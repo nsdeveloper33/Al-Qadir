@@ -8,6 +8,31 @@ import { useProducts } from '@/context/ProductContext';
 import { useToast } from '@/components/Toast';
 import * as XLSX from 'xlsx';
 
+// Translation function type
+type TFunction = (key: string, options?: { defaultValue?: string }) => string;
+
+// Translation map for admin unsubmitted orders
+const translations: Record<string, string> = {
+  'admin.unsubmitted.orderDetails': 'Unsubmitted Order Details',
+  'admin.unsubmitted.status': 'Unsubmitted',
+  'admin.unsubmitted.quantity': 'Quantity',
+  'admin.unsubmitted.customerInfo': 'Customer Information',
+  'admin.unsubmitted.name': 'Name',
+  'admin.unsubmitted.phone': 'Phone',
+  'admin.unsubmitted.city': 'City',
+  'admin.unsubmitted.address': 'Address',
+  'admin.unsubmitted.createdAt': 'Created At',
+  'admin.editOrder': 'Edit Order',
+  'admin.customerName': 'Customer Name',
+  'admin.phoneNumber': 'Phone Number',
+  'admin.orders.city': 'City',
+  'admin.deliveryAddress': 'Delivery Address',
+  'admin.orders.quantity': 'Quantity',
+  'admin.cancel': 'Cancel',
+  'admin.save': 'Save',
+  'admin.orders.export.noOrdersSelected': 'Please select orders to export',
+};
+
 // Detail Modal Component
 interface DetailModalProps {
   order: AbandonedOrder | null;
@@ -15,7 +40,7 @@ interface DetailModalProps {
   onClose: () => void;
   products: any[];
   currentLang: 'en' | 'ar';
-  t: any;
+  t: TFunction;
 }
 
 function DetailModal({ order, isOpen, onClose, products, currentLang, t }: DetailModalProps) {
@@ -465,10 +490,14 @@ function EditModal({ order, isOpen, onClose, onSave, t }: EditModalProps) {
 }
 
 export default function UnsubmittedOrdersPage() {
-  // TODO: Replace all t() calls with English text
   const { products } = useProducts();
   const { showToast } = useToast();
   const currentLang = 'en';
+  
+  // Translation function
+  const t: TFunction = (key: string, options?: { defaultValue?: string }) => {
+    return translations[key] || options?.defaultValue || key;
+  };
   const [abandonedOrders, setAbandonedOrders] = useState<AbandonedOrder[]>([]);
   const [viewOrder, setViewOrder] = useState<AbandonedOrder | null>(null);
   const [editOrder, setEditOrder] = useState<AbandonedOrder | null>(null);

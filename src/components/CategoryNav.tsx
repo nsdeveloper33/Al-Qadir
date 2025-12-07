@@ -6,7 +6,7 @@ import {
   BiTime,
   BiPhone,
   BiDish,
-  BiCar,
+  BiShoppingBag,
   BiBox,
   BiGridAlt
 } from 'react-icons/bi';
@@ -24,11 +24,11 @@ const categoryIcons: Record<string, any> = {
   'watches': BiTime,
   'mobile': BiPhone,
   'kitchen': BiDish,
-  'car': BiCar,
+  'ladiesbag': BiShoppingBag,
   'other': BiBox,
 };
 
-const categoryIds = ['all', 'cosmetics', 'electronics', 'watches', 'mobile', 'kitchen', 'car', 'other'];
+const categoryIds = ['all', 'cosmetics', 'electronics', 'watches', 'mobile', 'kitchen', 'ladiesbag', 'other'];
 
 const categoryLabels: Record<string, string> = {
   'all': 'All',
@@ -37,7 +37,7 @@ const categoryLabels: Record<string, string> = {
   'watches': 'Watches',
   'mobile': 'Mobile',
   'kitchen': 'Kitchen',
-  'car': 'Car',
+  'ladiesbag': 'Ladies Bag',
   'other': 'Other'
 };
 

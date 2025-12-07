@@ -13,7 +13,7 @@
     "watches": "Watches",
     "mobile": "Mobile",
     "kitchen": "Kitchen",
-    "car": "Car",
+    "ladiesbag": "Ladies Bag",
     "other": "Other"
   },
   "product": {
@@ -64,16 +64,16 @@
       ]
     },
     "3": {
-      "title": "2 in 1 Portable 800A Jump Starter & Air Pump",
-      "description": "Emergency Car Jump Starter with Air Compressor",
+      "title": "Premium Designer Ladies Handbag - Leather Material",
+      "description": "Stylish Premium Designer Handbag made from genuine leather material",
       "features": [
-        "800A peak current for most vehicles",
-        "Built-in air compressor for tire inflation",
-        "12000mAh power bank function",
-        "LED flashlight with SOS mode",
-        "Digital display for pressure reading",
-        "USB ports for device charging",
-        "Compact and portable design"
+        "Genuine leather material",
+        "Multiple compartments for organization",
+        "Adjustable shoulder strap",
+        "Spacious interior with zipper closure",
+        "Trendy design for all occasions",
+        "Durable construction",
+        "Perfect for office and casual wear"
       ]
     },
     "4": {
@@ -220,16 +220,16 @@
       ]
     },
     "15": {
-      "title": "Portable Car Wash Gun 2023",
-      "description": "High Pressure Portable Car Washer",
+      "title": "Fashion Tote Bag for Women - Large Capacity",
+      "description": "Spacious Fashion Tote Bag with Large Capacity - Perfect for Shopping and Daily Use",
       "features": [
-        "High pressure water spray",
-        "Adjustable spray patterns",
-        "Fits standard garden hose",
-        "Built-in soap dispenser",
-        "Ergonomic grip handle",
-        "Durable ABS construction",
-        "Perfect for cars, bikes, gardens"
+        "Large capacity for all your essentials",
+        "Reinforced handles for durability",
+        "Water-resistant material",
+        "Multiple interior pockets",
+        "Trendy design and colors",
+        "Lightweight and comfortable",
+        "Perfect for shopping and travel"
       ]
     },
     "16": {
@@ -298,16 +298,29 @@
       ]
     },
     "21": {
-      "title": "4K Ultra HD Car Dash Camera",
-      "description": "Professional Car Dash Camera with Night Vision",
+      "title": "Elegant Crossbody Bag for Women - Stylish Design",
+      "description": "Elegant Crossbody Bag with Adjustable Strap - Perfect for Parties and Events",
       "features": [
-        "4K Ultra HD recording",
-        "Night vision technology",
-        "Loop recording function",
-        "G-sensor for accident detection",
-        "Wide angle 170° lens",
-        "Parking mode with motion detection",
-        "GPS tracking included"
+        "Adjustable crossbody strap",
+        "Compact yet spacious design",
+        "Premium quality material",
+        "Secure zipper closure",
+        "Elegant and stylish appearance",
+        "Multiple card slots inside",
+        "Perfect for parties and special occasions"
+      ]
+    },
+    "22": {
+      "title": "Classic Shoulder Bag for Ladies - Office & Casual",
+      "description": "Classic Shoulder Bag - Versatile Design for Office and Casual Use",
+      "features": [
+        "Comfortable shoulder strap",
+        "Professional and elegant design",
+        "Multiple compartments",
+        "Main zipper closure",
+        "Durable construction",
+        "Suitable for office and casual wear",
+        "Fits laptop and documents"
       ]
     }
   },

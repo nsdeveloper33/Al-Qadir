@@ -11,6 +11,56 @@ import * as XLSX from 'xlsx';
 
 type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
 
+// Translation function type
+type TFunction = (key: string, options?: { defaultValue?: string }) => string;
+
+// Translation map for admin orders
+const translations: Record<string, string> = {
+  'admin.orders.title': 'Orders',
+  'admin.orders.subtitle': 'Manage and track all customer orders',
+  'admin.orders.all': 'All',
+  'admin.orders.searchPlaceholder': 'Search by order ID, customer name...',
+  'admin.orders.noOrders': 'No orders found',
+  'admin.orders.view': 'View',
+  'admin.orders.edit': 'Edit',
+  'admin.orders.delete': 'Delete',
+  'admin.orders.orderDetails': 'Order Details',
+  'admin.orders.status': 'Status',
+  'admin.orders.customerInfo': 'Customer Information',
+  'admin.orders.deliveryAddress': 'Delivery Address',
+  'admin.orders.products': 'Products',
+  'admin.orders.total': 'Total',
+  'admin.orders.save': 'Save',
+  'admin.orders.deleteConfirm': 'Are you sure you want to delete this order? This action cannot be undone.',
+  'admin.orders.editOrder': 'Edit Order',
+  'admin.orders.customerName': 'Customer Name',
+  'admin.orders.phone': 'Phone Number',
+  'admin.orders.city': 'City',
+  'admin.orders.selectCity': 'Select City',
+  'admin.orders.address': 'Address',
+  'admin.orders.export.selected': 'Export Selected',
+  'admin.orders.export.all': 'Export All',
+  'admin.orders.export.noOrdersSelected': 'Please select orders to export',
+  'admin.orders.import': 'Import Excel',
+  'admin.orders.stats.total': 'Total Orders',
+  'admin.orders.stats.revenue': 'Revenue',
+  'admin.orders.statuses.pending': 'Pending',
+  'admin.orders.statuses.processing': 'Processing',
+  'admin.orders.statuses.shipped': 'Shipped',
+  'admin.orders.statuses.delivered': 'Delivered',
+  'admin.orders.statuses.cancelled': 'Cancelled',
+  'admin.orders.table.orderId': 'Order ID',
+  'admin.orders.table.customer': 'Customer',
+  'admin.orders.table.products': 'Products',
+  'admin.orders.table.total': 'Total',
+  'admin.orders.table.status': 'Status',
+  'admin.orders.table.date': 'Date',
+  'admin.orders.table.actions': 'Actions',
+  'admin.orders.selectAll': 'Select All',
+  'admin.cancel': 'Cancel',
+  'admin.save': 'Save',
+};
+
 const statusConfig: Record<OrderStatus, { color: string; bgColor: string; icon: string }> = {
   pending: { color: '#FF9800', bgColor: 'rgba(255, 152, 0, 0.1)', icon: '⏳' },
   processing: { color: '#2196F3', bgColor: 'rgba(33, 150, 243, 0.1)', icon: '⚙️' },
@@ -34,8 +84,12 @@ interface EditOrderModalProps {
 }
 
 function OrderDetailModal({ order, isOpen, onClose, onUpdateStatus }: OrderDetailModalProps) {
-  // TODO: Replace all t() calls with English text
   const { products } = useProducts();
+  
+  // Translation function
+  const t: TFunction = (key: string, options?: { defaultValue?: string }) => {
+    return translations[key] || options?.defaultValue || key;
+  };
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus>('pending');
   
   // Update selectedStatus when modal opens
@@ -368,6 +422,10 @@ function OrderDetailModal({ order, isOpen, onClose, onUpdateStatus }: OrderDetai
 
 // Edit Order Modal Component
 function EditOrderModal({ order, isOpen, onClose, onSave }: EditOrderModalProps) {
+  // Translation function
+  const t: TFunction = (key: string, options?: { defaultValue?: string }) => {
+    return translations[key] || options?.defaultValue || key;
+  };
   // TODO: Replace all t() calls with English text
   const { products: allProducts } = useProducts();
   
@@ -561,7 +619,7 @@ function EditOrderModal({ order, isOpen, onClose, onSave }: EditOrderModalProps)
             >
               <option value="">{t('admin.orders.selectCity', { defaultValue: 'Select City' })}</option>
               {cities.map((city, idx) => {
-                const cityName = getCityName(city, 'en');
+                const cityName = getCityName(city);
                 return (
                   <option key={idx} value={cityName}>{cityName}</option>
                 );
@@ -720,11 +778,15 @@ function EditOrderModal({ order, isOpen, onClose, onSave }: EditOrderModalProps)
 }
 
 function AdminOrdersContent() {
-  // TODO: Replace all t() calls with English text
   const searchParams = useSearchParams();
   const router = useRouter();
   const statusParam = searchParams.get('status');
   const { showToast } = useToast();
+  
+  // Translation function
+  const t: TFunction = (key: string, options?: { defaultValue?: string }) => {
+    return translations[key] || options?.defaultValue || key;
+  };
   
   // Use orders from context
   const { orders, updateOrder, updateOrderStatus, deleteOrder, getOrderStats } = useOrders();

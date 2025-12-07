@@ -1021,7 +1021,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                     name="mobile"
                     value={formData.mobile}
                     onChange={handleInputChange}
-                    placeholder="09 1233456"
+                    placeholder="0300 1234567"
                     required
                     style={{
                       width: '100%',
@@ -1085,8 +1085,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                   >
                     <option value="">Select City*</option>
                     {cities.map((city, idx) => {
-                      const lang = isArabic ? 'ar' : 'en';
-                      const cityName = getCityName(city, lang);
+                      const cityName = getCityName(city);
                       return (
                         <option key={idx} value={cityName}>
                           {cityName}

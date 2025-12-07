@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import Image from 'next/image';
 import Header from '@/components/Header';
 import SearchBar from '@/components/SearchBar';
 import CategoryNav from '@/components/CategoryNav';
@@ -52,6 +53,49 @@ export default function Home() {
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#eeeeee' }}>
       {/* Header with Logo and Language Selector */}
       <Header />
+      
+      {/* Banner Section */}
+      <div 
+        style={{ 
+          width: '100%',
+          backgroundColor: '#eeeeee',
+          paddingTop: '20px',
+          paddingBottom: '20px'
+        }}
+      >
+        <div
+          style={{
+            maxWidth: '1300px',
+            margin: '0 auto',
+            paddingLeft: '15px',
+            paddingRight: '15px'
+          }}
+        >
+          <div
+            style={{
+              position: 'relative',
+              width: '100%',
+              borderRadius: '12px',
+              overflow: 'hidden',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+            }}
+          >
+            <Image
+              src="/Al-Qadir-banner.jpg"
+              alt="Al-Qadir Banner"
+              width={1300}
+              height={400}
+              style={{
+                width: '100%',
+                height: 'auto',
+                objectFit: 'cover',
+                display: 'block'
+              }}
+              priority
+            />
+          </div>
+        </div>
+      </div>
       
       {/* Search Bar */}
       <SearchBar onSearch={handleSearch} searchQuery={searchQuery} />

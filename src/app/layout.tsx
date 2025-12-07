@@ -14,9 +14,9 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Mega Deals Oman - Best Deals with Free Delivery",
-  description: "Best deals on electronics, cosmetics, watches and more with free delivery across Oman. Cash on delivery available.",
-  keywords: "Mega Deals, Oman, online shopping, electronics, cosmetics, watches, free delivery",
+  title: "Al-Qadir - Best Deals with Free Delivery",
+  description: "Best deals on electronics, cosmetics, watches and more with free delivery across Pakistan. Cash on delivery available.",
+  keywords: "Al-Qadir, Pakistan, online shopping, electronics, cosmetics, watches, free delivery",
 };
 
 export default function RootLayout({

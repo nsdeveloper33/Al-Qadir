@@ -1,6 +1,6 @@
 // ========================================
 // PRODUCT DATA WITH REAL PRODUCT IMAGES
-// Categories: all, cosmetics, electronics, watches, mobile, kitchen, car, other
+// Categories: all, cosmetics, electronics, watches, mobile, kitchen, ladiesbag, other
 // ========================================
 
 export interface PricingTier {
@@ -186,32 +186,32 @@ const rawProducts = [
       "2.4GHz remote control with 100m range"
     ]
   },
-  // CAR - Jump Starter
+  // LADIES BAG - Designer Handbag
   {
     id: 3,
-    title: "2 in 1 Portable 800A Jump Starter & Air Pump",
-    currentPrice: 18,
-    originalPrice: 35,
-    discount: 49,
-    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop",
+    title: "Premium Designer Ladies Handbag - Leather Material",
+    currentPrice: 25.9,
+    originalPrice: 49.9,
+    discount: 48,
+    image: "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=400&h=400&fit=crop",
     images: [
-      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop",
-      "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=400&h=400&fit=crop",
-      "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=400&h=400&fit=crop",
-      "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=400&fit=crop"
+      "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=400&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=400&h=400&fit=crop"
     ],
     freeDelivery: true,
-    soldCount: 8392,
-    category: "car",
-    description: "Emergency Car Jump Starter with Air Compressor",
+    soldCount: 5234,
+    category: "ladiesbag",
+    description: "Stylish Premium Designer Handbag made from genuine leather material",
     features: [
-      "800A peak current for most vehicles",
-      "Built-in air compressor for tire inflation",
-      "12000mAh power bank function",
-      "LED flashlight with SOS mode",
-      "Digital display for pressure reading",
-      "USB ports for device charging",
-      "Compact and portable design"
+      "Genuine leather material",
+      "Multiple compartments for organization",
+      "Adjustable shoulder strap",
+      "Spacious interior with zipper closure",
+      "Trendy design for all occasions",
+      "Durable construction",
+      "Perfect for office and casual wear"
     ]
   },
   // COSMETICS - Shampoo
@@ -522,32 +522,32 @@ const rawProducts = [
       "Space saving design"
     ]
   },
-  // CAR - Car Wash
+  // LADIES BAG - Tote Bag
   {
     id: 15,
-    title: "Portable Car Wash Gun 2023",
-    currentPrice: 6.9,
-    originalPrice: 15,
-    discount: 54,
-    image: "https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?w=400&h=400&fit=crop",
+    title: "Fashion Tote Bag for Women - Large Capacity",
+    currentPrice: 12.9,
+    originalPrice: 24.9,
+    discount: 48,
+    image: "https://images.unsplash.com/photo-1564422167308-5c4fd6c2e473?w=400&h=400&fit=crop",
     images: [
-      "https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?w=400&h=400&fit=crop",
-      "https://images.unsplash.com/photo-1607860108855-64acf2078ed9?w=400&h=400&fit=crop",
-      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop",
-      "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=400&h=400&fit=crop"
+      "https://images.unsplash.com/photo-1564422167308-5c4fd6c2e473?w=400&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1594633313593-bab3825d0caf?w=400&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=400&h=400&fit=crop"
     ],
     freeDelivery: true,
-    soldCount: 6293,
-    category: "car",
-    description: "High Pressure Portable Car Washer",
+    soldCount: 7821,
+    category: "ladiesbag",
+    description: "Spacious Fashion Tote Bag with Large Capacity - Perfect for Shopping and Daily Use",
     features: [
-      "High pressure water spray",
-      "Adjustable spray patterns",
-      "Fits standard garden hose",
-      "Built-in soap dispenser",
-      "Ergonomic grip handle",
-      "Durable ABS construction",
-      "Perfect for cars, bikes, gardens"
+      "Large capacity for all your essentials",
+      "Reinforced handles for durability",
+      "Water-resistant material",
+      "Multiple interior pockets",
+      "Trendy design and colors",
+      "Lightweight and comfortable",
+      "Perfect for shopping and travel"
     ]
   },
   // OTHER - RC Airplane
@@ -690,32 +690,60 @@ const rawProducts = [
       "Safety lock mechanism"
     ]
   },
-  // CAR - Car Camera
+  // LADIES BAG - Crossbody Bag
   {
     id: 21,
-    title: "4K Ultra HD Car Dash Camera",
-    currentPrice: 8.9,
-    originalPrice: 18,
-    discount: 51,
-    image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=400&fit=crop",
+    title: "Elegant Crossbody Bag for Women - Stylish Design",
+    currentPrice: 18.9,
+    originalPrice: 34.9,
+    discount: 46,
+    image: "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=400&h=400&fit=crop",
     images: [
-      "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=400&fit=crop",
-      "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=400&h=400&fit=crop",
-      "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=400&h=400&fit=crop",
-      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop"
+      "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=400&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1564422167308-5c4fd6c2e473?w=400&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=400&h=400&fit=crop"
     ],
     freeDelivery: true,
-    soldCount: 4567,
-    category: "car",
-    description: "Professional Car Dash Camera with Night Vision",
+    soldCount: 6453,
+    category: "ladiesbag",
+    description: "Elegant Crossbody Bag with Adjustable Strap - Perfect for Parties and Events",
     features: [
-      "4K Ultra HD recording",
-      "Night vision technology",
-      "Loop recording function",
-      "G-sensor for accident detection",
-      "Wide angle 170° lens",
-      "Parking mode with motion detection",
-      "GPS tracking included"
+      "Adjustable crossbody strap",
+      "Compact yet spacious design",
+      "Premium quality material",
+      "Secure zipper closure",
+      "Elegant and stylish appearance",
+      "Multiple card slots inside",
+      "Perfect for parties and special occasions"
+    ]
+  },
+  // LADIES BAG - Shoulder Bag
+  {
+    id: 22,
+    title: "Classic Shoulder Bag for Ladies - Office & Casual",
+    currentPrice: 22.9,
+    originalPrice: 42.9,
+    discount: 47,
+    image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&h=400&fit=crop",
+    images: [
+      "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=400&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1594633313593-bab3825d0caf?w=400&h=400&fit=crop"
+    ],
+    freeDelivery: true,
+    soldCount: 3892,
+    category: "ladiesbag",
+    description: "Classic Shoulder Bag - Versatile Design for Office and Casual Use",
+    features: [
+      "Comfortable shoulder strap",
+      "Professional and elegant design",
+      "Multiple compartments",
+      "Main zipper closure",
+      "Durable construction",
+      "Suitable for office and casual wear",
+      "Fits laptop and documents"
     ]
   }
 ];
@@ -731,45 +759,55 @@ export const categories = [
   { id: 'watches', name: 'Watches' },
   { id: 'mobile', name: 'Mobile' },
   { id: 'kitchen', name: 'Kitchen' },
-  { id: 'car', name: 'Car' },
+  { id: 'ladiesbag', name: 'Ladies Bag' },
   { id: 'other', name: 'Other' },
 ];
 
-// Cities for order form (Multilingual - like products)
+// Cities for order form (English only)
 export const cities = [
-  { en: "Mabela", ar: "المعبيلة" },
-  { en: "Seeb", ar: "السيب" },
-  { en: "Muttrah", ar: "مطرح" },
-  { en: "Al Amerat", ar: "العامرات" },
-  { en: "Quriyat", ar: "قريات" },
-  { en: "Salalah", ar: "صلالة" },
-  { en: "Sohar", ar: "صحار" },
-  { en: "Nizwa", ar: "نزوى" },
-  { en: "Sur", ar: "صور" },
-  { en: "Ibri", ar: "عبري" },
-  { en: "Al Buraimi", ar: "البريمي" },
-  { en: "Rustaq", ar: "الرستاق" },
-  { en: "Barka", ar: "بركاء" },
-  { en: "Saham", ar: "صحم" },
-  { en: "Khasab (Musandam)", ar: "خصب (مسندم)" },
-  { en: "Duqm", ar: "الدقم" },
-  { en: "Bahla", ar: "بهلا" },
-  { en: "Shinas", ar: "شناص" },
-  { en: "Al Mudhaibi", ar: "المضيبي" },
-  { en: "Al Suwaiq", ar: "السويق" },
-  { en: "Bidbid", ar: "بدبد" },
-  { en: "Bidiyah", ar: "بدية" },
-  { en: "Jalan Bani Bu Ali", ar: "جعلان بني بو علي" },
-  { en: "Jalan Bani Bu Hassan", ar: "جعلان بني بو حسن" },
-  { en: "Adam", ar: "أدم" },
-  { en: "Izki", ar: "إزكي" },
-  { en: "Ibra", ar: "إبراء" },
-  { en: "Others", ar: "أخرى" }
+  "Karachi",
+  "Lahore",
+  "Islamabad",
+  "Rawalpindi",
+  "Faisalabad",
+  "Multan",
+  "Peshawar",
+  "Quetta",
+  "Gujranwala",
+  "Sialkot",
+  "Sargodha",
+  "Bahawalpur",
+  "Sukkur",
+  "Larkana",
+  "Hyderabad",
+  "Gujrat",
+  "Kasur",
+  "Sheikhupura",
+  "Rahim Yar Khan",
+  "Jhang",
+  "Mardan",
+  "Mingora",
+  "Nawabshah",
+  "Chiniot",
+  "Kotri",
+  "Khanpur",
+  "Hafizabad",
+  "Kohat",
+  "Jacobabad",
+  "Shikarpur",
+  "Muzaffargarh",
+  "Khanewal",
+  "Vehari",
+  "Others"
 ];
 
-// Helper to get city name in specific language
-export const getCityName = (cityObj: { en: string; ar: string }, lang: 'en' | 'ar') => {
-  return cityObj[lang];
+// Helper to get city name (returns city as-is for backward compatibility)
+export const getCityName = (city: string | { en: string; ar: string }) => {
+  if (typeof city === 'string') {
+    return city;
+  }
+  // Backward compatibility with old format
+  return city.en;
 };
 
 // Get product by ID

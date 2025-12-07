@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 
 export default function Header() {
@@ -26,19 +25,57 @@ export default function Header() {
           className="flex items-center justify-between relative"
           style={{ height: '90px' }}
         >
-          {/* Center Logo - Image */}
+          {/* Center Logo - Custom Text Design */}
           <Link 
             href="/" 
             className="absolute left-1/2 transform -translate-x-1/2"
+            style={{
+              textDecoration: 'none',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer'
+            }}
           >
-            <Image
-              src="/Qeelu.png"
-              alt="Qeelu Logo"
-              width={220}
-              height={90}
-              style={{ width: 'auto', height: '75px' }}
-              priority
-            />
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                lineHeight: '1.2'
+              }}
+            >
+              {/* Main Logo Text - Al-Qadir */}
+              <span
+                style={{
+                  fontSize: '32px',
+                  fontWeight: '700',
+                  background: 'linear-gradient(135deg, #1a1a2e 0%, #4CAF50 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                  letterSpacing: '1px',
+                  fontFamily: 'var(--font-poppins), Arial, sans-serif'
+                }}
+              >
+                Al-Qadir
+              </span>
+              {/* Subtitle - Shopping Mall */}
+              <span
+                style={{
+                  fontSize: '12px',
+                  fontWeight: '500',
+                  color: '#666',
+                  letterSpacing: '2px',
+                  marginTop: '2px',
+                  textTransform: 'uppercase',
+                  fontFamily: 'var(--font-poppins), Arial, sans-serif'
+                }}
+              >
+                Shopping Mall
+              </span>
+            </div>
           </Link>
 
           {/* Mobile Menu Toggle */}

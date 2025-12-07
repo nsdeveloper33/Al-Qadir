@@ -8,6 +8,66 @@ import { useProducts } from '@/context/ProductContext';
 import { useToast } from '@/components/Toast';
 import { getProductTitle, getProductDescription } from '@/utils/getProductText';
 
+// Translation function type
+type TFunction = (key: string, options?: { defaultValue?: string }) => string;
+
+// Translation map for admin panel
+const translations: Record<string, string> = {
+  'admin.products': 'Products',
+  'admin.manageProducts': 'Manage all products',
+  'admin.addProduct': 'Add Product',
+  'admin.editProduct': 'Edit Product',
+  'admin.searchProducts': 'Search products...',
+  'admin.active': 'Active',
+  'admin.inactive': 'Inactive',
+  'admin.edit': 'Edit',
+  'admin.delete': 'Delete',
+  'admin.cancel': 'Cancel',
+  'admin.save': 'Save',
+  'admin.back': 'Back',
+  'admin.next': 'Next',
+  'admin.deleteConfirm': 'Delete this product?',
+  'admin.noProducts': 'No products found',
+  'admin.form.title': 'Title',
+  'admin.form.category': 'Category',
+  'admin.form.status': 'Status',
+  'admin.form.originalPrice': 'Original Price',
+  'admin.form.currentPrice': 'Current Price',
+  'admin.form.discount': 'Discount',
+  'admin.form.description': 'Description',
+  'admin.form.freeDelivery': 'Free Delivery',
+  'admin.form.freeDeliveryDesc': 'Enable free delivery for this product',
+  'admin.form.featuresOptional': 'Add product features (optional). You can skip this step.',
+  'admin.form.mainImage': 'Main Image',
+  'admin.form.additionalImages': 'Additional Images',
+  'admin.form.optional': 'Optional',
+  'admin.form.imageUrlPlaceholder': 'Enter image URL...',
+  'admin.form.preview': 'Preview',
+  'admin.form.step': 'Step',
+  'admin.form.of': 'of',
+  'admin.form.tab.basic': 'Basic Info',
+  'admin.form.tab.features': 'Features',
+  'admin.form.tab.images': 'Images',
+  'admin.form.errors.mainImageRequired': 'Main image URL is required',
+  'admin.form.pricingTiers': 'Quantity Pricing',
+  'admin.form.pricingTiersDesc': 'Set different prices for different quantities',
+  'admin.form.noPricingTiers': 'No quantity pricing set - Click "Add Tier" to add',
+  'admin.table.product': 'Product',
+  'admin.table.category': 'Category',
+  'admin.table.price': 'Price',
+  'admin.table.status': 'Status',
+  'admin.table.actions': 'Actions',
+  // Category translations
+  'categories.all': 'All',
+  'categories.cosmetics': 'Cosmetics',
+  'categories.electronics': 'Electronics',
+  'categories.watches': 'Watches',
+  'categories.mobile': 'Mobile',
+  'categories.kitchen': 'Kitchen',
+  'categories.ladiesbag': 'Ladies Bag',
+  'categories.other': 'Other',
+};
+
 // Helper function to validate URL or local path
 const isValidUrl = (url: string): boolean => {
   if (!url || !url.trim()) return false;
@@ -1515,12 +1575,16 @@ function DeleteModal({ isOpen, onClose, onConfirm, productTitle, t }: DeleteModa
 }
 
 function AdminProductsContent() {
-  // TODO: Replace all t() calls with English text
   const searchParams = useSearchParams();
   const router = useRouter();
   const categoryParam = searchParams.get('category');
   const currentLang = 'en' as 'en' | 'ar';
   const { showToast } = useToast();
+  
+  // Translation function that returns English text
+  const t: TFunction = (key: string, options?: { defaultValue?: string }) => {
+    return translations[key] || options?.defaultValue || key;
+  };
   
   // Use global product context
   const { products, addProduct, updateProduct, deleteProduct, toggleProductStatus } = useProducts();

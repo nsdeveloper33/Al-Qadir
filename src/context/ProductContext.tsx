@@ -112,7 +112,15 @@ export function ProductProvider({ children }: { children: ReactNode }) {
         setProducts([data.product, ...products]);
         return { success: true };
       } else {
-        const errorData = await response.json();
+        let errorData: any = {};
+        try {
+          const text = await response.text();
+          errorData = text ? JSON.parse(text) : {};
+        } catch (parseError) {
+          console.error('Failed to parse error response:', parseError);
+          errorData = { error: `HTTP ${response.status}: ${response.statusText}` };
+        }
+        
         console.error('Failed to add product:', errorData);
         
         // Check for duplicate key error
@@ -123,7 +131,9 @@ export function ProductProvider({ children }: { children: ReactNode }) {
           };
         }
         
-        return { success: false, error: errorData.details || errorData.error || 'Failed to add product' };
+        // Provide meaningful error message
+        const errorMessage = errorData.details || errorData.error || errorData.message || `Failed to add product (${response.status})`;
+        return { success: false, error: errorMessage };
       }
     } catch (error) {
       console.error('Error adding product:', error);

@@ -14,19 +14,19 @@ export async function GET() {
       sampleRows: [
         {
           Customer: 'Ahmed Hassan',
-          Phone: '+968 91234567',
-          City: 'Muscat',
-          Address: 'Al Khuwair, Building 15',
+          Phone: '+92 300 1234567',
+          City: 'Karachi',
+          Address: 'Gulshan-e-Iqbal, Block 15',
           Product: 'Waterproof Turbo Shaver',
           Quantity: 2,
           Price: 4.9,
           Total: 9.8
         },
         {
-          Customer: 'Sara Al-Rashid',
-          Phone: '+968 98765432',
-          City: 'Salalah',
-          Address: 'Al Hamra, Villa 8',
+          Customer: 'Sara Khan',
+          Phone: '+92 321 9876543',
+          City: 'Lahore',
+          Address: 'DHA Phase 5, House 8',
           Product: 'Jet Mavic Camera HD 4k Drone',
           Quantity: 1,
           Price: 7.9,
@@ -35,7 +35,7 @@ export async function GET() {
       ],
       instructions: [
         'Required fields: Customer, Phone, City, Address, Product, Quantity, Price, Total',
-        'Phone format: +968 XXXXXXXX or just numbers',
+        'Phone format: +92 3XX XXXXXXX or just numbers',
         'City: Use exact city names from dropdown',
         'Product: Product name',
         'Quantity: Number of items',

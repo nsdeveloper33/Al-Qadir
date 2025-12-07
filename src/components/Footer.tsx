@@ -87,8 +87,8 @@ export default function Footer() {
               CONTACT INFO
             </h4>
             <address style={{ fontStyle: 'normal', color: '#555555', fontSize: '14px', lineHeight: '1.8' }}>
-              <p>Al Mabailah</p>
-              <p>Muscat, Oman</p>
+              <p>Vehari</p>
+              <p>Pakistan</p>
             </address>
           </div>
 
