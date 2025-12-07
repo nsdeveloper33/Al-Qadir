@@ -61,7 +61,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             {!imgError ? (
               <Image
                 src={product.image}
-                alt={getProductTitle(product, 'en') || (typeof product.title === 'object' ? product.title.en : product.title || 'Product')}
+                alt={getProductTitle(product) || (typeof product.title === 'object' ? product.title.en : product.title || 'Product')}
                 fill
                 className="object-cover"
                 style={{ 
@@ -117,7 +117,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             }}
             suppressHydrationWarning
           >
-            {getProductTitle(product, 'en') || (typeof product.title === 'object' ? product.title.en : product.title || 'Product')}
+            {getProductTitle(product) || (typeof product.title === 'object' ? product.title.en : product.title || 'Product')}
           </h3>
           
           {/* Pricing - PKR */}

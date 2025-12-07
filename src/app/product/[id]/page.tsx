@@ -288,7 +288,7 @@ export default function ProductPage({ params }: ProductPageProps) {
       city: formData.city,
       address: formData.address,
       product: {
-        name: getProductTitle(product, isArabic ? 'ar' : 'en'),
+        name: getProductTitle(product),
         image: product.image,
         quantity: quantity,
         price: product.currentPrice,
@@ -305,7 +305,7 @@ export default function ProductPage({ params }: ProductPageProps) {
       city: formData.city,
       address: formData.address,
       products: [{
-        name: getProductTitle(product, isArabic ? 'ar' : 'en'),
+        name: getProductTitle(product),
         quantity: quantity,
         price: product.currentPrice,
       }],
@@ -338,11 +338,10 @@ export default function ProductPage({ params }: ProductPageProps) {
     };
   };
 
-  // Get translated title, description, and features based on current language
-  // These will update automatically when language changes
-  const productTitle = getProductTitle(product, isArabic ? 'ar' : 'en');
-  const productDescription = getProductDescription(product, isArabic ? 'ar' : 'en');
-  const productFeatures = getProductFeatures(product, isArabic ? 'ar' : 'en');
+  // Get product title, description, and features (English only)
+  const productTitle = getProductTitle(product);
+  const productDescription = getProductDescription(product);
+  const productFeatures = getProductFeatures(product);
 
   // Get recommended products (same category, different product)
   const getRecommendedProducts = () => {
@@ -677,7 +676,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                 
                 <div className="grid grid-cols-2 md:grid-cols-4" style={{ gap: '16px' }}>
                   {getRecommendedProducts().map((recommendedProduct) => {
-                    const recTitle = getProductTitle(recommendedProduct, isArabic ? 'ar' : 'en');
+                    const recTitle = getProductTitle(recommendedProduct);
                     return (
                       <a
                         key={recommendedProduct.id}

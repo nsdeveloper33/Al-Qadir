@@ -625,10 +625,10 @@ export default function Home() {
       <section
         style={{
           width: '100%',
-          background: 'linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%)',
+          backgroundColor: '#fff',
           paddingTop: '80px',
           paddingBottom: '80px',
-          color: '#fff'
+          color: '#1a1a2e'
         }}
       >
         <div
@@ -645,7 +645,8 @@ export default function Home() {
               fontSize: 'clamp(28px, 5vw, 42px)',
               fontWeight: '700',
               marginBottom: '20px',
-              fontFamily: 'var(--font-poppins), Arial, sans-serif'
+              fontFamily: 'var(--font-poppins), Arial, sans-serif',
+              color: '#1a1a2e'
             }}
           >
             Ready to Start Shopping?
@@ -654,7 +655,7 @@ export default function Home() {
             style={{
               fontSize: '18px',
               marginBottom: '40px',
-              opacity: 0.9,
+              color: '#666',
               maxWidth: '600px',
               margin: '0 auto 40px'
             }}

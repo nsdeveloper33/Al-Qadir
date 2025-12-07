@@ -16,9 +16,8 @@ export function getSoldCount(product: Product, orders: Order[]): number {
     return 0;
   }
 
-  // Get product titles in both languages
-  const productTitleEn = getProductTitle(product, 'en');
-  const productTitleAr = getProductTitle(product, 'ar');
+  // Get product title in English
+  const productTitle = getProductTitle(product);
 
   // Count sold items from non-cancelled orders
   let soldCount = 0;
@@ -30,12 +29,10 @@ export function getSoldCount(product: Product, orders: Order[]): number {
     }
 
     order.products.forEach(orderProduct => {
-      // Match by product name (could be in English or Arabic depending on language when order was placed)
+      // Match by product name (English only)
       if (
-        orderProduct.name === productTitleEn ||
-        orderProduct.name === productTitleAr ||
-        orderProduct.name.trim() === productTitleEn.trim() ||
-        orderProduct.name.trim() === productTitleAr.trim()
+        orderProduct.name === productTitle ||
+        orderProduct.name.trim() === productTitle.trim()
       ) {
         soldCount += orderProduct.quantity;
       }

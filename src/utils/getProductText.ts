@@ -16,7 +16,7 @@ interface ProductText {
 /**
  * Get product title in English
  */
-export function getProductTitle(product: ProductText, lang?: 'en' | 'ar'): string {
+export function getProductTitle(product: ProductText): string {
   if (!product) return '';
   
   // If product has nested title object, use English
@@ -32,7 +32,7 @@ export function getProductTitle(product: ProductText, lang?: 'en' | 'ar'): strin
 /**
  * Get product description in English
  */
-export function getProductDescription(product: ProductText, lang?: 'en' | 'ar'): string {
+export function getProductDescription(product: ProductText): string {
   if (!product) return '';
   
   // If product has nested description object, use English
@@ -47,7 +47,7 @@ export function getProductDescription(product: ProductText, lang?: 'en' | 'ar'):
 /**
  * Get product features in English
  */
-export function getProductFeatures(product: ProductText, lang?: 'en' | 'ar'): string[] {
+export function getProductFeatures(product: ProductText): string[] {
   if (!product || !product.features) return [];
   
   // If features is nested object, use English
