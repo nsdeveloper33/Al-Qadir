@@ -324,7 +324,7 @@ function OrderDetailModal({ order, isOpen, onClose, onUpdateStatus }: OrderDetai
                       Quantity: x{product.quantity}
                     </p>
                     <p style={{ fontSize: '14px', fontWeight: '600', color: '#4CAF50' }}>
-                      {product.price * product.quantity} OMR
+                      {product.price * product.quantity} PKR
                     </p>
                   </div>
                 </div>
@@ -337,7 +337,7 @@ function OrderDetailModal({ order, isOpen, onClose, onUpdateStatus }: OrderDetai
                 alignItems: 'center',
               }}>
                 <span style={{ fontSize: '14px', color: '#fff', fontWeight: '500' }}>{t('admin.orders.total')}</span>
-                <span style={{ fontSize: '18px', color: '#4CAF50', fontWeight: '700' }}>{order.total.toFixed(2)} OMR</span>
+                <span style={{ fontSize: '18px', color: '#4CAF50', fontWeight: '700' }}>{order.total.toFixed(2)} PKR</span>
               </div>
             </div>
           </div>
@@ -618,7 +618,7 @@ function EditOrderModal({ order, isOpen, onClose, onSave }: EditOrderModalProps)
                     {product.name}
                   </p>
                   <p style={{ fontSize: '12px', color: '#666' }}>
-                    Price: {product.price.toFixed(2)} OMR
+                    Price: {product.price.toFixed(2)} PKR
                   </p>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -663,7 +663,7 @@ function EditOrderModal({ order, isOpen, onClose, onSave }: EditOrderModalProps)
                 {t('admin.orders.total')}
               </span>
               <span style={{ fontSize: '18px', fontWeight: '700', color: '#4CAF50' }}>
-                {formData.products.reduce((sum, p) => sum + (p.price * p.quantity), 0).toFixed(2)} OMR
+                {formData.products.reduce((sum, p) => sum + (p.price * p.quantity), 0).toFixed(2)} PKR
               </span>
             </div>
           </div>
@@ -917,7 +917,7 @@ function AdminOrdersContent() {
       'City': order.city,
       'Address': order.address,
       'Products': order.products.map(p => `${p.name} (x${p.quantity})`).join(', '),
-      'Total (OMR)': order.total,
+      'Total (PKR)': order.total,
       'Status': order.status,
       'Date': order.date,
       'Time': order.time,
@@ -1221,7 +1221,7 @@ function AdminOrdersContent() {
           color: '#fff',
         }}>
           <p style={{ fontSize: '12px', opacity: 0.9, marginBottom: '6px' }}>{t('admin.orders.stats.revenue')}</p>
-          <p style={{ fontSize: '22px', fontWeight: '700' }}>{stats.revenue.toFixed(2)} OMR</p>
+          <p style={{ fontSize: '22px', fontWeight: '700' }}>{stats.revenue.toFixed(2)} PKR</p>
         </div>
 
         {/* Pending */}
@@ -1557,7 +1557,7 @@ function AdminOrdersContent() {
                   </td>
                   <td style={{ padding: '16px' }}>
                     <p style={{ fontSize: '16px', fontWeight: '700', color: '#4CAF50' }}>
-                      {order.total.toFixed(2)} OMR
+                      {order.total.toFixed(2)} PKR
                     </p>
                   </td>
                   <td style={{ padding: '16px', position: 'relative', overflow: 'visible' }}>
@@ -1969,7 +1969,7 @@ function AdminOrdersContent() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: (order.status === 'cancelled' && filterStatus === 'cancelled') ? '10px' : '0' }}>
                   <div>
                     <p style={{ fontSize: '11px', color: '#999', marginBottom: '2px' }}>Total</p>
-                    <p style={{ fontSize: '20px', fontWeight: '700', color: '#4CAF50' }}>{order.total.toFixed(2)} OMR</p>
+                    <p style={{ fontSize: '20px', fontWeight: '700', color: '#4CAF50' }}>{order.total.toFixed(2)} PKR</p>
                   </div>
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <button

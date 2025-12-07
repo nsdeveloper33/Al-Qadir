@@ -75,7 +75,7 @@ export default function AdminDashboard() {
           }} className="hover:scale-105 hover:shadow-lg">
             <div style={{ position: 'absolute', top: '-20px', right: '-20px', opacity: 0.1, fontSize: '100px' }}>⏳</div>
             <p style={{ fontSize: '13px', opacity: 0.9, marginBottom: '8px' }}>Pending Amount</p>
-            <p style={{ fontSize: '32px', fontWeight: '700' }}>{pendingAmount.toFixed(2)} OMR</p>
+            <p style={{ fontSize: '32px', fontWeight: '700' }}>{pendingAmount.toFixed(2)} PKR</p>
             <p style={{ fontSize: '12px', opacity: 0.8, marginTop: '8px' }}>
               {pendingOrders} orders waiting
             </p>
@@ -96,7 +96,7 @@ export default function AdminDashboard() {
           }} className="hover:scale-105 hover:shadow-lg">
             <div style={{ position: 'absolute', top: '-20px', right: '-20px', opacity: 0.1, fontSize: '100px' }}>🚚</div>
             <p style={{ fontSize: '13px', opacity: 0.9, marginBottom: '8px' }}>In Progress</p>
-            <p style={{ fontSize: '32px', fontWeight: '700' }}>{processingAmount.toFixed(2)} OMR</p>
+            <p style={{ fontSize: '32px', fontWeight: '700' }}>{processingAmount.toFixed(2)} PKR</p>
             <p style={{ fontSize: '12px', opacity: 0.8, marginTop: '8px' }}>
               {processingOrders + shippedOrders} orders in progress
             </p>
@@ -117,7 +117,7 @@ export default function AdminDashboard() {
           }} className="hover:scale-105 hover:shadow-lg">
             <div style={{ position: 'absolute', top: '-20px', right: '-20px', opacity: 0.1, fontSize: '100px' }}>✅</div>
             <p style={{ fontSize: '13px', opacity: 0.9, marginBottom: '8px' }}>Completed Amount</p>
-            <p style={{ fontSize: '32px', fontWeight: '700' }}>{completedAmount.toFixed(2)} OMR</p>
+            <p style={{ fontSize: '32px', fontWeight: '700' }}>{completedAmount.toFixed(2)} PKR</p>
             <p style={{ fontSize: '12px', opacity: 0.8, marginTop: '8px' }}>
               {deliveredOrders} orders delivered
             </p>
@@ -138,7 +138,7 @@ export default function AdminDashboard() {
           }} className="hover:scale-105 hover:shadow-lg">
             <div style={{ position: 'absolute', top: '-20px', right: '-20px', opacity: 0.1, fontSize: '100px' }}>❌</div>
             <p style={{ fontSize: '13px', opacity: 0.9, marginBottom: '8px' }}>Cancelled</p>
-            <p style={{ fontSize: '32px', fontWeight: '700' }}>{cancelledAmount.toFixed(2)} OMR</p>
+            <p style={{ fontSize: '32px', fontWeight: '700' }}>{cancelledAmount.toFixed(2)} PKR</p>
             <p style={{ fontSize: '12px', opacity: 0.8, marginTop: '8px' }}>
               {cancelledOrders} orders cancelled
             </p>
@@ -173,7 +173,7 @@ export default function AdminDashboard() {
           </div>
           <div>
             <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Total Revenue</p>
-            <p style={{ fontSize: '28px', fontWeight: '700', color: '#4CAF50' }}>{totalRevenue.toFixed(2)} OMR</p>
+            <p style={{ fontSize: '28px', fontWeight: '700', color: '#4CAF50' }}>{totalRevenue.toFixed(2)} PKR</p>
           </div>
         </div>
         <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
@@ -187,7 +187,7 @@ export default function AdminDashboard() {
           </div>
           <div style={{ textAlign: 'center' }}>
             <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginBottom: '4px' }}>Avg Order</p>
-            <p style={{ fontSize: '20px', fontWeight: '600', color: '#fff' }}>{(totalRevenue / (totalOrders - cancelledOrders) || 0).toFixed(2)} OMR</p>
+            <p style={{ fontSize: '20px', fontWeight: '600', color: '#fff' }}>{(totalRevenue / (totalOrders - cancelledOrders) || 0).toFixed(2)} PKR</p>
           </div>
         </div>
       </div>
@@ -376,7 +376,7 @@ export default function AdminDashboard() {
                   </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <p style={{ fontSize: '15px', fontWeight: '600', color: '#4CAF50' }}>{order.total.toFixed(2)} OMR</p>
+                  <p style={{ fontSize: '15px', fontWeight: '600', color: '#4CAF50' }}>{order.total.toFixed(2)} PKR</p>
                   <span style={{
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -451,7 +451,7 @@ export default function AdminDashboard() {
                   </p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
                     <span style={{ color: '#4CAF50', fontWeight: '600', fontSize: '14px' }}>
-                      {product.currentPrice} OMR
+                      {product.currentPrice} PKR
                     </span>
                     <span style={{
                       backgroundColor: '#ffebee',

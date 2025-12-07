@@ -363,12 +363,12 @@ export default function ProductPage({ params }: ProductPageProps) {
   const quantityOptions = product.pricingTiers && product.pricingTiers.length > 0
     ? product.pricingTiers.map(tier => ({
         value: tier.quantity.toString(),
-        label: `${tier.quantity} ${tier.quantity === 1 ? 'Piece' : 'Pieces'} - ${tier.price.toFixed(2)} OMR${tier.discount ? ` (${tier.discount}% OFF)` : ''}`
+        label: `${tier.quantity} ${tier.quantity === 1 ? 'Piece' : 'Pieces'} - ${tier.price.toFixed(2)} PKR${tier.discount ? ` (${tier.discount}% OFF)` : ''}`
       }))
     : [
-        { value: '1', label: `1 Piece - ${product.currentPrice.toFixed(2)} OMR` },
-        { value: '2', label: `2 Pieces - ${(product.currentPrice * 2).toFixed(2)} OMR` },
-        { value: '3', label: `3 Pieces - ${(product.currentPrice * 3).toFixed(2)} OMR` },
+        { value: '1', label: `1 Piece - ${product.currentPrice.toFixed(2)} PKR` },
+        { value: '2', label: `2 Pieces - ${(product.currentPrice * 2).toFixed(2)} PKR` },
+        { value: '3', label: `3 Pieces - ${(product.currentPrice * 3).toFixed(2)} PKR` },
       ];
   
   console.log('Generated quantityOptions:', quantityOptions);
@@ -468,7 +468,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                     }}>
                       <span style={{ fontWeight: '600', color: '#1a1a2e' }}>{isArabic ? 'الإجمالي:' : 'Total:'}</span>
                       <span style={{ fontSize: '18px', fontWeight: '700', color: '#4CAF50' }}>
-                        {(product.currentPrice * parseInt(formData.quantity || '1')).toFixed(2)} OMR
+                        {(product.currentPrice * parseInt(formData.quantity || '1')).toFixed(2)} PKR
                       </span>
                     </div>
                   </div>
@@ -641,7 +641,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                             {order.product.name}
                           </p>
                           <p style={{ fontSize: '12px', color: '#666' }}>
-                            {isArabic ? 'الكمية:' : 'Qty:'} {order.product.quantity} • {order.product.price.toFixed(2)} OMR
+                            {isArabic ? 'الكمية:' : 'Qty:'} {order.product.quantity} • {order.product.price.toFixed(2)} PKR
                           </p>
                         </div>
 
@@ -651,7 +651,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                           flexShrink: 0,
                         }}>
                           <p style={{ fontSize: '16px', fontWeight: '700', color: '#4CAF50' }}>
-                            {order.total.toFixed(2)} OMR
+                            {order.total.toFixed(2)} PKR
                           </p>
                           <p style={{ fontSize: '11px', color: '#999' }}>
                             {order.time}
@@ -761,14 +761,14 @@ export default function ProductPage({ params }: ProductPageProps) {
                               fontSize: '16px',
                               fontWeight: '700',
                             }}>
-                              {recommendedProduct.currentPrice.toFixed(2)} OMR
+                              {recommendedProduct.currentPrice.toFixed(2)} PKR
                             </span>
                             <span style={{
                               color: '#999',
                               fontSize: '12px',
                               textDecoration: 'line-through',
                             }}>
-                              {recommendedProduct.originalPrice.toFixed(2)} OMR
+                              {recommendedProduct.originalPrice.toFixed(2)} PKR
                             </span>
                           </div>
                         </div>
@@ -954,14 +954,14 @@ export default function ProductPage({ params }: ProductPageProps) {
                 </div>
               )}
 
-              {/* Price & Sold Count - OMR */}
+              {/* Price & Sold Count - PKR */}
               <div className="flex items-center justify-between" style={{ marginTop: '14px' }}>
                 <div className="flex items-baseline" style={{ gap: '8px' }}>
                   <span style={{ color: '#e53935', fontSize: '22px', fontWeight: '700' }}>
-                    {product.currentPrice.toFixed(2)} OMR
+                    {product.currentPrice.toFixed(2)} PKR
                   </span>
                   <span style={{ color: '#999', fontSize: '14px', textDecoration: 'line-through' }}>
-                    {product.originalPrice.toFixed(2)} OMR
+                    {product.originalPrice.toFixed(2)} PKR
                   </span>
                 </div>
                 <span style={{ color: '#009688', fontWeight: '500', fontSize: '13px' }}>

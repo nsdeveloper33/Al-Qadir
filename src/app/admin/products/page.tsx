@@ -746,7 +746,7 @@ function ProductModal({ isOpen, onClose, product, onSave, t }: ProductModalProps
                     paddingLeft: '8px'
                   }}>
                     <span style={{ fontSize: '11px', fontWeight: '600', color: '#666', textTransform: 'uppercase' }}>Qty</span>
-                    <span style={{ fontSize: '11px', fontWeight: '600', color: '#666', textTransform: 'uppercase' }}>Price (OMR)</span>
+                    <span style={{ fontSize: '11px', fontWeight: '600', color: '#666', textTransform: 'uppercase' }}>Price (PKR)</span>
                     <span style={{ fontSize: '11px', fontWeight: '600', color: '#666', textTransform: 'uppercase' }}>Disc %</span>
                     <span></span>
                   </div>
@@ -1737,8 +1737,8 @@ function AdminProductsContent() {
               </div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '14px', paddingTop: '14px', borderTop: '1px solid #f0f0f0' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ color: '#4CAF50', fontSize: '18px', fontWeight: '700' }}>{product.currentPrice.toFixed(2)} OMR</span>
-                  <span style={{ color: '#999', fontSize: '14px', textDecoration: 'line-through' }}>{product.originalPrice.toFixed(2)} OMR</span>
+                  <span style={{ color: '#4CAF50', fontSize: '18px', fontWeight: '700' }}>{product.currentPrice.toFixed(2)} PKR</span>
+                  <span style={{ color: '#999', fontSize: '14px', textDecoration: 'line-through' }}>{product.originalPrice.toFixed(2)} PKR</span>
                   <span style={{ backgroundColor: '#ffebee', color: '#e53935', padding: '4px 8px', borderRadius: '6px', fontSize: '12px', fontWeight: '600' }}>-{product.discount}%</span>
                 </div>
                 <div style={{ display: 'flex', gap: '8px' }}>
@@ -1807,8 +1807,8 @@ function AdminProductsContent() {
                   <td style={{ padding: '16px' }}><span style={{ backgroundColor: '#f0f0f0', padding: '6px 12px', borderRadius: '6px', fontSize: '12px', color: '#666', fontWeight: '500' }}>{t(`categories.${product.category}`)}</span></td>
                   <td style={{ padding: '16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ fontSize: '16px', color: '#4CAF50', fontWeight: '700' }}>{product.currentPrice.toFixed(2)} OMR</span>
-                      <span style={{ fontSize: '13px', color: '#999', textDecoration: 'line-through' }}>{product.originalPrice.toFixed(2)} OMR</span>
+                      <span style={{ fontSize: '16px', color: '#4CAF50', fontWeight: '700' }}>{product.currentPrice.toFixed(2)} PKR</span>
+                      <span style={{ fontSize: '13px', color: '#999', textDecoration: 'line-through' }}>{product.originalPrice.toFixed(2)} PKR</span>
                       <span style={{ backgroundColor: '#ffebee', color: '#e53935', padding: '3px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: '600' }}>-{product.discount}%</span>
                     </div>
                   </td>

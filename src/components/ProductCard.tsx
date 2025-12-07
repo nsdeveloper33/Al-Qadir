@@ -120,19 +120,19 @@ export default function ProductCard({ product }: ProductCardProps) {
             {getProductTitle(product, 'en') || (typeof product.title === 'object' ? product.title.en : product.title || 'Product')}
           </h3>
           
-          {/* Pricing - OMR */}
+          {/* Pricing - PKR */}
           <div className="product-pricing flex items-baseline" style={{ marginTop: '8px', gap: '8px' }}>
             <span 
               className="current-price font-bold"
               style={{ color: '#e53935', fontSize: '16px' }}
             >
-              {product.currentPrice.toFixed(2)} OMR
+              {product.currentPrice.toFixed(2)} PKR
             </span>
             <span 
               className="original-price line-through"
               style={{ color: '#999999', fontSize: '14px' }}
             >
-              {product.originalPrice.toFixed(2)} OMR
+              {product.originalPrice.toFixed(2)} PKR
             </span>
           </div>
         </div>
