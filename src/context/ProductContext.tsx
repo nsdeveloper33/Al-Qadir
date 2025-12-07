@@ -2,12 +2,11 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { products as initialProducts, Product } from '@/data/products';
-import { autoTranslate, translateArray, cleanTranslatedText } from '@/utils/translation';
 import { addProductToI18n } from '@/utils/getProductText';
 
 interface ProductContextType {
   products: Product[];
-  addProduct: (product: Partial<Product>, currentLang: 'en' | 'ar') => Promise<{ success: boolean; error?: string }>;
+  addProduct: (product: Partial<Product>) => Promise<{ success: boolean; error?: string }>;
   updateProduct: (product: Product) => void;
   deleteProduct: (id: number) => void;
   toggleProductStatus: (id: number) => void;
@@ -44,39 +43,29 @@ export function ProductProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const addProduct = async (productData: Partial<Product>, currentLang: 'en' | 'ar') => {
-    // Extract text from current language input
+  const addProduct = async (productData: Partial<Product>) => {
+    // Extract text - English only
     const titleText = typeof productData.title === 'string' 
       ? productData.title 
-      : (currentLang === 'en' ? productData.title?.en || '' : productData.title?.ar || '');
+      : productData.title?.en || '';
     
     const descriptionText = typeof productData.description === 'string'
       ? productData.description
-      : (currentLang === 'en' ? productData.description?.en || '' : productData.description?.ar || '');
+      : productData.description?.en || '';
 
     const featuresText = Array.isArray(productData.features)
       ? productData.features
-      : (currentLang === 'en' ? productData.features?.en || [] : productData.features?.ar || []);
+      : productData.features?.en || [];
 
-    // Auto-translate to other language
-    const otherLang: 'en' | 'ar' = currentLang === 'en' ? 'ar' : 'en';
-    const titleEn = currentLang === 'en' ? titleText : autoTranslate(titleText, 'en');
-    const titleAr = currentLang === 'ar' ? titleText : autoTranslate(titleText, 'ar');
-    
-    const descriptionEn = currentLang === 'en' ? descriptionText : autoTranslate(descriptionText, 'en');
-    const descriptionAr = currentLang === 'ar' ? descriptionText : autoTranslate(descriptionText, 'ar');
-
-    const featuresEn = currentLang === 'en' ? featuresText : translateArray(featuresText, 'en');
-    const featuresAr = currentLang === 'ar' ? featuresText : translateArray(featuresText, 'ar');
-
+    // English only format
     const newProduct = {
       title: { 
-        en: cleanTranslatedText(titleEn), 
-        ar: cleanTranslatedText(titleAr) 
+        en: titleText, 
+        ar: titleText // Keep same for database compatibility
       },
       description: { 
-        en: cleanTranslatedText(descriptionEn), 
-        ar: cleanTranslatedText(descriptionAr) 
+        en: descriptionText, 
+        ar: descriptionText // Keep same for database compatibility
       },
       currentPrice: productData.currentPrice || 0,
       originalPrice: productData.originalPrice || 0,
@@ -84,12 +73,12 @@ export function ProductProvider({ children }: { children: ReactNode }) {
       image: productData.image || '',
       images: productData.images || [productData.image || ''],
       freeDelivery: productData.freeDelivery || false,
-      soldCount: productData.soldCount || Math.floor(Math.random() * 900) + 100, // Random 100-999
+      soldCount: productData.soldCount || Math.floor(Math.random() * 900) + 100,
       category: productData.category || 'other',
-      features: featuresEn.length > 0 
+      features: featuresText.length > 0 
         ? { 
-            en: featuresEn.map(cleanTranslatedText), 
-            ar: featuresAr.map(cleanTranslatedText) 
+            en: featuresText, 
+            ar: featuresText // Keep same for database compatibility
           } 
         : undefined,
       pricingTiers: productData.pricingTiers || [],

@@ -39,11 +39,10 @@ interface DetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   products: any[];
-  currentLang: 'en' | 'ar';
   t: TFunction;
 }
 
-function DetailModal({ order, isOpen, onClose, products, currentLang, t }: DetailModalProps) {
+function DetailModal({ order, isOpen, onClose, products, t }: DetailModalProps) {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -59,12 +58,12 @@ function DetailModal({ order, isOpen, onClose, products, currentLang, t }: Detai
 
   const product = products.find(p => p.id.toString() === order.product_id);
   const productName = product 
-    ? (typeof product.title === 'object' ? product.title[currentLang] : product.title)
+    ? (typeof product.title === 'object' ? product.title.en : product.title)
     : order.product_id;
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString(currentLang === 'ar' ? 'ar-SA' : 'en-US', {
+    return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -492,7 +491,6 @@ function EditModal({ order, isOpen, onClose, onSave, t }: EditModalProps) {
 export default function UnsubmittedOrdersPage() {
   const { products } = useProducts();
   const { showToast } = useToast();
-  const currentLang = 'en';
   
   // Translation function
   const t: TFunction = (key: string, options?: { defaultValue?: string }) => {
@@ -616,13 +614,13 @@ export default function UnsubmittedOrdersPage() {
     if (!product) return productId;
     
     return typeof product.title === 'object' 
-      ? product.title[currentLang]
+      ? product.title.en
       : product.title;
   };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString(currentLang === 'ar' ? 'ar-SA' : 'en-US', {
+    return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -1202,7 +1200,6 @@ export default function UnsubmittedOrdersPage() {
           isOpen={!!viewOrder}
           onClose={() => setViewOrder(null)}
           products={products}
-          currentLang={currentLang}
           t={t}
         />
 

@@ -18,7 +18,6 @@ const statusConfig: Record<string, { color: string; bgColor: string; icon: strin
 export default function AdminDashboard() {
   const { products } = useProducts();
   const { orders, getOrderStats } = useOrders();
-  const currentLang = 'en';
 
   // Calculate product stats
   const totalProducts = products.length;
@@ -433,7 +432,7 @@ export default function AdminDashboard() {
                 <div style={{ width: '50px', height: '50px', borderRadius: '10px', overflow: 'hidden', position: 'relative', flexShrink: 0 }}>
                   <Image 
                     src={product.image} 
-                    alt={getProductTitle(product, currentLang)} 
+                    alt={getProductTitle(product)} 
                     fill 
                     style={{ objectFit: 'cover' }} 
                   />
@@ -447,7 +446,7 @@ export default function AdminDashboard() {
                     textOverflow: 'ellipsis', 
                     whiteSpace: 'nowrap',
                   }}>
-                    {getProductTitle(product, currentLang)}
+                    {getProductTitle(product)}
                   </p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
                     <span style={{ color: '#4CAF50', fontWeight: '600', fontSize: '14px' }}>

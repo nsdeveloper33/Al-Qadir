@@ -27,7 +27,7 @@ export default function Header() {
         >
           {/* Center Logo - Custom Text Design */}
           <Link 
-            href="/" 
+            href="/shop" 
             className="absolute left-1/2 transform -translate-x-1/2"
             style={{
               textDecoration: 'none',

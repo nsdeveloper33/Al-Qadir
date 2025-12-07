@@ -94,46 +94,44 @@ interface ProductModalProps {
 }
 
 function ProductModal({ isOpen, onClose, product, onSave, t }: ProductModalProps) {
-  const currentLang = 'en' as 'en' | 'ar';
   const { showToast } = useToast();
   
   const [currentStep, setCurrentStep] = useState(1);
   
-  // Initialize formData based on current language and product
-  const [formData, setFormData] = useState(() => {
-    if (product) {
-      // Handle both old and new format
-      const title = getProductTitle(product, currentLang);
-      const description = getProductDescription(product, currentLang);
-      
+    // Initialize formData based on product (English only)
+    const [formData, setFormData] = useState(() => {
+      if (product) {
+        const title = getProductTitle(product);
+        const description = getProductDescription(product);
+        
+        return {
+          title,
+          currentPrice: product.currentPrice,
+          originalPrice: product.originalPrice,
+          discount: product.discount,
+          category: product.category,
+          description,
+          freeDelivery: product.freeDelivery,
+          status: product.status || 'active' as 'active' | 'inactive',
+        };
+      }
       return {
-        title,
-        currentPrice: product.currentPrice,
-        originalPrice: product.originalPrice,
-        discount: product.discount,
-        category: product.category,
-        description,
-        freeDelivery: product.freeDelivery,
-        status: product.status || 'active' as 'active' | 'inactive',
+        title: '',
+        currentPrice: 0,
+        originalPrice: 0,
+        discount: 0,
+        category: 'electronics',
+        description: '',
+        freeDelivery: true,
+        status: 'active' as 'active' | 'inactive',
       };
-    }
-    return {
-      title: '',
-      currentPrice: 0,
-      originalPrice: 0,
-      discount: 0,
-      category: 'electronics',
-      description: '',
-      freeDelivery: true,
-      status: 'active' as 'active' | 'inactive',
-    };
-  });
+    });
   
-  // Initialize features based on current language
+  // Initialize features (English only)
   const [features, setFeatures] = useState<string[]>(() => {
     if (product?.features) {
       if (typeof product.features === 'object' && 'en' in product.features) {
-        return product.features[currentLang] || [];
+        return product.features.en || [];
       }
       return Array.isArray(product.features) ? product.features : [];
     }
@@ -333,29 +331,20 @@ function ProductModal({ isOpen, onClose, product, onSave, t }: ProductModalProps
         soldCount: product?.soldCount || 0,
       };
       
-      // Add title and description - preserve existing if editing, or prepare for translation
+      // Add title and description (English only)
       if (product) {
-        // Editing: Keep existing title/description in {en, ar} format
+        // Editing: Keep existing title/description
         productData.title = product.title;
         productData.description = product.description;
       } else {
-        // New product: Format for auto-translation
-        if (currentLang === 'en') {
-          productData.title = formData.title as unknown as { en: string; ar: string };
-          productData.description = formData.description as unknown as { en: string; ar: string };
-        } else {
-          productData.title = { ar: formData.title } as { en: string; ar: string };
-          productData.description = { ar: formData.description } as { en: string; ar: string };
-        }
+        // New product: Format as {en, ar} for database compatibility
+        productData.title = { en: formData.title, ar: formData.title };
+        productData.description = { en: formData.description, ar: formData.description };
       }
       
-      // Add features
+      // Add features (English only)
       if (features.length > 0) {
-        if (currentLang === 'en') {
-          productData.features = { en: features, ar: [] };
-        } else {
-          productData.features = { en: [], ar: features };
-        }
+        productData.features = { en: features, ar: features };
       }
       
       // Add pricing tiers
@@ -521,10 +510,7 @@ function ProductModal({ isOpen, onClose, product, onSave, t }: ProductModalProps
               {/* Title - Based on current UI language */}
               <div>
                 <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#1a1a2e', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  {t('admin.form.title')} ({currentLang === 'en' ? 'English' : 'العربية'}) <span style={{ color: '#e53935' }}>*</span>
-                  <span style={{ fontSize: '11px', fontWeight: '400', color: '#999', marginLeft: '8px' }}>
-                    ({currentLang === 'en' ? 'Arabic translation will be auto-generated' : 'سيتم إنشاء الترجمة الإنجليزية تلقائياً'})
-                  </span>
+                  {t('admin.form.title')} <span style={{ color: '#e53935' }}>*</span>
                 </label>
                   <input
                     type="text"
@@ -536,8 +522,7 @@ function ProductModal({ isOpen, onClose, product, onSave, t }: ProductModalProps
                         setFieldErrors(prev => ({ ...prev, title: '' }));
                       }
                     }}
-                    placeholder={currentLang === 'en' ? "Enter product title..." : "أدخل عنوان المنتج..."}
-                    dir={currentLang === 'ar' ? 'rtl' : 'ltr'}
+                    placeholder="Enter product title..."
                     style={{
                       width: '100%',
                       padding: '12px 14px',
@@ -546,7 +531,7 @@ function ProductModal({ isOpen, onClose, product, onSave, t }: ProductModalProps
                       fontSize: '14px',
                       color: '#000',
                       outline: 'none',
-                      textAlign: currentLang === 'ar' ? 'right' : 'left',
+                      textAlign: 'left',
                     }}
                   />
                   {fieldErrors.title && (
@@ -945,16 +930,12 @@ function ProductModal({ isOpen, onClose, product, onSave, t }: ProductModalProps
               {/* Description - Based on current UI language */}
               <div>
                 <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#1a1a2e', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  {t('admin.form.description')} ({currentLang === 'en' ? 'English' : 'العربية'})
-                  <span style={{ fontSize: '11px', fontWeight: '400', color: '#999', marginLeft: '8px' }}>
-                    ({currentLang === 'en' ? 'Arabic translation will be auto-generated' : 'سيتم إنشاء الترجمة الإنجليزية تلقائياً'})
-                  </span>
+                  {t('admin.form.description')} <span style={{ color: '#e53935' }}>*</span>
                 </label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder={currentLang === 'en' ? "Enter product description..." : "أدخل وصف المنتج..."}
-                  dir={currentLang === 'ar' ? 'rtl' : 'ltr'}
+                  placeholder="Enter product description..."
                   rows={2}
                   style={{
                     width: '100%',
@@ -964,7 +945,7 @@ function ProductModal({ isOpen, onClose, product, onSave, t }: ProductModalProps
                     fontSize: '14px',
                     color: '#000',
                     resize: 'none',
-                    textAlign: currentLang === 'ar' ? 'right' : 'left',
+                    textAlign: 'left',
                   }}
                 />
               </div>
@@ -1023,9 +1004,7 @@ function ProductModal({ isOpen, onClose, product, onSave, t }: ProductModalProps
                 {t('admin.form.featuresOptional')}
               </p>
               <p style={{ fontSize: '12px', color: '#999', marginBottom: '8px' }}>
-                {currentLang === 'en' 
-                  ? 'Features will be auto-translated to Arabic' 
-                  : 'سيتم ترجمة الميزات تلقائياً إلى الإنجليزية'}
+                Features are saved as English text
               </p>
 
               {/* Features Input - Based on current UI language */}
@@ -1034,8 +1013,7 @@ function ProductModal({ isOpen, onClose, product, onSave, t }: ProductModalProps
                   type="text"
                   value={newFeature}
                   onChange={(e) => setNewFeature(e.target.value)}
-                  placeholder={currentLang === 'en' ? "Enter feature..." : "أدخل الميزة..."}
-                  dir={currentLang === 'ar' ? 'rtl' : 'ltr'}
+                  placeholder="Enter feature..."
                   onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddFeature())}
                   style={{
                     flex: 1,
@@ -1044,7 +1022,7 @@ function ProductModal({ isOpen, onClose, product, onSave, t }: ProductModalProps
                     borderRadius: '10px',
                     fontSize: '14px',
                     color: '#000',
-                    textAlign: currentLang === 'ar' ? 'right' : 'left',
+                    textAlign: 'left',
                   }}
                 />
                 <button
@@ -1060,13 +1038,13 @@ function ProductModal({ isOpen, onClose, product, onSave, t }: ProductModalProps
                     fontWeight: '500',
                   }}
                 >
-                  {currentLang === 'en' ? '+ Add' : '+ إضافة'}
+                  + Add
                 </button>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '180px', overflowY: 'auto' }}>
                 {features.length === 0 ? (
                   <p style={{ color: '#999', fontSize: '13px', textAlign: 'center', padding: '20px' }}>
-                    {currentLang === 'en' ? 'No features added yet' : 'لم تتم إضافة ميزات بعد'}
+                    No features added yet
                   </p>
                 ) : features.map((feature, index) => (
                   <div 
@@ -1080,10 +1058,9 @@ function ProductModal({ isOpen, onClose, product, onSave, t }: ProductModalProps
                       borderRadius: '8px', 
                       border: '1px solid #eee' 
                     }} 
-                    dir={currentLang === 'ar' ? 'rtl' : 'ltr'}
                   >
                     <span style={{ width: '20px', height: '20px', borderRadius: '50%', backgroundColor: '#4CAF50', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '600' }}>{index + 1}</span>
-                    <span style={{ flex: 1, fontSize: '13px', color: '#333', textAlign: currentLang === 'ar' ? 'right' : 'left' }}>{feature}</span>
+                    <span style={{ flex: 1, fontSize: '13px', color: '#333', textAlign: 'left' }}>{feature}</span>
                     <button type="button" onClick={() => handleRemoveFeature(index)} style={{ padding: '4px', backgroundColor: '#ffebee', color: '#e53935', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>✕</button>
                   </div>
                 ))}
@@ -1578,7 +1555,6 @@ function AdminProductsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const categoryParam = searchParams.get('category');
-  const currentLang = 'en' as 'en' | 'ar';
   const { showToast } = useToast();
   
   // Translation function that returns English text
@@ -1618,7 +1594,7 @@ function AdminProductsContent() {
   };
 
   const filteredProducts = products.filter((product) => {
-    const productTitle = getProductTitle(product, currentLang);
+    const productTitle = getProductTitle(product);
     const matchesSearch = productTitle.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
     return matchesSearch && matchesCategory;
@@ -1646,8 +1622,8 @@ function AdminProductsContent() {
       showToast('Changes Saved', 'success');
       setEditingProduct(null);
     } else {
-      // For new product, use addProduct with current language for auto-translation
-      const result = await addProduct(productData as Partial<Product>, currentLang);
+      // For new product, use addProduct (English only)
+      const result = await addProduct(productData as Partial<Product>);
       
       if (result.success) {
         showToast('✅ Product Added Successfully!', 'success');
@@ -1775,7 +1751,7 @@ function AdminProductsContent() {
                 <div style={{ width: '80px', height: '80px', borderRadius: '10px', overflow: 'hidden', position: 'relative', flexShrink: 0 }}>
                   <Image 
                     src={product.image} 
-                    alt={getProductTitle(product, currentLang)} 
+                    alt={getProductTitle(product)} 
                     fill 
                     style={{ objectFit: 'cover' }} 
                   />
@@ -1783,14 +1759,7 @@ function AdminProductsContent() {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'space-between', gap: '8px' }}>
                     <p style={{ fontSize: '14px', color: '#333', fontWeight: '500', marginBottom: '6px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                      {(() => {
-                        const oldProduct = product as Product & { titleAr?: string };
-                        return typeof product.title === 'object' 
-                          ? product.title[currentLang]
-                          : (currentLang === 'ar' 
-                              ? (oldProduct.titleAr || product.title)
-                              : product.title);
-                      })()}
+                      {getProductTitle(product)}
                     </p>
                     <button onClick={() => handleToggleStatus(product.id)} style={{ padding: '4px 10px', borderRadius: '12px', border: 'none', fontSize: '11px', fontWeight: '600', cursor: 'pointer', backgroundColor: (product.status === 'active' || !product.status) ? '#e8f5e9' : '#ffebee', color: (product.status === 'active' || !product.status) ? '#4CAF50' : '#e53935', whiteSpace: 'nowrap' }}>
                       {(product.status === 'active' || !product.status) ? t('admin.active') : t('admin.inactive')}
@@ -1842,21 +1811,21 @@ function AdminProductsContent() {
                       <div style={{ width: '56px', height: '56px', borderRadius: '10px', overflow: 'hidden', position: 'relative', flexShrink: 0 }}>
                         <Image 
                     src={product.image} 
-                    alt={getProductTitle(product, currentLang)} 
+                    alt={getProductTitle(product)} 
                     fill 
                     style={{ objectFit: 'cover' }} 
                   />
                       </div>
                       <div style={{ maxWidth: '220px' }}>
                         <p style={{ fontSize: '14px', color: '#1a1a2e', fontWeight: '500', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {getProductTitle(product, currentLang)}
+                          {getProductTitle(product)}
                         </p>
                         <p style={{ fontSize: '12px', color: '#999', marginTop: '4px' }}>
                           ID: {product.id} • {(() => {
                             if (!product.features) return 0;
                             if (typeof product.features === 'object' && 'en' in product.features) {
                               const featuresObj = product.features as { en: string[]; ar: string[] };
-                              const langFeatures = featuresObj[currentLang];
+                              const langFeatures = featuresObj.en;
                               return langFeatures ? langFeatures.length : 0;
                             }
                             if (Array.isArray(product.features)) {
@@ -2040,7 +2009,7 @@ function AdminProductsContent() {
         onConfirm={handleDeleteProduct} 
         productTitle={
           deleteModal.product 
-            ? getProductTitle(deleteModal.product, currentLang)
+            ? getProductTitle(deleteModal.product)
             : ''
         } 
         t={t} 
