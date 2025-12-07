@@ -1,10 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useTranslation } from 'react-i18next';
 
 export default function Footer() {
-  const { t } = useTranslation();
 
   return (
     <footer 
@@ -39,7 +37,7 @@ export default function Footer() {
                 borderBottom: '1px solid #ddd'
               }}
             >
-              {t('footer.usefulLinks')}
+              USEFUL LINKS
             </h4>
             <ul style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <li>
@@ -48,7 +46,7 @@ export default function Footer() {
                   style={{ color: '#2196F3', fontSize: '14px' }}
                   className="hover:underline"
                 >
-                  {t('footer.aboutUs')}
+                  About Us
                 </Link>
               </li>
               <li>
@@ -57,7 +55,7 @@ export default function Footer() {
                   style={{ color: '#2196F3', fontSize: '14px' }}
                   className="hover:underline"
                 >
-                  {t('footer.unclaimableProducts')}
+                  Un-Claimable Products
                 </Link>
               </li>
               <li>
@@ -66,7 +64,7 @@ export default function Footer() {
                   style={{ color: '#2196F3', fontSize: '14px' }}
                   className="hover:underline"
                 >
-                  {t('footer.whyUs')}
+                  Why Us?
                 </Link>
               </li>
             </ul>

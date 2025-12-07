@@ -3,7 +3,6 @@
 import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { useTranslation } from 'react-i18next';
 import { 
   BiSpa,
   BiChip,
@@ -70,10 +69,27 @@ interface AdminSidebarProps {
   isMobile?: boolean;
 }
 
+const categoryLabels: Record<string, string> = {
+  'cosmetics': 'Cosmetics',
+  'electronics': 'Electronics',
+  'watches': 'Watches',
+  'mobile': 'Mobile',
+  'kitchen': 'Kitchen',
+  'car': 'Car',
+  'other': 'Other'
+};
+
+const statusLabels: Record<string, string> = {
+  'pending': 'Pending',
+  'processing': 'Processing',
+  'shipped': 'Shipped',
+  'delivered': 'Delivered',
+  'cancelled': 'Cancelled'
+};
+
 function AdminSidebarContent({ isOpen, onClose, isMobile = false }: AdminSidebarProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { t } = useTranslation();
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [ordersOpen, setOrdersOpen] = useState(false);
   
@@ -134,7 +150,7 @@ function AdminSidebarContent({ isOpen, onClose, isMobile = false }: AdminSidebar
           }}
         >
           <h2 style={{ color: '#fff', fontSize: '18px', fontWeight: '600' }}>
-            {t('admin.panel')}
+            Admin Panel
           </h2>
           {/* Close button for mobile */}
           {isMobile && (
@@ -184,7 +200,7 @@ function AdminSidebarContent({ isOpen, onClose, isMobile = false }: AdminSidebar
                   >
                     <span style={{ opacity: isActive ? 1 : 0.7 }}>{item.icon}</span>
                     <span style={{ fontSize: '14px', fontWeight: isActive ? '500' : '400' }}>
-                      {t(`admin.menu.${item.id}`)}
+                      {item.id === 'dashboard' ? 'Dashboard' : 'Products'}
                     </span>
                   </Link>
                 </li>
@@ -223,7 +239,7 @@ function AdminSidebarContent({ isOpen, onClose, isMobile = false }: AdminSidebar
                         <line x1="3" y1="18" x2="3.01" y2="18" />
                       </svg>
                       <span style={{ fontSize: '14px', fontWeight: hasCategoryActive ? '500' : '400' }}>
-                        {t('admin.menu.categories')}
+                        Categories
                       </span>
                     </div>
                     <svg
@@ -277,7 +293,7 @@ function AdminSidebarContent({ isOpen, onClose, isMobile = false }: AdminSidebar
                       className={isActiveCategory ? '' : 'hover:bg-white/5 hover:text-white'}
                     >
                       <IconComponent size={16} style={{ color: isActiveCategory ? '#4CAF50' : 'inherit' }} />
-                      <span>{t(`categories.${cat.id}`)}</span>
+                      <span>{categoryLabels[cat.id] || cat.id}</span>
                     </Link>
                   );
                 })}
@@ -314,7 +330,7 @@ function AdminSidebarContent({ isOpen, onClose, isMobile = false }: AdminSidebar
                         <path d="M16 10a4 4 0 0 1-8 0" />
                       </svg>
                       <span style={{ fontSize: '14px', fontWeight: isOrdersPage ? '500' : '400' }}>
-                        {t('admin.menu.orders')}
+                        Orders
                       </span>
                     </div>
                     <svg
@@ -364,7 +380,7 @@ function AdminSidebarContent({ isOpen, onClose, isMobile = false }: AdminSidebar
                   className={pathname === '/admin/orders' && !activeStatus ? '' : 'hover:bg-white/5 hover:text-white'}
                 >
                   <BiBox size={16} style={{ color: pathname === '/admin/orders' && !activeStatus ? '#4CAF50' : 'inherit' }} />
-                  <span>{t('admin.orders.all')}</span>
+                  <span>All</span>
                 </Link>
                 
                 {orderStatusItems.map((status) => {
@@ -391,7 +407,7 @@ function AdminSidebarContent({ isOpen, onClose, isMobile = false }: AdminSidebar
                       className={isActiveStatus ? '' : 'hover:bg-white/5 hover:text-white'}
                     >
                       <IconComponent size={16} style={{ color: isActiveStatus ? '#4CAF50' : 'inherit' }} />
-                      <span>{t(`admin.orders.statuses.${status.id}`)}</span>
+                      <span>{statusLabels[status.id] || status.id}</span>
                     </Link>
                   );
                 })}
@@ -423,7 +439,7 @@ function AdminSidebarContent({ isOpen, onClose, isMobile = false }: AdminSidebar
                   <path d="M9 11l3 3L22 4" />
                   <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
                 </svg>
-                <span>{t('admin.menu.unsubmitted', { defaultValue: 'Unsubmitted Orders' })}</span>
+                <span>Unsubmitted Orders</span>
               </Link>
             </li>
           </ul>
@@ -460,7 +476,7 @@ function AdminSidebarContent({ isOpen, onClose, isMobile = false }: AdminSidebar
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
               <polyline points="9 22 9 12 15 12 15 22" />
             </svg>
-            {t('admin.backToStore')}
+            Back to Store
           </Link>
         </div>
       </aside>

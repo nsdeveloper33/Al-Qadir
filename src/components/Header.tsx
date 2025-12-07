@@ -1,34 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useTranslation } from 'react-i18next';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { i18n } = useTranslation();
-  const [currentLang, setCurrentLang] = useState('en');
-
-  useEffect(() => {
-    // Get initial language from i18n
-    const lang = i18n.language?.startsWith('ar') ? 'ar' : 'en';
-    setCurrentLang(lang);
-    // Update HTML dir attribute for RTL support (but header stays LTR)
-    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-    document.documentElement.lang = lang;
-  }, [i18n.language]);
-
-  const isArabic = currentLang === 'ar';
-
-  const toggleLanguage = () => {
-    const newLang = isArabic ? 'en' : 'ar';
-    i18n.changeLanguage(newLang);
-    setCurrentLang(newLang);
-    // Update HTML dir attribute for RTL support
-    document.documentElement.dir = newLang === 'ar' ? 'rtl' : 'ltr';
-    document.documentElement.lang = newLang;
-  };
 
   return (
     <header 
@@ -49,45 +26,6 @@ export default function Header() {
           className="flex items-center justify-between relative"
           style={{ height: '90px' }}
         >
-          {/* Language Toggle Button - Always on left */}
-          <button 
-            type="button"
-            onClick={toggleLanguage}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100"
-            style={{ 
-              border: '1px solid #e0e0e0',
-              backgroundColor: '#fafafa'
-            }}
-          >
-            {isArabic ? (
-              <>
-                <Image
-                  src="https://flagcdn.com/w40/gb.png"
-                  alt="English"
-                  width={24}
-                  height={16}
-                  className="rounded-sm"
-                />
-                <span style={{ fontSize: '13px', color: '#333333', fontWeight: '500' }}>
-                  English
-                </span>
-              </>
-            ) : (
-              <>
-                <Image
-                  src="https://flagcdn.com/w40/sa.png"
-                  alt="Arabic"
-                  width={24}
-                  height={16}
-                  className="rounded-sm"
-                />
-                <span style={{ fontSize: '13px', color: '#333333', fontWeight: '500' }}>
-                  عربي
-                </span>
-              </>
-            )}
-          </button>
-
           {/* Center Logo - Image */}
           <Link 
             href="/" 
@@ -117,7 +55,7 @@ export default function Header() {
           </button>
 
           {/* Empty div for flex balance on desktop */}
-          <div className="hidden md:block" style={{ width: '50px' }}></div>
+          <div className="hidden md:block" style={{ width: '120px' }}></div>
         </div>
       </div>
     </header>

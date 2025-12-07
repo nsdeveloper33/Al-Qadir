@@ -1,7 +1,5 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import { 
   BiSpa,
   BiChip,
@@ -32,14 +30,18 @@ const categoryIcons: Record<string, any> = {
 
 const categoryIds = ['all', 'cosmetics', 'electronics', 'watches', 'mobile', 'kitchen', 'car', 'other'];
 
-export default function CategoryNav({ activeCategory, onCategoryChange }: CategoryNavProps) {
-  const [mounted, setMounted] = useState(false);
-  const { t } = useTranslation();
+const categoryLabels: Record<string, string> = {
+  'all': 'All',
+  'cosmetics': 'Cosmetics',
+  'electronics': 'Electronics',
+  'watches': 'Watches',
+  'mobile': 'Mobile',
+  'kitchen': 'Kitchen',
+  'car': 'Car',
+  'other': 'Other'
+};
 
-  // Prevent hydration mismatch by only rendering language-dependent content after mount
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+export default function CategoryNav({ activeCategory, onCategoryChange }: CategoryNavProps) {
 
   return (
     <nav 
@@ -89,10 +91,9 @@ export default function CategoryNav({ activeCategory, onCategoryChange }: Catego
                     outline: 'none'
                   }}
                   className="hover:text-black"
-                  suppressHydrationWarning
                 >
                   {IconComponent && <IconComponent size={18} style={{ flexShrink: 0 }} />}
-                  {mounted ? t(`categories.${categoryId}`) : categoryId === 'all' ? 'All' : categoryId}
+                  {categoryLabels[categoryId] || categoryId}
                 </button>
               </li>
             );

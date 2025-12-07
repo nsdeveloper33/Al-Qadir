@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
-import I18nProvider from "@/components/I18nProvider";
 import { ProductProvider } from "@/context/ProductContext";
 import { OrderProvider } from "@/context/OrderContext";
 
@@ -28,13 +27,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${poppins.variable} font-sans antialiased bg-[#f5f5f5]`}>
-        <I18nProvider>
-          <ProductProvider>
-            <OrderProvider>
-              {children}
-            </OrderProvider>
-          </ProductProvider>
-        </I18nProvider>
+        <ProductProvider>
+          <OrderProvider>
+            {children}
+          </OrderProvider>
+        </ProductProvider>
       </body>
     </html>
   );

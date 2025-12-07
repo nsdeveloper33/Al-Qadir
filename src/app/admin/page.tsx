@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useProducts } from '@/context/ProductContext';
 import { useOrders } from '@/context/OrderContext';
 import Image from 'next/image';
@@ -17,16 +16,9 @@ const statusConfig: Record<string, { color: string; bgColor: string; icon: strin
 };
 
 export default function AdminDashboard() {
-  const [mounted, setMounted] = useState(false);
-  const { t, i18n } = useTranslation();
   const { products } = useProducts();
   const { orders, getOrderStats } = useOrders();
-  const currentLang = i18n.language?.startsWith('ar') ? 'ar' : 'en';
-
-  // Prevent hydration mismatch by only rendering dynamic data after mount
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const currentLang = 'en';
 
   // Calculate product stats
   const totalProducts = products.length;
@@ -34,21 +26,8 @@ export default function AdminDashboard() {
   const inactiveProducts = products.filter(p => p.status === 'inactive').length;
   const totalCategories = [...new Set(products.map(p => p.category))].length;
 
-  // Get order stats from context (only after mount to prevent hydration mismatch)
-  const stats = mounted ? getOrderStats() : {
-    total: 0,
-    pending: 0,
-    processing: 0,
-    shipped: 0,
-    delivered: 0,
-    cancelled: 0,
-    pendingAmount: 0,
-    processingAmount: 0,
-    completedAmount: 0,
-    cancelledAmount: 0,
-    totalRevenue: 0,
-    todayOrders: 0,
-  };
+  // Get order stats from context
+  const stats = getOrderStats();
   const {
     total: totalOrders,
     pending: pendingOrders,
@@ -64,19 +43,19 @@ export default function AdminDashboard() {
     todayOrders,
   } = stats;
 
-  // Recent products & orders (only after mount to prevent hydration mismatch)
-  const recentProducts = mounted ? products.slice(0, 5) : [];
-  const recentOrders = mounted ? orders.slice(0, 5) : [];
+  // Recent products & orders
+  const recentProducts = products.slice(0, 5);
+  const recentOrders = orders.slice(0, 5);
 
   return (
     <div>
       {/* Page Title */}
       <div style={{ marginBottom: '20px' }}>
         <h1 style={{ fontSize: '22px', fontWeight: '600', color: '#1a1a2e' }}>
-          {t('admin.menu.dashboard')}
+          Dashboard
         </h1>
         <p style={{ color: '#666', fontSize: '14px', marginTop: '4px' }}>
-          {t('admin.welcomeMessage')}
+          Welcome to your admin dashboard
         </p>
       </div>
 
@@ -95,10 +74,10 @@ export default function AdminDashboard() {
             transition: 'transform 0.2s ease, box-shadow 0.2s ease',
           }} className="hover:scale-105 hover:shadow-lg">
             <div style={{ position: 'absolute', top: '-20px', right: '-20px', opacity: 0.1, fontSize: '100px' }}>⏳</div>
-            <p style={{ fontSize: '13px', opacity: 0.9, marginBottom: '8px' }}>{t('admin.dashboard.pendingAmount')}</p>
-            <p style={{ fontSize: '32px', fontWeight: '700' }} suppressHydrationWarning>{pendingAmount.toFixed(2)} OMR</p>
-            <p style={{ fontSize: '12px', opacity: 0.8, marginTop: '8px' }} suppressHydrationWarning>
-              {t('admin.dashboard.pendingOrdersCount', { count: pendingOrders })}
+            <p style={{ fontSize: '13px', opacity: 0.9, marginBottom: '8px' }}>Pending Amount</p>
+            <p style={{ fontSize: '32px', fontWeight: '700' }}>{pendingAmount.toFixed(2)} OMR</p>
+            <p style={{ fontSize: '12px', opacity: 0.8, marginTop: '8px' }}>
+              {pendingOrders} orders waiting
             </p>
           </div>
         </Link>
@@ -116,10 +95,10 @@ export default function AdminDashboard() {
             transition: 'transform 0.2s ease, box-shadow 0.2s ease',
           }} className="hover:scale-105 hover:shadow-lg">
             <div style={{ position: 'absolute', top: '-20px', right: '-20px', opacity: 0.1, fontSize: '100px' }}>🚚</div>
-            <p style={{ fontSize: '13px', opacity: 0.9, marginBottom: '8px' }}>{t('admin.dashboard.inProgressAmount')}</p>
-            <p style={{ fontSize: '32px', fontWeight: '700' }} suppressHydrationWarning>{processingAmount.toFixed(2)} OMR</p>
-            <p style={{ fontSize: '12px', opacity: 0.8, marginTop: '8px' }} suppressHydrationWarning>
-              {t('admin.dashboard.inProgressOrdersCount', { count: processingOrders + shippedOrders })}
+            <p style={{ fontSize: '13px', opacity: 0.9, marginBottom: '8px' }}>In Progress</p>
+            <p style={{ fontSize: '32px', fontWeight: '700' }}>{processingAmount.toFixed(2)} OMR</p>
+            <p style={{ fontSize: '12px', opacity: 0.8, marginTop: '8px' }}>
+              {processingOrders + shippedOrders} orders in progress
             </p>
           </div>
         </Link>
@@ -137,10 +116,10 @@ export default function AdminDashboard() {
             transition: 'transform 0.2s ease, box-shadow 0.2s ease',
           }} className="hover:scale-105 hover:shadow-lg">
             <div style={{ position: 'absolute', top: '-20px', right: '-20px', opacity: 0.1, fontSize: '100px' }}>✅</div>
-            <p style={{ fontSize: '13px', opacity: 0.9, marginBottom: '8px' }}>{t('admin.dashboard.completedAmount')}</p>
-            <p style={{ fontSize: '32px', fontWeight: '700' }} suppressHydrationWarning>{completedAmount.toFixed(2)} OMR</p>
-            <p style={{ fontSize: '12px', opacity: 0.8, marginTop: '8px' }} suppressHydrationWarning>
-              {t('admin.dashboard.completedOrdersCount', { count: deliveredOrders })}
+            <p style={{ fontSize: '13px', opacity: 0.9, marginBottom: '8px' }}>Completed Amount</p>
+            <p style={{ fontSize: '32px', fontWeight: '700' }}>{completedAmount.toFixed(2)} OMR</p>
+            <p style={{ fontSize: '12px', opacity: 0.8, marginTop: '8px' }}>
+              {deliveredOrders} orders delivered
             </p>
           </div>
         </Link>
@@ -158,10 +137,10 @@ export default function AdminDashboard() {
             transition: 'transform 0.2s ease, box-shadow 0.2s ease',
           }} className="hover:scale-105 hover:shadow-lg">
             <div style={{ position: 'absolute', top: '-20px', right: '-20px', opacity: 0.1, fontSize: '100px' }}>❌</div>
-            <p style={{ fontSize: '13px', opacity: 0.9, marginBottom: '8px' }}>{t('admin.dashboard.cancelledAmount')}</p>
-            <p style={{ fontSize: '32px', fontWeight: '700' }} suppressHydrationWarning>{cancelledAmount.toFixed(2)} OMR</p>
-            <p style={{ fontSize: '12px', opacity: 0.8, marginTop: '8px' }} suppressHydrationWarning>
-              {t('admin.dashboard.cancelledOrdersCount', { count: cancelledOrders })}
+            <p style={{ fontSize: '13px', opacity: 0.9, marginBottom: '8px' }}>Cancelled</p>
+            <p style={{ fontSize: '32px', fontWeight: '700' }}>{cancelledAmount.toFixed(2)} OMR</p>
+            <p style={{ fontSize: '12px', opacity: 0.8, marginTop: '8px' }}>
+              {cancelledOrders} orders cancelled
             </p>
           </div>
         </Link>
@@ -193,22 +172,22 @@ export default function AdminDashboard() {
             💰
           </div>
           <div>
-            <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>{t('admin.dashboard.totalRevenue')}</p>
-            <p style={{ fontSize: '28px', fontWeight: '700', color: '#4CAF50' }} suppressHydrationWarning>{totalRevenue.toFixed(2)} OMR</p>
+            <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Total Revenue</p>
+            <p style={{ fontSize: '28px', fontWeight: '700', color: '#4CAF50' }}>{totalRevenue.toFixed(2)} OMR</p>
           </div>
         </div>
         <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
           <div style={{ textAlign: 'center' }}>
-            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginBottom: '4px' }}>{t('admin.dashboard.totalOrders')}</p>
-            <p style={{ fontSize: '20px', fontWeight: '600', color: '#fff' }} suppressHydrationWarning>{totalOrders}</p>
+            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginBottom: '4px' }}>Total Orders</p>
+            <p style={{ fontSize: '20px', fontWeight: '600', color: '#fff' }}>{totalOrders}</p>
           </div>
           <div style={{ textAlign: 'center' }}>
-            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginBottom: '4px' }}>{t('admin.dashboard.todayOrders')}</p>
-            <p style={{ fontSize: '20px', fontWeight: '600', color: '#fff' }} suppressHydrationWarning>{todayOrders}</p>
+            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginBottom: '4px' }}>Today</p>
+            <p style={{ fontSize: '20px', fontWeight: '600', color: '#fff' }}>{todayOrders}</p>
           </div>
           <div style={{ textAlign: 'center' }}>
-            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginBottom: '4px' }}>{t('admin.dashboard.avgOrderValue')}</p>
-            <p style={{ fontSize: '20px', fontWeight: '600', color: '#fff' }} suppressHydrationWarning>{(totalRevenue / (totalOrders - cancelledOrders) || 0).toFixed(2)} OMR</p>
+            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginBottom: '4px' }}>Avg Order</p>
+            <p style={{ fontSize: '20px', fontWeight: '600', color: '#fff' }}>{(totalRevenue / (totalOrders - cancelledOrders) || 0).toFixed(2)} OMR</p>
           </div>
         </div>
       </div>
@@ -240,8 +219,8 @@ export default function AdminDashboard() {
             </svg>
           </div>
           <div>
-            <p style={{ fontSize: '12px', color: '#666' }}>{t('admin.stats.activeProducts')}</p>
-            <p style={{ fontSize: '20px', fontWeight: '700', color: '#1a1a2e' }} suppressHydrationWarning>{activeProducts}</p>
+            <p style={{ fontSize: '12px', color: '#666' }}>Active</p>
+            <p style={{ fontSize: '20px', fontWeight: '700', color: '#1a1a2e' }}>{activeProducts}</p>
           </div>
         </div>
 
@@ -270,8 +249,8 @@ export default function AdminDashboard() {
             </svg>
           </div>
           <div>
-            <p style={{ fontSize: '12px', color: '#666' }}>{t('admin.stats.inactiveProducts')}</p>
-            <p style={{ fontSize: '20px', fontWeight: '700', color: '#1a1a2e' }} suppressHydrationWarning>{inactiveProducts}</p>
+            <p style={{ fontSize: '12px', color: '#666' }}>Inactive</p>
+            <p style={{ fontSize: '20px', fontWeight: '700', color: '#1a1a2e' }}>{inactiveProducts}</p>
           </div>
         </div>
 
@@ -304,8 +283,8 @@ export default function AdminDashboard() {
             </svg>
           </div>
           <div>
-            <p style={{ fontSize: '12px', color: '#666' }}>{t('admin.stats.categories')}</p>
-            <p style={{ fontSize: '20px', fontWeight: '700', color: '#1a1a2e' }} suppressHydrationWarning>{totalCategories}</p>
+            <p style={{ fontSize: '12px', color: '#666' }}>Categories</p>
+            <p style={{ fontSize: '20px', fontWeight: '700', color: '#1a1a2e' }}>{totalCategories}</p>
           </div>
         </div>
 
@@ -334,8 +313,8 @@ export default function AdminDashboard() {
             </svg>
           </div>
           <div>
-            <p style={{ fontSize: '12px', color: '#666' }}>{t('admin.dashboard.avgOrderValue')}</p>
-            <p style={{ fontSize: '20px', fontWeight: '700', color: '#1a1a2e' }} suppressHydrationWarning>${Math.round(totalRevenue / (totalOrders - cancelledOrders) || 0)}</p>
+            <p style={{ fontSize: '12px', color: '#666' }}>Avg Order</p>
+            <p style={{ fontSize: '20px', fontWeight: '700', color: '#1a1a2e' }}>${Math.round(totalRevenue / (totalOrders - cancelledOrders) || 0)}</p>
           </div>
         </div>
       </div>
@@ -357,10 +336,10 @@ export default function AdminDashboard() {
             borderBottom: '1px solid #eee',
           }}>
             <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#1a1a2e' }}>
-              {t('admin.dashboard.recentOrders')}
+              Recent Orders
             </h2>
             <Link href="/admin/orders" style={{ color: '#4CAF50', fontSize: '13px', textDecoration: 'none' }}>
-              {t('admin.viewAll')}
+              View All
             </Link>
           </div>
 
@@ -389,15 +368,15 @@ export default function AdminDashboard() {
                     fontSize: '14px',
                     fontWeight: '600',
                   }}>
-                    {mounted ? order.customer.charAt(0) : '?'}
+                    {order.customer.charAt(0)}
                   </div>
                   <div>
-                    <p style={{ fontSize: '14px', fontWeight: '500', color: '#1a1a2e' }} suppressHydrationWarning>{order.customer}</p>
-                    <p style={{ fontSize: '12px', color: '#999' }} suppressHydrationWarning>#{order.id} • {order.city}</p>
+                    <p style={{ fontSize: '14px', fontWeight: '500', color: '#1a1a2e' }}>{order.customer}</p>
+                    <p style={{ fontSize: '12px', color: '#999' }}>#{order.id} • {order.city}</p>
                   </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <p style={{ fontSize: '15px', fontWeight: '600', color: '#4CAF50' }} suppressHydrationWarning>{order.total.toFixed(2)} OMR</p>
+                  <p style={{ fontSize: '15px', fontWeight: '600', color: '#4CAF50' }}>{order.total.toFixed(2)} OMR</p>
                   <span style={{
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -408,8 +387,8 @@ export default function AdminDashboard() {
                     fontWeight: '500',
                     backgroundColor: statusConfig[order.status]?.bgColor,
                     color: statusConfig[order.status]?.color,
-                  }} suppressHydrationWarning>
-                    {statusConfig[order.status]?.icon} {t(`admin.orders.statuses.${order.status}`)}
+                  }}>
+                    {statusConfig[order.status]?.icon} {order.status === 'pending' ? 'Pending' : order.status === 'processing' ? 'Processing' : order.status === 'shipped' ? 'Shipped' : order.status === 'delivered' ? 'Delivered' : 'Cancelled'}
                   </span>
                 </div>
               </div>
@@ -432,10 +411,10 @@ export default function AdminDashboard() {
             borderBottom: '1px solid #eee',
           }}>
             <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#1a1a2e' }}>
-              {t('admin.recentProducts')}
+              Recent Products
             </h2>
             <Link href="/admin/products" style={{ color: '#4CAF50', fontSize: '13px', textDecoration: 'none' }}>
-              {t('admin.viewAll')}
+              View All
             </Link>
           </div>
 
@@ -492,7 +471,7 @@ export default function AdminDashboard() {
                       fontSize: '10px',
                       fontWeight: '500',
                     }}>
-                      {product.status === 'inactive' ? t('admin.inactive') : t('admin.active')}
+                      {product.status === 'inactive' ? 'Inactive' : 'Active'}
                     </span>
                   </div>
                 </div>

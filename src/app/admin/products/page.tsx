@@ -2,8 +2,6 @@
 
 import { useState, Suspense } from 'react';
 import Image from 'next/image';
-import { useTranslation } from 'react-i18next';
-import { TFunction } from 'i18next';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { categories, Product } from '@/data/products';
 import { useProducts } from '@/context/ProductContext';
@@ -36,8 +34,7 @@ interface ProductModalProps {
 }
 
 function ProductModal({ isOpen, onClose, product, onSave, t }: ProductModalProps) {
-  const { i18n } = useTranslation();
-  const currentLang = (i18n.language?.startsWith('ar') ? 'ar' : 'en') as 'en' | 'ar';
+  const currentLang = 'en' as 'en' | 'ar';
   const { showToast } = useToast();
   
   const [currentStep, setCurrentStep] = useState(1);
@@ -1518,11 +1515,11 @@ function DeleteModal({ isOpen, onClose, onConfirm, productTitle, t }: DeleteModa
 }
 
 function AdminProductsContent() {
-  const { t, i18n } = useTranslation();
+  // TODO: Replace all t() calls with English text
   const searchParams = useSearchParams();
   const router = useRouter();
   const categoryParam = searchParams.get('category');
-  const currentLang = (i18n.language?.startsWith('ar') ? 'ar' : 'en') as 'en' | 'ar';
+  const currentLang = 'en' as 'en' | 'ar';
   const { showToast } = useToast();
   
   // Use global product context

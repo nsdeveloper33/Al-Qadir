@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
@@ -10,13 +9,6 @@ interface SearchBarProps {
 
 export default function SearchBar({ onSearch, searchQuery }: SearchBarProps) {
   const [inputValue, setInputValue] = useState(searchQuery);
-  const [mounted, setMounted] = useState(false);
-  const { t } = useTranslation();
-
-  // Prevent hydration mismatch by only rendering language-dependent content after mount
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -81,7 +73,7 @@ export default function SearchBar({ onSearch, searchQuery }: SearchBarProps) {
             type="text"
             value={inputValue}
             onChange={handleInputChange}
-            placeholder={mounted ? t('search.placeholder') : 'Search products...'}
+            placeholder="Search products..."
             style={{
               width: '100%',
               padding: '10px 36px 10px 40px',
@@ -93,7 +85,6 @@ export default function SearchBar({ onSearch, searchQuery }: SearchBarProps) {
               outline: 'none',
               boxShadow: '0 1px 3px rgba(0,0,0,0.08)'
             }}
-            suppressHydrationWarning
           />
 
           {/* Clear Button */}

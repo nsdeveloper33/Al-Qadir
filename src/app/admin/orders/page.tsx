@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, Suspense, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useOrders, Order } from '@/context/OrderContext';
 import { useProducts } from '@/context/ProductContext';
@@ -35,7 +34,7 @@ interface EditOrderModalProps {
 }
 
 function OrderDetailModal({ order, isOpen, onClose, onUpdateStatus }: OrderDetailModalProps) {
-  const { t } = useTranslation();
+  // TODO: Replace all t() calls with English text
   const { products } = useProducts();
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus>('pending');
   
@@ -369,7 +368,7 @@ function OrderDetailModal({ order, isOpen, onClose, onUpdateStatus }: OrderDetai
 
 // Edit Order Modal Component
 function EditOrderModal({ order, isOpen, onClose, onSave }: EditOrderModalProps) {
-  const { t } = useTranslation();
+  // TODO: Replace all t() calls with English text
   const { products: allProducts } = useProducts();
   
   const [formData, setFormData] = useState({
@@ -721,7 +720,7 @@ function EditOrderModal({ order, isOpen, onClose, onSave }: EditOrderModalProps)
 }
 
 function AdminOrdersContent() {
-  const { t } = useTranslation();
+  // TODO: Replace all t() calls with English text
   const searchParams = useSearchParams();
   const router = useRouter();
   const statusParam = searchParams.get('status');

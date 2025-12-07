@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import Image from 'next/image';
 import AdminSidebar from '@/components/AdminSidebar';
 import { AbandonedOrder } from '@/utils/abandonedOrders';
@@ -466,10 +465,10 @@ function EditModal({ order, isOpen, onClose, onSave, t }: EditModalProps) {
 }
 
 export default function UnsubmittedOrdersPage() {
-  const { t, i18n } = useTranslation();
+  // TODO: Replace all t() calls with English text
   const { products } = useProducts();
   const { showToast } = useToast();
-  const currentLang = i18n.language?.startsWith('ar') ? 'ar' : 'en';
+  const currentLang = 'en';
   const [abandonedOrders, setAbandonedOrders] = useState<AbandonedOrder[]>([]);
   const [viewOrder, setViewOrder] = useState<AbandonedOrder | null>(null);
   const [editOrder, setEditOrder] = useState<AbandonedOrder | null>(null);

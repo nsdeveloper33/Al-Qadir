@@ -7,7 +7,6 @@ import Footer from '@/components/Footer';
 import WhatsAppFab from '@/components/WhatsAppFab';
 import { cities, getCityName } from '@/data/products';
 import { notFound } from 'next/navigation';
-import { useTranslation } from 'react-i18next';
 import { useProducts } from '@/context/ProductContext';
 import { useOrders } from '@/context/OrderContext';
 import { saveAbandonedOrder, removeAbandonedOrderOnSubmit } from '@/utils/abandonedOrders';
@@ -30,49 +29,58 @@ export default function ProductPage({ params }: ProductPageProps) {
     // Use strict equality for exact match (works for both integers and decimals)
     return productId === searchId;
   });
-  const { t, i18n } = useTranslation();
-  const isArabic = i18n.language?.startsWith('ar');
+  const isArabic = false;
   
   const [selectedImage, setSelectedImage] = useState(0);
   
-  // Load saved customer details from sessionStorage (clears on page refresh/close)
-  const loadSavedCustomerDetails = () => {
-    if (typeof window === 'undefined') return null;
+  // Initialize with empty values to prevent hydration mismatch
+  // Load from sessionStorage only on client side after mount
+  const [recentOrders, setRecentOrders] = useState<Array<any>>([]);
+  const [formData, setFormData] = useState({
+    fullName: '',
+    mobile: '',
+    quantity: '1',
+    city: '',
+    address: ''
+  });
+
+  // Load saved data from sessionStorage only on client after mount
+  useEffect(() => {
     try {
       const saved = sessionStorage.getItem('qeelu_customer_details');
-      return saved ? JSON.parse(saved) : null;
+      if (saved) {
+        const savedDetails = JSON.parse(saved);
+        setFormData(prev => ({ ...prev, ...savedDetails }));
+      }
     } catch {
-      return null;
+      // Ignore errors
     }
-  };
 
-  // Load recent orders from sessionStorage (clears on page refresh/close)
-  const loadRecentOrders = () => {
-    if (typeof window === 'undefined') return [];
     try {
       const saved = sessionStorage.getItem('qeelu_recent_orders');
-      return saved ? JSON.parse(saved) : [];
+      if (saved) {
+        setRecentOrders(JSON.parse(saved));
+      }
     } catch {
-      return [];
+      // Ignore errors
     }
-  };
-
-  const [recentOrders, setRecentOrders] = useState(() => loadRecentOrders());
-
-  const [formData, setFormData] = useState(() => {
-    const savedDetails = loadSavedCustomerDetails();
-    return savedDetails || {
-      fullName: '',
-      mobile: '',
-      quantity: '1',
-      city: '',
-      address: ''
-    };
-  });
+  }, []);
   const [orderSubmitted, setOrderSubmitted] = useState(false);
   const hasSubmittedRef = useRef(false); // Track if form was submitted
   const formDataRef = useRef(formData); // Keep ref for cleanup handlers
-  const savedDetailsRef = useRef(loadSavedCustomerDetails());
+  const savedDetailsRef = useRef<{ fullName?: string; mobile?: string; city?: string; address?: string } | null>(null);
+  
+  // Update savedDetailsRef after formData is loaded from sessionStorage
+  useEffect(() => {
+    if (formData.fullName || formData.mobile) {
+      savedDetailsRef.current = {
+        fullName: formData.fullName,
+        mobile: formData.mobile,
+        city: formData.city,
+        address: formData.address
+      };
+    }
+  }, [formData]);
 
   // Get all available images (before early returns)
   const allImages = product ? (product.images || [product.image]) : [];
@@ -215,7 +223,7 @@ export default function ProductPage({ params }: ProductPageProps) {
     
     // Validate form
     if (!formData.fullName || !formData.mobile || !formData.city || !formData.address) {
-      alert(isArabic ? 'يرجى ملء جميع الحقول المطلوبة' : 'Please fill all required fields');
+      alert('Please fill all required fields');
       return;
     }
 
@@ -355,12 +363,12 @@ export default function ProductPage({ params }: ProductPageProps) {
   const quantityOptions = product.pricingTiers && product.pricingTiers.length > 0
     ? product.pricingTiers.map(tier => ({
         value: tier.quantity.toString(),
-        label: `${tier.quantity} ${tier.quantity === 1 ? t('orderForm.piece') : t('orderForm.pieces')} - ${tier.price.toFixed(2)} OMR${tier.discount ? ` (${tier.discount}% OFF)` : ''}`
+        label: `${tier.quantity} ${tier.quantity === 1 ? 'Piece' : 'Pieces'} - ${tier.price.toFixed(2)} OMR${tier.discount ? ` (${tier.discount}% OFF)` : ''}`
       }))
     : [
-        { value: '1', label: `1 ${t('orderForm.piece')} - ${product.currentPrice.toFixed(2)} OMR` },
-        { value: '2', label: `2 ${t('orderForm.pieces')} - ${(product.currentPrice * 2).toFixed(2)} OMR` },
-        { value: '3', label: `3 ${t('orderForm.pieces')} - ${(product.currentPrice * 3).toFixed(2)} OMR` },
+        { value: '1', label: `1 Piece - ${product.currentPrice.toFixed(2)} OMR` },
+        { value: '2', label: `2 Pieces - ${(product.currentPrice * 2).toFixed(2)} OMR` },
+        { value: '3', label: `3 Pieces - ${(product.currentPrice * 3).toFixed(2)} OMR` },
       ];
   
   console.log('Generated quantityOptions:', quantityOptions);
@@ -381,7 +389,7 @@ export default function ProductPage({ params }: ProductPageProps) {
         >
           {/* Product Title */}
           <h1 style={{ fontSize: isArabic ? '20px' : '17px', fontWeight: '500', color: '#222', marginBottom: '16px' }}>
-            {productTitle} - <span style={{ color: '#4CAF50' }}>{t('product.freeDelivery')}</span>
+            {productTitle} - <span style={{ color: '#4CAF50' }}>Free Delivery</span>
           </h1>
 
           {/* Order Confirmation Success */}
@@ -726,7 +734,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                               padding: '3px 6px',
                               borderRadius: '50px',
                             }}>
-                              {t('product.freeDelivery')}
+                              Free Delivery
                             </span>
                           )}
                         </div>
@@ -809,7 +817,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                     borderRadius: '4px'
                   }}
                 >
-                  {product.discount}% {t('product.off')}
+                  {product.discount}% OFF
                 </span>
                 <Image
                   src={allImages[selectedImage]}
@@ -893,7 +901,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                       borderRadius: '50px'
                     }}
                   >
-                    {t('product.freeDelivery')}
+                    Free Delivery
                   </span>
                 )}
               </div>
@@ -957,7 +965,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                   </span>
                 </div>
                 <span style={{ color: '#009688', fontWeight: '500', fontSize: '13px' }}>
-                  {actualSoldCount} {t('product.itemsSold')}
+                  {actualSoldCount} Items Sold
                 </span>
               </div>
             </div>
@@ -972,24 +980,24 @@ export default function ProductPage({ params }: ProductPageProps) {
               }}
             >
               <h2 style={{ fontSize: isArabic ? '26px' : '22px', fontWeight: '600', color: '#222', marginBottom: '6px' }}>
-                {t('orderForm.orderNow')}
+                Order Now
               </h2>
               <p style={{ color: '#555', fontSize: isArabic ? '15px' : '13px', marginBottom: '20px' }}>
-                {t('orderForm.formMessage')}
+                Kindly fill the form & we will deliver 1-2 working days.
               </p>
 
               <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                 {/* Full Name */}
                 <div>
                   <label style={{ display: 'block', fontSize: isArabic ? '16px' : '14px', fontWeight: '600', color: '#222', marginBottom: '6px' }}>
-                    {t('orderForm.fullName')}<span style={{ color: '#e53935' }}>*</span>
+                    Full Name<span style={{ color: '#e53935' }}>*</span>
                   </label>
                   <input
                     type="text"
                     name="fullName"
                     value={formData.fullName}
                     onChange={handleInputChange}
-                    placeholder={`${t('orderForm.fullName')}*`}
+                    placeholder="Full Name*"
                     required
                     style={{
                       width: '100%',
@@ -1006,7 +1014,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                 {/* Mobile */}
                 <div>
                   <label style={{ display: 'block', fontSize: isArabic ? '16px' : '14px', fontWeight: '600', color: '#222', marginBottom: '6px' }}>
-                    {t('orderForm.mobile')}<span style={{ color: '#e53935' }}>*</span>
+                    Mobile<span style={{ color: '#e53935' }}>*</span>
                   </label>
                   <input
                     type="tel"
@@ -1030,7 +1038,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                 {/* Quantity */}
                 <div>
                   <label style={{ display: 'block', fontSize: isArabic ? '16px' : '14px', fontWeight: '600', color: '#222', marginBottom: '6px' }}>
-                    {t('orderForm.quantity')}<span style={{ color: '#e53935' }}>*</span>
+                    Quantity<span style={{ color: '#e53935' }}>*</span>
                   </label>
                   <select
                     name="quantity"
@@ -1057,7 +1065,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                 {/* City */}
                 <div>
                   <label style={{ display: 'block', fontSize: isArabic ? '16px' : '14px', fontWeight: '600', color: '#222', marginBottom: '6px' }}>
-                    {t('orderForm.city')}<span style={{ color: '#e53935' }}>*</span>
+                    City<span style={{ color: '#e53935' }}>*</span>
                   </label>
                   <select
                     name="city"
@@ -1075,7 +1083,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                       backgroundColor: 'white'
                     }}
                   >
-                    <option value="">{t('orderForm.selectCity')}*</option>
+                    <option value="">Select City*</option>
                     {cities.map((city, idx) => {
                       const lang = isArabic ? 'ar' : 'en';
                       const cityName = getCityName(city, lang);
@@ -1091,13 +1099,13 @@ export default function ProductPage({ params }: ProductPageProps) {
                 {/* Delivery Address */}
                 <div>
                   <label style={{ display: 'block', fontSize: isArabic ? '16px' : '14px', fontWeight: '600', color: '#222', marginBottom: '6px' }}>
-                    {t('orderForm.deliveryAddress')}<span style={{ color: '#e53935' }}>*</span>
+                    Delivery Address<span style={{ color: '#e53935' }}>*</span>
                   </label>
                   <textarea
                     name="address"
                     value={formData.address}
                     onChange={handleInputChange}
-                    placeholder={t('orderForm.addressPlaceholder')}
+                    placeholder="Delivery Address* (Building No, Street name, Area)"
                     required
                     rows={3}
                     style={{
@@ -1132,7 +1140,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                   }}
                   className="hover:opacity-90"
                 >
-                  {t('orderForm.submitOrder')}
+                  SUBMIT ORDER
                 </button>
               </form>
             </div>
@@ -1151,7 +1159,7 @@ export default function ProductPage({ params }: ProductPageProps) {
             }}
           >
             <div style={{ borderBottom: '1px solid #eee', padding: '14px 20px' }}>
-              <h3 style={{ fontSize: isArabic ? '18px' : '15px', fontWeight: '600', color: '#222' }}>{t('product.description')}</h3>
+              <h3 style={{ fontSize: '15px', fontWeight: '600', color: '#222' }}>Description</h3>
             </div>
             <div style={{ padding: '20px' }}>
               <p style={{ fontWeight: '500', color: '#222', marginBottom: '14px', fontSize: isArabic ? '18px' : '15px' }}>{productDescription}</p>

@@ -3,8 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Product } from '@/data/products';
-import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
 import { getProductTitle } from '@/utils/getProductText';
 
 interface ProductCardProps {
@@ -14,14 +13,6 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   const [imgError, setImgError] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  const { t, i18n } = useTranslation();
-  
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-  
-  const isArabic = mounted && i18n.language?.startsWith('ar');
   
   return (
     <Link href={`/product/${product.id}`}>
@@ -55,7 +46,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               borderRadius: '4px'
             }}
           >
-            {product.discount}% {t('product.off')}
+            {product.discount}% OFF
           </span>
           
           {/* Product Image - Zooms on hover */}
@@ -70,7 +61,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             {!imgError ? (
               <Image
                 src={product.image}
-                alt={mounted ? getProductTitle(product, isArabic ? 'ar' : 'en') : (typeof product.title === 'object' ? product.title.en : product.title || 'Product')}
+                alt={getProductTitle(product, 'en') || (typeof product.title === 'object' ? product.title.en : product.title || 'Product')}
                 fill
                 className="object-cover"
                 style={{ 
@@ -80,7 +71,6 @@ export default function ProductCard({ product }: ProductCardProps) {
                 }}
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 onError={() => setImgError(true)}
-                suppressHydrationWarning
               />
             ) : (
               <div 
@@ -107,7 +97,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 borderRadius: '50px'
               }}
             >
-              {t('product.freeDelivery')}
+              Free Delivery
             </span>
           )}
         </div>
@@ -119,15 +109,15 @@ export default function ProductCard({ product }: ProductCardProps) {
             className="product-title line-clamp-2"
             style={{
               marginTop: '8px',
-              fontSize: isArabic ? '17px' : '15px',
+              fontSize: '15px',
               color: '#222222',
-              lineHeight: isArabic ? '1.5' : '1.3',
-              minHeight: isArabic ? '52px' : '40px',
-              fontWeight: isArabic ? '500' : '400'
+              lineHeight: '1.3',
+              minHeight: '40px',
+              fontWeight: '400'
             }}
             suppressHydrationWarning
           >
-            {mounted ? getProductTitle(product, isArabic ? 'ar' : 'en') : (typeof product.title === 'object' ? product.title.en : product.title || 'Product')}
+            {getProductTitle(product, 'en') || (typeof product.title === 'object' ? product.title.en : product.title || 'Product')}
           </h3>
           
           {/* Pricing - OMR */}

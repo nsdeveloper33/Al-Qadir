@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 import Header from '@/components/Header';
 import SearchBar from '@/components/SearchBar';
 import CategoryNav from '@/components/CategoryNav';
@@ -14,8 +13,7 @@ import { getProductTitle } from '@/utils/getProductText';
 export default function Home() {
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const { i18n } = useTranslation();
-  const currentLang = i18n.language?.startsWith('ar') ? 'ar' : 'en';
+  const currentLang = 'en';
   
   // Get only active products from context
   const { getActiveProducts } = useProducts();
