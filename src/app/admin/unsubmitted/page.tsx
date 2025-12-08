@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import AdminSidebar from '@/components/AdminSidebar';
 import { AbandonedOrder } from '@/utils/abandonedOrders';
 import { useProducts } from '@/context/ProductContext';
 import { useToast } from '@/components/Toast';
+import { Product } from '@/data/products';
 import * as XLSX from 'xlsx';
 
 // Translation function type
@@ -22,15 +22,29 @@ const translations: Record<string, string> = {
   'admin.unsubmitted.city': 'City',
   'admin.unsubmitted.address': 'Address',
   'admin.unsubmitted.createdAt': 'Created At',
+  'admin.unsubmitted.title': 'Unsubmitted Orders',
+  'admin.unsubmitted.description': 'Orders that were started but not completed',
+  'admin.unsubmitted.product': 'Product',
+  'admin.unsubmitted.date': 'Date',
+  'admin.unsubmitted.actions': 'Actions',
+  'admin.unsubmitted.view': 'View',
+  'admin.unsubmitted.delete': 'Delete',
+  'admin.unsubmitted.confirmDelete': 'Delete Unsubmitted Order?',
+  'admin.unsubmitted.confirmDeleteMessage': 'This action cannot be undone.',
+  'admin.unsubmitted.noOrders': 'No unsubmitted orders found',
   'admin.editOrder': 'Edit Order',
   'admin.customerName': 'Customer Name',
   'admin.phoneNumber': 'Phone Number',
   'admin.orders.city': 'City',
   'admin.deliveryAddress': 'Delivery Address',
   'admin.orders.quantity': 'Quantity',
+  'admin.orders.export.selected': 'Export Selected',
+  'admin.orders.export.all': 'Export All',
+  'admin.orders.export.noOrdersSelected': 'Please select orders to export',
+  'admin.orders.selectAll': 'Select All',
   'admin.cancel': 'Cancel',
   'admin.save': 'Save',
-  'admin.orders.export.noOrdersSelected': 'Please select orders to export',
+  'admin.delete': 'Delete',
 };
 
 // Detail Modal Component
@@ -38,7 +52,7 @@ interface DetailModalProps {
   order: AbandonedOrder | null;
   isOpen: boolean;
   onClose: () => void;
-  products: any[];
+  products: Product[];
   t: TFunction;
 }
 
@@ -244,29 +258,18 @@ interface EditModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (updatedOrder: AbandonedOrder) => void;
-  t: any;
+  t: TFunction;
 }
 
 function EditModal({ order, isOpen, onClose, onSave, t }: EditModalProps) {
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    city: '',
-    address: '',
-    quantity: '',
-  });
-
-  useEffect(() => {
-    if (order) {
-      setFormData({
-        name: order.name,
-        phone: order.phone,
-        city: order.city,
-        address: order.address,
-        quantity: order.quantity,
-      });
-    }
-  }, [order]);
+  // Initialize form data from order - key prop on form will reset this when order changes
+  const [formData, setFormData] = useState(() => ({
+    name: order?.name || '',
+    phone: order?.phone || '',
+    city: order?.city || '',
+    address: order?.address || '',
+    quantity: order?.quantity || '',
+  }));
 
   if (!isOpen || !order) return null;
 
@@ -342,7 +345,7 @@ function EditModal({ order, isOpen, onClose, onSave, t }: EditModalProps) {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} style={{ padding: '20px' }}>
+        <form key={order?.id || 'new'} onSubmit={handleSubmit} style={{ padding: '20px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {/* Customer Name */}
             <div>

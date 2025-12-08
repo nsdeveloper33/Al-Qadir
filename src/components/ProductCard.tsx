@@ -4,50 +4,80 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Product } from '@/data/products';
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { getProductTitle } from '@/utils/getProductText';
 
 interface ProductCardProps {
   product: Product;
+  index?: number;
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product, index = 0 }: ProductCardProps) {
   const [imgError, setImgError] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   
   return (
-    <Link href={`/product/${product.id}`}>
-      <article 
-        className="product-card cursor-pointer"
-        style={{
-          backgroundColor: '#ffffff',
-          borderRadius: '12px',
-          boxShadow: '0px 1px 4px rgba(0,0,0,0.08)',
-          padding: '12px'
-        }}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: index * 0.05 }}
+    >
+      <Link href={`/product/${product.id}`}>
+        <motion.article 
+          className="product-card cursor-pointer"
+          style={{
+            background: isHovered 
+              ? 'linear-gradient(145deg, #ffffff 0%, #f7fafc 50%, #edf2f7 100%)'
+              : 'linear-gradient(145deg, #ffffff 0%, #f0f4ff 100%)',
+            borderRadius: '28px',
+            boxShadow: isHovered 
+              ? '0px 25px 60px rgba(102, 126, 234, 0.3), 0px 10px 25px rgba(79, 172, 254, 0.25), 0px 0px 0px 1px rgba(102, 126, 234, 0.1), inset 0px 2px 4px rgba(255,255,255,0.9)' 
+              : '0px 12px 35px rgba(102, 126, 234, 0.15), 0px 5px 15px rgba(79, 172, 254, 0.1), 0px 0px 0px 1px rgba(102, 126, 234, 0.08)',
+            padding: '28px',
+            overflow: 'hidden',
+            position: 'relative',
+            border: isHovered ? '2px solid rgba(102, 126, 234, 0.4)' : '1px solid rgba(102, 126, 234, 0.2)',
+            backdropFilter: 'blur(15px)',
+            transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+            transform: isHovered ? 'translateY(-2px)' : 'translateY(0)'
+          }}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          whileHover={{ y: -10, scale: 1.03 }}
+          transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+        >
         {/* Image Container - No border/outline */}
         <div 
           className="product-image-wrapper relative overflow-hidden"
-          style={{ borderRadius: '10px' }}
+          style={{ 
+            borderRadius: '16px',
+            boxShadow: isHovered 
+              ? '0px 8px 25px rgba(0,0,0,0.12), inset 0px 1px 0px rgba(255,255,255,0.5)' 
+              : '0px 4px 15px rgba(0,0,0,0.08)',
+            transition: 'all 0.3s ease'
+          }}
         >
           {/* Discount Badge - Top Right */}
-          <span 
+          <motion.span 
             className="badge-discount absolute z-10"
             style={{
-              top: '8px',
-              right: '8px',
-              backgroundColor: '#e53935',
+              top: '12px',
+              right: '12px',
+              background: 'linear-gradient(135deg, #e53e3e 0%, #c53030 50%, #fc8181 100%)',
               color: '#fff',
               fontSize: '12px',
-              fontWeight: '600',
-              padding: '4px 8px',
-              borderRadius: '4px'
+              fontWeight: '700',
+              padding: '8px 16px',
+              borderRadius: '30px',
+              boxShadow: '0px 6px 20px rgba(229, 62, 62, 0.6), 0px 3px 10px rgba(197, 48, 48, 0.4)',
+              letterSpacing: '0.7px',
+              textTransform: 'uppercase',
+              border: '1px solid rgba(255,255,255,0.4)'
             }}
+            whileHover={{ scale: 1.05 }}
           >
             {product.discount}% OFF
-          </span>
+          </motion.span>
           
           {/* Product Image - Zooms on hover */}
           <div 
@@ -55,7 +85,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             style={{ 
               paddingBottom: '100%',
               overflow: 'hidden',
-              borderRadius: '10px'
+              borderRadius: '14px'
             }}
           >
             {!imgError ? (
@@ -65,17 +95,18 @@ export default function ProductCard({ product }: ProductCardProps) {
                 fill
                 className="object-cover"
                 style={{ 
-                  borderRadius: '10px',
-                  transform: isHovered ? 'scale(1.05)' : 'scale(1)',
-                  transition: 'transform 0.3s ease'
+              borderRadius: '14px',
+              transform: isHovered ? 'scale(1.08)' : 'scale(1)',
+              transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
                 }}
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 onError={() => setImgError(true)}
+                unoptimized
               />
             ) : (
               <div 
                 className="absolute inset-0 flex items-center justify-center bg-gray-100 text-gray-400 text-sm"
-                style={{ borderRadius: '10px' }}
+                style={{ borderRadius: '14px' }}
               >
                 Image
               </div>
@@ -84,36 +115,46 @@ export default function ProductCard({ product }: ProductCardProps) {
           
           {/* Free Delivery Badge - Bottom Left */}
           {product.freeDelivery && (
-            <span 
+            <motion.span 
               className="badge-delivery absolute z-10"
               style={{
-                bottom: '8px',
-                left: '8px',
-                backgroundColor: '#4CAF50',
+                bottom: '12px',
+                left: '12px',
+                background: 'linear-gradient(135deg, #38a169 0%, #2f855a 50%, #48bb78 100%)',
                 color: 'white',
-                fontSize: '12px',
-                fontWeight: '500',
-                padding: '3px 8px',
-                borderRadius: '50px'
+                fontSize: '11px',
+                fontWeight: '600',
+                padding: '7px 14px',
+                borderRadius: '30px',
+                boxShadow: '0px 6px 20px rgba(56, 161, 105, 0.6), 0px 3px 10px rgba(47, 133, 90, 0.4)',
+                letterSpacing: '0.5px',
+                textTransform: 'uppercase',
+                border: '1px solid rgba(255,255,255,0.4)'
               }}
+              whileHover={{ scale: 1.05 }}
             >
               Free Delivery
-            </span>
+            </motion.span>
           )}
         </div>
 
         {/* Product Info */}
-        <div style={{ paddingTop: '10px', paddingBottom: '4px' }}>
+        <div style={{ paddingTop: '16px', paddingBottom: '6px' }}>
           {/* Product Title */}
           <h3 
             className="product-title line-clamp-2"
             style={{
-              marginTop: '8px',
-              fontSize: '15px',
-              color: '#222222',
-              lineHeight: '1.3',
-              minHeight: '40px',
-              fontWeight: '400'
+              marginTop: '0px',
+              fontSize: '18px',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #4facfe 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              lineHeight: '1.5',
+              minHeight: '48px',
+              fontWeight: '600',
+              transition: 'all 0.3s ease',
+              letterSpacing: '0.2px'
             }}
             suppressHydrationWarning
           >
@@ -121,22 +162,32 @@ export default function ProductCard({ product }: ProductCardProps) {
           </h3>
           
           {/* Pricing - PKR */}
-          <div className="product-pricing flex items-baseline" style={{ marginTop: '8px', gap: '8px' }}>
-            <span 
+          <div className="product-pricing flex items-baseline" style={{ marginTop: '14px', gap: '12px' }}>
+            <motion.span 
               className="current-price font-bold"
-              style={{ color: '#e53935', fontSize: '16px' }}
+              style={{ 
+                background: 'linear-gradient(135deg, #ff6b9d 0%, #c44569 50%, #f093fb 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                fontSize: '22px',
+                fontWeight: '800',
+                letterSpacing: '0.5px'
+              }}
+              whileHover={{ scale: 1.05 }}
             >
               {product.currentPrice.toFixed(2)} PKR
-            </span>
+            </motion.span>
             <span 
               className="original-price line-through"
-              style={{ color: '#999999', fontSize: '14px' }}
+              style={{ color: '#999999', fontSize: '14px', fontWeight: '400' }}
             >
               {product.originalPrice.toFixed(2)} PKR
             </span>
           </div>
         </div>
-      </article>
+      </motion.article>
     </Link>
+    </motion.div>
   );
 }

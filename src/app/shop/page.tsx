@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import SearchBar from '@/components/SearchBar';
 import CategoryNav from '@/components/CategoryNav';
@@ -48,7 +49,18 @@ export default function ShopPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#eeeeee' }}>
+    <motion.div 
+      className="min-h-screen flex flex-col"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      style={{ 
+        background: 'linear-gradient(180deg, #f5f7fa 0%, #eef2f6 50%, #f5f7fa 100%)',
+        minHeight: '100vh',
+        position: 'relative',
+        paddingTop: '90px'
+      }}
+    >
       {/* Header */}
       <Header />
       
@@ -71,7 +83,7 @@ export default function ShopPage() {
       
       {/* WhatsApp Floating Action Button */}
       <WhatsAppFab />
-    </div>
+    </motion.div>
   );
 }
 

@@ -1,0 +1,43 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { v2 as cloudinary } from 'cloudinary';
+import fs from 'fs';
+import path from 'path';
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+export async function POST(request: NextRequest) {
+  try {
+    const { imageName } = await request.json();
+    
+    if (!imageName) {
+      return NextResponse.json({ error: 'Image name required' }, { status: 400 });
+    }
+
+    const imagePath = path.join(process.cwd(), 'public', 'images', imageName);
+    
+    if (!fs.existsSync(imagePath)) {
+      return NextResponse.json({ error: 'Image not found' }, { status: 404 });
+    }
+
+    const result = await cloudinary.uploader.upload(imagePath, {
+      folder: 'homepage',
+      public_id: imageName.replace('.jpg', '').replace('.jpeg', '').replace('.png', ''),
+    });
+
+    return NextResponse.json({
+      success: true,
+      url: result.secure_url,
+      publicId: result.public_id,
+    });
+  } catch (error: any) {
+    console.error('Upload error:', error);
+    return NextResponse.json(
+      { error: error.message || 'Failed to upload' },
+      { status: 500 }
+    );
+  }
+}

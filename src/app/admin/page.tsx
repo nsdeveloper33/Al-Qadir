@@ -8,11 +8,11 @@ import Link from 'next/link';
 import { getProductTitle } from '@/utils/getProductText';
 
 const statusConfig: Record<string, { color: string; bgColor: string; icon: string }> = {
-  pending: { color: '#FF9800', bgColor: 'rgba(255, 152, 0, 0.1)', icon: '⏳' },
-  processing: { color: '#2196F3', bgColor: 'rgba(33, 150, 243, 0.1)', icon: '⚙️' },
-  shipped: { color: '#9C27B0', bgColor: 'rgba(156, 39, 176, 0.1)', icon: '🚚' },
-  delivered: { color: '#4CAF50', bgColor: 'rgba(76, 175, 80, 0.1)', icon: '✅' },
-  cancelled: { color: '#f44336', bgColor: 'rgba(244, 67, 54, 0.1)', icon: '❌' },
+  pending: { color: '#FF6B35', bgColor: 'rgba(255, 107, 53, 0.12)', icon: '⏳' },
+  processing: { color: '#3B82F6', bgColor: 'rgba(59, 130, 246, 0.12)', icon: '⚙️' },
+  shipped: { color: '#8B5CF6', bgColor: 'rgba(139, 92, 246, 0.12)', icon: '🚚' },
+  delivered: { color: '#10B981', bgColor: 'rgba(16, 185, 129, 0.12)', icon: '✅' },
+  cancelled: { color: '#EF4444', bgColor: 'rgba(239, 68, 68, 0.12)', icon: '❌' },
 };
 
 export default function AdminDashboard() {
@@ -50,7 +50,7 @@ export default function AdminDashboard() {
     <div>
       {/* Page Title */}
       <div style={{ marginBottom: '20px' }}>
-        <h1 style={{ fontSize: '22px', fontWeight: '600', color: '#1a1a2e' }}>
+        <h1 style={{ fontSize: '22px', fontWeight: '600', color: '#2c3e50' }}>
           Dashboard
         </h1>
         <p style={{ color: '#666', fontSize: '14px', marginTop: '4px' }}>
@@ -63,7 +63,7 @@ export default function AdminDashboard() {
         {/* Pending Amount Card */}
         <Link href="/admin/orders?status=pending" style={{ textDecoration: 'none' }}>
           <div style={{
-            background: 'linear-gradient(135deg, #FF9800 0%, #E65100 100%)',
+            background: 'linear-gradient(135deg, #FF6B35 0%, #C2410C 100%)',
             borderRadius: '16px',
             padding: '24px',
             color: '#fff',
@@ -84,7 +84,7 @@ export default function AdminDashboard() {
         {/* In Progress Amount Card */}
         <Link href="/admin/orders?status=processing" style={{ textDecoration: 'none' }}>
           <div style={{
-            background: 'linear-gradient(135deg, #2196F3 0%, #1565C0 100%)',
+            background: 'linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%)',
             borderRadius: '16px',
             padding: '24px',
             color: '#fff',
@@ -105,7 +105,7 @@ export default function AdminDashboard() {
         {/* Completed Amount Card */}
         <Link href="/admin/orders?status=delivered" style={{ textDecoration: 'none' }}>
           <div style={{
-            background: 'linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%)',
+            background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
             borderRadius: '16px',
             padding: '24px',
             color: '#fff',
@@ -126,7 +126,7 @@ export default function AdminDashboard() {
         {/* Cancelled Amount Card */}
         <Link href="/admin/orders?status=cancelled" style={{ textDecoration: 'none' }}>
           <div style={{
-            background: 'linear-gradient(135deg, #78909C 0%, #455A64 100%)',
+            background: 'linear-gradient(135deg, #2c3e50 0%, #34495e 100%)',
             borderRadius: '16px',
             padding: '24px',
             color: '#fff',
@@ -134,6 +134,7 @@ export default function AdminDashboard() {
             overflow: 'hidden',
             cursor: 'pointer',
             transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+            opacity: cancelledOrders > 0 ? 1 : 0.7,
           }} className="hover:scale-105 hover:shadow-lg">
             <div style={{ position: 'absolute', top: '-20px', right: '-20px', opacity: 0.1, fontSize: '100px' }}>❌</div>
             <p style={{ fontSize: '13px', opacity: 0.9, marginBottom: '8px' }}>Cancelled</p>
@@ -147,7 +148,7 @@ export default function AdminDashboard() {
 
       {/* Total Revenue Summary */}
       <div style={{
-        background: 'linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%)',
+        background: 'linear-gradient(135deg, #2c3e50 0%, #34495e 100%)',
         borderRadius: '16px',
         padding: '20px 24px',
         marginBottom: '24px',
@@ -162,7 +163,7 @@ export default function AdminDashboard() {
             width: '56px',
             height: '56px',
             borderRadius: '12px',
-            backgroundColor: 'rgba(76, 175, 80, 0.2)',
+            backgroundColor: 'rgba(16, 185, 129, 0.2)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -172,7 +173,7 @@ export default function AdminDashboard() {
           </div>
           <div>
             <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Total Revenue</p>
-            <p style={{ fontSize: '28px', fontWeight: '700', color: '#4CAF50' }}>{totalRevenue.toFixed(2)} PKR</p>
+            <p style={{ fontSize: '28px', fontWeight: '700', color: '#10B981' }}>{totalRevenue.toFixed(2)} PKR</p>
           </div>
         </div>
         <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
@@ -206,11 +207,11 @@ export default function AdminDashboard() {
             width: '44px',
             height: '44px',
             borderRadius: '10px',
-            backgroundColor: 'rgba(76, 175, 80, 0.1)',
+            backgroundColor: 'rgba(52, 152, 219, 0.1)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#4CAF50',
+            color: '#3498db',
           }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
@@ -219,7 +220,7 @@ export default function AdminDashboard() {
           </div>
           <div>
             <p style={{ fontSize: '12px', color: '#666' }}>Active</p>
-            <p style={{ fontSize: '20px', fontWeight: '700', color: '#1a1a2e' }}>{activeProducts}</p>
+            <p style={{ fontSize: '20px', fontWeight: '700', color: '#2c3e50' }}>{activeProducts}</p>
           </div>
         </div>
 
@@ -249,7 +250,7 @@ export default function AdminDashboard() {
           </div>
           <div>
             <p style={{ fontSize: '12px', color: '#666' }}>Inactive</p>
-            <p style={{ fontSize: '20px', fontWeight: '700', color: '#1a1a2e' }}>{inactiveProducts}</p>
+            <p style={{ fontSize: '20px', fontWeight: '700', color: '#2c3e50' }}>{inactiveProducts}</p>
           </div>
         </div>
 
@@ -266,11 +267,11 @@ export default function AdminDashboard() {
             width: '44px',
             height: '44px',
             borderRadius: '10px',
-            backgroundColor: 'rgba(33, 150, 243, 0.1)',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#2196F3',
+            color: '#3B82F6',
           }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="8" y1="6" x2="21" y2="6" />
@@ -283,7 +284,7 @@ export default function AdminDashboard() {
           </div>
           <div>
             <p style={{ fontSize: '12px', color: '#666' }}>Categories</p>
-            <p style={{ fontSize: '20px', fontWeight: '700', color: '#1a1a2e' }}>{totalCategories}</p>
+            <p style={{ fontSize: '20px', fontWeight: '700', color: '#2c3e50' }}>{totalCategories}</p>
           </div>
         </div>
 
@@ -300,11 +301,11 @@ export default function AdminDashboard() {
             width: '44px',
             height: '44px',
             borderRadius: '10px',
-            backgroundColor: 'rgba(156, 39, 176, 0.1)',
+            backgroundColor: 'rgba(139, 92, 246, 0.1)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#9C27B0',
+            color: '#8B5CF6',
           }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="12" y1="1" x2="12" y2="23" />
@@ -313,7 +314,7 @@ export default function AdminDashboard() {
           </div>
           <div>
             <p style={{ fontSize: '12px', color: '#666' }}>Avg Order</p>
-            <p style={{ fontSize: '20px', fontWeight: '700', color: '#1a1a2e' }}>${Math.round(totalRevenue / (totalOrders - cancelledOrders) || 0)}</p>
+            <p style={{ fontSize: '20px', fontWeight: '700', color: '#2c3e50' }}>${Math.round(totalRevenue / (totalOrders - cancelledOrders) || 0)}</p>
           </div>
         </div>
       </div>
@@ -334,10 +335,10 @@ export default function AdminDashboard() {
             padding: '16px 20px',
             borderBottom: '1px solid #eee',
           }}>
-            <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#1a1a2e' }}>
+            <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#2c3e50' }}>
               Recent Orders
             </h2>
-            <Link href="/admin/orders" style={{ color: '#4CAF50', fontSize: '13px', textDecoration: 'none' }}>
+            <Link href="/admin/orders" style={{ color: '#10B981', fontSize: '13px', textDecoration: 'none' }}>
               View All
             </Link>
           </div>
@@ -359,7 +360,7 @@ export default function AdminDashboard() {
                     width: '40px',
                     height: '40px',
                     borderRadius: '50%',
-                    backgroundColor: '#1a1a2e',
+                    backgroundColor: '#1E293B',
                     color: '#fff',
                     display: 'flex',
                     alignItems: 'center',
@@ -370,12 +371,12 @@ export default function AdminDashboard() {
                     {order.customer.charAt(0)}
                   </div>
                   <div>
-                    <p style={{ fontSize: '14px', fontWeight: '500', color: '#1a1a2e' }}>{order.customer}</p>
+                    <p style={{ fontSize: '14px', fontWeight: '500', color: '#2c3e50' }}>{order.customer}</p>
                     <p style={{ fontSize: '12px', color: '#999' }}>#{order.id} • {order.city}</p>
                   </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <p style={{ fontSize: '15px', fontWeight: '600', color: '#4CAF50' }}>{order.total.toFixed(2)} PKR</p>
+                  <p style={{ fontSize: '15px', fontWeight: '600', color: '#10B981' }}>{order.total.toFixed(2)} PKR</p>
                   <span style={{
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -409,10 +410,10 @@ export default function AdminDashboard() {
             padding: '16px 20px',
             borderBottom: '1px solid #eee',
           }}>
-            <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#1a1a2e' }}>
+            <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#2c3e50' }}>
               Recent Products
             </h2>
-            <Link href="/admin/products" style={{ color: '#4CAF50', fontSize: '13px', textDecoration: 'none' }}>
+            <Link href="/admin/products" style={{ color: '#10B981', fontSize: '13px', textDecoration: 'none' }}>
               View All
             </Link>
           </div>
@@ -440,7 +441,7 @@ export default function AdminDashboard() {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ 
                     fontSize: '14px', 
-                    color: '#1a1a2e', 
+                    color: '#2c3e50', 
                     fontWeight: '500',
                     overflow: 'hidden', 
                     textOverflow: 'ellipsis', 
@@ -449,7 +450,7 @@ export default function AdminDashboard() {
                     {getProductTitle(product)}
                   </p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
-                    <span style={{ color: '#4CAF50', fontWeight: '600', fontSize: '14px' }}>
+                    <span style={{ color: '#10B981', fontWeight: '600', fontSize: '14px' }}>
                       {product.currentPrice} PKR
                     </span>
                     <span style={{
@@ -463,8 +464,8 @@ export default function AdminDashboard() {
                       {product.discount}% OFF
                     </span>
                     <span style={{
-                      backgroundColor: product.status === 'inactive' ? '#ffebee' : '#e8f5e9',
-                      color: product.status === 'inactive' ? '#e53935' : '#4CAF50',
+                      backgroundColor: product.status === 'inactive' ? '#ffebee' : '#D1FAE5',
+                      color: product.status === 'inactive' ? '#e53935' : '#10B981',
                       padding: '2px 8px',
                       borderRadius: '10px',
                       fontSize: '10px',

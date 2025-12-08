@@ -61,6 +61,16 @@ const menuItems = [
       </svg>
     ),
   },
+  {
+    id: 'profile',
+    href: '/admin/profile',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+        <circle cx="12" cy="7" r="4" />
+      </svg>
+    ),
+  },
 ];
 
 interface AdminSidebarProps {
@@ -125,31 +135,43 @@ function AdminSidebarContent({ isOpen, onClose, isMobile = false }: AdminSidebar
       {/* Sidebar */}
       <aside
         style={{
-          width: '250px',
+          width: '260px',
           height: 'calc(100vh - 90px)',
-          backgroundColor: '#1a1a2e',
+          background: 'linear-gradient(180deg, #2c3e50 0%, #34495e 100%)',
           position: 'fixed',
           top: '90px',
           bottom: 0,
-          left: isOpen ? 0 : '-250px',
+          left: isOpen ? 0 : '-260px',
           zIndex: 50,
           transition: 'left 0.3s ease',
           display: 'flex',
           flexDirection: 'column',
+          boxShadow: '2px 0 20px rgba(0,0,0,0.15)',
+          borderRight: '1px solid rgba(255,255,255,0.1)',
         }}
       >
         {/* Admin Title */}
         <div
           style={{
-            padding: '20px 20px',
+            padding: '24px 20px',
             borderBottom: '1px solid rgba(255,255,255,0.1)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             flexShrink: 0,
+            background: 'rgba(52, 152, 219, 0.1)',
           }}
         >
-          <h2 style={{ color: '#fff', fontSize: '18px', fontWeight: '600' }}>
+          <h2 style={{ 
+            color: '#fff', 
+            fontSize: '20px', 
+            fontWeight: '700',
+            letterSpacing: '0.5px',
+            background: 'linear-gradient(135deg, #ecf0f1 0%, #3498db 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+          }}>
             Admin Panel
           </h2>
           {/* Close button for mobile */}
@@ -188,19 +210,45 @@ function AdminSidebarContent({ isOpen, onClose, isMobile = false }: AdminSidebar
                     style={{
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '12px',
-                      padding: '14px 20px',
+                      gap: '14px',
+                      padding: '16px 20px',
                       color: isActive ? '#fff' : 'rgba(255,255,255,0.7)',
                       textDecoration: 'none',
-                      backgroundColor: isActive ? 'rgba(255,255,255,0.1)' : 'transparent',
-                      borderLeft: isActive ? '3px solid #4CAF50' : '3px solid transparent',
-                      transition: 'all 0.2s ease',
+                      backgroundColor: isActive 
+                        ? 'linear-gradient(90deg, rgba(52, 152, 219, 0.2) 0%, rgba(52, 152, 219, 0.1) 100%)'
+                        : 'transparent',
+                      borderLeft: isActive ? '4px solid #3498db' : '4px solid transparent',
+                      borderRadius: isActive ? '0 12px 12px 0' : '0',
+                      transition: 'all 0.3s ease',
+                      marginRight: '8px',
+                      position: 'relative',
                     }}
-                    className="hover:bg-white/5"
+                    onMouseEnter={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)';
+                        e.currentTarget.style.transform = 'translateX(4px)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                        e.currentTarget.style.transform = 'translateX(0)';
+                      }
+                    }}
                   >
-                    <span style={{ opacity: isActive ? 1 : 0.7 }}>{item.icon}</span>
-                    <span style={{ fontSize: '14px', fontWeight: isActive ? '500' : '400' }}>
-                      {item.id === 'dashboard' ? 'Dashboard' : 'Products'}
+                    <span style={{ 
+                      opacity: isActive ? 1 : 0.7,
+                      color: isActive ? '#3498db' : 'inherit',
+                      transition: 'all 0.3s ease'
+                    }}>
+                      {item.icon}
+                    </span>
+                    <span style={{ 
+                      fontSize: '15px', 
+                      fontWeight: isActive ? '600' : '400',
+                      letterSpacing: '0.3px'
+                    }}>
+                      {item.id === 'dashboard' ? 'Dashboard' : item.id === 'products' ? 'Products' : 'Profile'}
                     </span>
                   </Link>
                 </li>
@@ -219,15 +267,30 @@ function AdminSidebarContent({ isOpen, onClose, isMobile = false }: AdminSidebar
                       alignItems: 'center',
                       justifyContent: 'space-between',
                       width: '100%',
-                      padding: '14px 20px',
+                      padding: '16px 20px',
                       color: hasCategoryActive ? '#fff' : 'rgba(255,255,255,0.7)',
-                      backgroundColor: hasCategoryActive ? 'rgba(255,255,255,0.1)' : 'transparent',
+                      backgroundColor: hasCategoryActive 
+                        ? 'linear-gradient(90deg, rgba(52, 152, 219, 0.2) 0%, rgba(52, 152, 219, 0.1) 100%)'
+                        : 'transparent',
                       border: 'none',
-                      borderLeft: hasCategoryActive ? '3px solid #4CAF50' : '3px solid transparent',
+                      borderLeft: hasCategoryActive ? '4px solid #3498db' : '4px solid transparent',
+                      borderRadius: hasCategoryActive ? '0 12px 0 0' : '0',
                       cursor: 'pointer',
-                      transition: 'all 0.2s ease',
+                      transition: 'all 0.3s ease',
+                      marginRight: '8px',
                     }}
-                    className="hover:bg-white/5"
+                    onMouseEnter={(e) => {
+                      if (!hasCategoryActive) {
+                        e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)';
+                        e.currentTarget.style.transform = 'translateX(4px)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!hasCategoryActive) {
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                        e.currentTarget.style.transform = 'translateX(0)';
+                      }
+                    }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ opacity: hasCategoryActive ? 1 : 0.7 }}>
@@ -266,7 +329,7 @@ function AdminSidebarContent({ isOpen, onClose, isMobile = false }: AdminSidebar
                   maxHeight: categoriesOpen ? '400px' : '0',
                   overflow: 'hidden',
                   transition: 'max-height 0.3s ease',
-                  backgroundColor: 'rgba(0,0,0,0.2)',
+                  backgroundColor: 'rgba(0,0,0,0.15)',
                 }}
               >
                 {categoryItems.map((cat) => {
@@ -280,19 +343,32 @@ function AdminSidebarContent({ isOpen, onClose, isMobile = false }: AdminSidebar
                       style={{
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '10px',
-                        padding: '12px 20px 12px 48px',
-                        color: isActiveCategory ? '#4CAF50' : 'rgba(255,255,255,0.6)',
+                        gap: '12px',
+                        padding: '12px 20px 12px 52px',
+                        color: isActiveCategory ? '#3498db' : 'rgba(255,255,255,0.6)',
                         textDecoration: 'none',
-                        fontSize: '13px',
+                        fontSize: '14px',
                         fontWeight: isActiveCategory ? '600' : '400',
-                        transition: 'all 0.2s ease',
-                        backgroundColor: isActiveCategory ? 'rgba(76, 175, 80, 0.1)' : 'transparent',
-                        borderLeft: isActiveCategory ? '3px solid #4CAF50' : '3px solid transparent',
+                        transition: 'all 0.3s ease',
+                        backgroundColor: isActiveCategory ? 'rgba(52, 152, 219, 0.15)' : 'transparent',
+                        borderLeft: isActiveCategory ? '4px solid #3498db' : '4px solid transparent',
+                        borderRadius: isActiveCategory ? '0 8px 8px 0' : '0',
+                        marginRight: '8px',
                       }}
-                      className={isActiveCategory ? '' : 'hover:bg-white/5 hover:text-white'}
+                      onMouseEnter={(e) => {
+                        if (!isActiveCategory) {
+                          e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)';
+                          e.currentTarget.style.color = 'rgba(255,255,255,0.9)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isActiveCategory) {
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                          e.currentTarget.style.color = 'rgba(255,255,255,0.6)';
+                        }
+                      }}
                     >
-                      <IconComponent size={16} style={{ color: isActiveCategory ? '#4CAF50' : 'inherit' }} />
+                      <IconComponent size={16} style={{ color: isActiveCategory ? '#3498db' : 'inherit' }} />
                       <span>{categoryLabels[cat.id] || cat.id}</span>
                     </Link>
                   );
@@ -313,15 +389,30 @@ function AdminSidebarContent({ isOpen, onClose, isMobile = false }: AdminSidebar
                       alignItems: 'center',
                       justifyContent: 'space-between',
                       width: '100%',
-                      padding: '14px 20px',
+                      padding: '16px 20px',
                       color: isOrdersPage ? '#fff' : 'rgba(255,255,255,0.7)',
-                      backgroundColor: isOrdersPage ? 'rgba(255,255,255,0.1)' : 'transparent',
+                      backgroundColor: isOrdersPage 
+                        ? 'linear-gradient(90deg, rgba(52, 152, 219, 0.2) 0%, rgba(52, 152, 219, 0.1) 100%)'
+                        : 'transparent',
                       border: 'none',
-                      borderLeft: isOrdersPage ? '3px solid #4CAF50' : '3px solid transparent',
+                      borderLeft: isOrdersPage ? '4px solid #3498db' : '4px solid transparent',
+                      borderRadius: isOrdersPage ? '0 12px 0 0' : '0',
                       cursor: 'pointer',
-                      transition: 'all 0.2s ease',
+                      transition: 'all 0.3s ease',
+                      marginRight: '8px',
                     }}
-                    className="hover:bg-white/5"
+                    onMouseEnter={(e) => {
+                      if (!isOrdersPage) {
+                        e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)';
+                        e.currentTarget.style.transform = 'translateX(4px)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isOrdersPage) {
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                        e.currentTarget.style.transform = 'translateX(0)';
+                      }
+                    }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ opacity: isOrdersPage ? 1 : 0.7 }}>
@@ -357,7 +448,7 @@ function AdminSidebarContent({ isOpen, onClose, isMobile = false }: AdminSidebar
                   maxHeight: ordersOpen ? '400px' : '0',
                   overflow: 'hidden',
                   transition: 'max-height 0.3s ease',
-                  backgroundColor: 'rgba(0,0,0,0.2)',
+                  backgroundColor: 'rgba(0,0,0,0.15)',
                 }}
               >
                 {/* All Orders */}
@@ -367,19 +458,32 @@ function AdminSidebarContent({ isOpen, onClose, isMobile = false }: AdminSidebar
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '10px',
-                    padding: '12px 20px 12px 48px',
-                    color: pathname === '/admin/orders' && !activeStatus ? '#4CAF50' : 'rgba(255,255,255,0.6)',
+                    gap: '12px',
+                    padding: '12px 20px 12px 52px',
+                    color: pathname === '/admin/orders' && !activeStatus ? '#3498db' : 'rgba(255,255,255,0.6)',
                     textDecoration: 'none',
-                    fontSize: '13px',
+                    fontSize: '14px',
                     fontWeight: pathname === '/admin/orders' && !activeStatus ? '600' : '400',
-                    transition: 'all 0.2s ease',
-                    backgroundColor: pathname === '/admin/orders' && !activeStatus ? 'rgba(76, 175, 80, 0.1)' : 'transparent',
-                    borderLeft: pathname === '/admin/orders' && !activeStatus ? '3px solid #4CAF50' : '3px solid transparent',
+                    transition: 'all 0.3s ease',
+                    backgroundColor: pathname === '/admin/orders' && !activeStatus ? 'rgba(52, 152, 219, 0.15)' : 'transparent',
+                    borderLeft: pathname === '/admin/orders' && !activeStatus ? '4px solid #3498db' : '4px solid transparent',
+                    borderRadius: pathname === '/admin/orders' && !activeStatus ? '0 8px 8px 0' : '0',
+                    marginRight: '8px',
                   }}
-                  className={pathname === '/admin/orders' && !activeStatus ? '' : 'hover:bg-white/5 hover:text-white'}
+                  onMouseEnter={(e) => {
+                    if (pathname !== '/admin/orders' || activeStatus) {
+                      e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)';
+                      e.currentTarget.style.color = 'rgba(255,255,255,0.9)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (pathname !== '/admin/orders' || activeStatus) {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                      e.currentTarget.style.color = 'rgba(255,255,255,0.6)';
+                    }
+                  }}
                 >
-                  <BiBox size={16} style={{ color: pathname === '/admin/orders' && !activeStatus ? '#4CAF50' : 'inherit' }} />
+                  <BiBox size={16} style={{ color: pathname === '/admin/orders' && !activeStatus ? '#3498db' : 'inherit' }} />
                   <span>All</span>
                 </Link>
                 
@@ -394,19 +498,32 @@ function AdminSidebarContent({ isOpen, onClose, isMobile = false }: AdminSidebar
                       style={{
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '10px',
-                        padding: '12px 20px 12px 48px',
-                        color: isActiveStatus ? '#4CAF50' : 'rgba(255,255,255,0.6)',
+                        gap: '12px',
+                        padding: '12px 20px 12px 52px',
+                        color: isActiveStatus ? '#3498db' : 'rgba(255,255,255,0.6)',
                         textDecoration: 'none',
-                        fontSize: '13px',
+                        fontSize: '14px',
                         fontWeight: isActiveStatus ? '600' : '400',
-                        transition: 'all 0.2s ease',
-                        backgroundColor: isActiveStatus ? 'rgba(76, 175, 80, 0.1)' : 'transparent',
-                        borderLeft: isActiveStatus ? '3px solid #4CAF50' : '3px solid transparent',
+                        transition: 'all 0.3s ease',
+                        backgroundColor: isActiveStatus ? 'rgba(52, 152, 219, 0.15)' : 'transparent',
+                        borderLeft: isActiveStatus ? '4px solid #3498db' : '4px solid transparent',
+                        borderRadius: isActiveStatus ? '0 8px 8px 0' : '0',
+                        marginRight: '8px',
                       }}
-                      className={isActiveStatus ? '' : 'hover:bg-white/5 hover:text-white'}
+                      onMouseEnter={(e) => {
+                        if (!isActiveStatus) {
+                          e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)';
+                          e.currentTarget.style.color = 'rgba(255,255,255,0.9)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isActiveStatus) {
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                          e.currentTarget.style.color = 'rgba(255,255,255,0.6)';
+                        }
+                      }}
                     >
-                      <IconComponent size={16} style={{ color: isActiveStatus ? '#4CAF50' : 'inherit' }} />
+                      <IconComponent size={16} style={{ color: isActiveStatus ? '#3498db' : 'inherit' }} />
                       <span>{statusLabels[status.id] || status.id}</span>
                     </Link>
                   );
@@ -422,18 +539,33 @@ function AdminSidebarContent({ isOpen, onClose, isMobile = false }: AdminSidebar
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '12px',
-                  padding: '12px 16px',
+                  gap: '14px',
+                  padding: '16px 20px',
                   color: pathname === '/admin/unsubmitted' ? '#fff' : 'rgba(255,255,255,0.7)',
-                  backgroundColor: pathname === '/admin/unsubmitted' ? 'rgba(255,255,255,0.1)' : 'transparent',
+                  backgroundColor: pathname === '/admin/unsubmitted' 
+                    ? 'linear-gradient(90deg, rgba(255, 152, 0, 0.15) 0%, rgba(255, 152, 0, 0.05) 100%)'
+                    : 'transparent',
                   border: 'none',
-                  borderLeft: pathname === '/admin/unsubmitted' ? '3px solid #FF9800' : '3px solid transparent',
+                  borderLeft: pathname === '/admin/unsubmitted' ? '4px solid #FF9800' : '4px solid transparent',
+                  borderRadius: pathname === '/admin/unsubmitted' ? '0 12px 12px 0' : '0',
                   textDecoration: 'none',
-                  fontSize: '14px',
-                  fontWeight: pathname === '/admin/unsubmitted' ? '500' : '400',
-                  transition: 'all 0.2s ease',
+                  fontSize: '15px',
+                  fontWeight: pathname === '/admin/unsubmitted' ? '600' : '400',
+                  transition: 'all 0.3s ease',
+                  marginRight: '8px',
                 }}
-                className={pathname === '/admin/unsubmitted' ? '' : 'hover:bg-white/5 hover:text-white'}
+                onMouseEnter={(e) => {
+                  if (pathname !== '/admin/unsubmitted') {
+                    e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)';
+                    e.currentTarget.style.transform = 'translateX(4px)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (pathname !== '/admin/unsubmitted') {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.transform = 'translateX(0)';
+                  }
+                }}
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ opacity: pathname === '/admin/unsubmitted' ? 1 : 0.7 }}>
                   <path d="M9 11l3 3L22 4" />
@@ -450,7 +582,7 @@ function AdminSidebarContent({ isOpen, onClose, isMobile = false }: AdminSidebar
           style={{
             padding: '16px',
             borderTop: '1px solid rgba(255,255,255,0.1)',
-            backgroundColor: '#16162b',
+            backgroundColor: '#2c3e50',
             flexShrink: 0,
           }}
         >

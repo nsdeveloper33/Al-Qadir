@@ -2,6 +2,7 @@
 
 import { useState, use, useEffect, useRef } from 'react';
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import WhatsAppFab from '@/components/WhatsAppFab';
@@ -32,43 +33,75 @@ export default function ProductPage({ params }: ProductPageProps) {
   const isArabic = false;
   
   const [selectedImage, setSelectedImage] = useState(0);
+  const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
+  
+  // Type for recent orders
+  type RecentOrder = {
+    id: string;
+    product: {
+      name: string;
+      image: string;
+      quantity: number;
+      price: number;
+    };
+    date: string;
+    time: string;
+    total: number;
+  };
   
   // Initialize with empty values to prevent hydration mismatch
-  // Load from sessionStorage only on client side after mount
-  const [recentOrders, setRecentOrders] = useState<Array<any>>([]);
-  const [formData, setFormData] = useState({
-    fullName: '',
-    mobile: '',
-    quantity: '1',
-    city: '',
-    address: ''
+  // Load from sessionStorage only on client side after mount using lazy initialization
+  const [recentOrders, setRecentOrders] = useState<RecentOrder[]>(() => {
+    if (typeof window === 'undefined') return [];
+    try {
+      const saved = sessionStorage.getItem('qeelu_recent_orders');
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch {
+      // Ignore errors
+    }
+    return [];
   });
-
-  // Load saved data from sessionStorage only on client after mount
-  useEffect(() => {
+  
+  const [formData, setFormData] = useState(() => {
+    if (typeof window === 'undefined') {
+      return {
+        fullName: '',
+        mobile: '',
+        quantity: '1',
+        city: '',
+        address: ''
+      };
+    }
     try {
       const saved = sessionStorage.getItem('qeelu_customer_details');
       if (saved) {
         const savedDetails = JSON.parse(saved);
-        setFormData(prev => ({ ...prev, ...savedDetails }));
+        return {
+          fullName: '',
+          mobile: '',
+          quantity: '1',
+          city: '',
+          address: '',
+          ...savedDetails
+        };
       }
     } catch {
       // Ignore errors
     }
-
-    try {
-      const saved = sessionStorage.getItem('qeelu_recent_orders');
-      if (saved) {
-        setRecentOrders(JSON.parse(saved));
-      }
-    } catch {
-      // Ignore errors
-    }
-  }, []);
+    return {
+      fullName: '',
+      mobile: '',
+      quantity: '1',
+      city: '',
+      address: ''
+    };
+  });
   const [orderSubmitted, setOrderSubmitted] = useState(false);
   const hasSubmittedRef = useRef(false); // Track if form was submitted
   const formDataRef = useRef(formData); // Keep ref for cleanup handlers
-  const savedDetailsRef = useRef<{ fullName?: string; mobile?: string; city?: string; address?: string } | null>(null);
+  const savedDetailsRef = useRef<{ fullName?: string; mobile?: string; city?: string; address?: string; quantity?: string } | null>(null);
   
   // Update savedDetailsRef after formData is loaded from sessionStorage
   useEffect(() => {
@@ -171,27 +204,29 @@ export default function ProductPage({ params }: ProductPageProps) {
   // Show loading state while products are being fetched
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#eeeeee' }}>
+      <div className="min-h-screen flex flex-col" style={{ background: 'linear-gradient(180deg, #f5f7fa 0%, #eef2f6 50%, #f5f7fa 100%)' }}>
         <Header />
-        <main className="flex-1 flex items-center justify-center">
-          <div style={{ textAlign: 'center', padding: '40px' }}>
-            <div style={{
-              width: '50px',
-              height: '50px',
-              border: '4px solid #e0e0e0',
-              borderTop: '4px solid #4CAF50',
-              borderRadius: '50%',
-              margin: '0 auto 20px',
-              animation: 'spin 1s linear infinite'
-            }} />
-            <p style={{ color: '#666', fontSize: '16px' }}>Loading product...</p>
-            <style jsx>{`
-              @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-              }
-            `}</style>
-          </div>
+        <main className="flex-1 flex items-center justify-center" style={{ paddingTop: '90px' }}>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            style={{ textAlign: 'center', padding: '40px' }}
+          >
+            <motion.div 
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+              style={{
+                width: '60px',
+                height: '60px',
+                border: '4px solid rgba(255, 107, 53, 0.2)',
+                borderTop: '4px solid #ff6b35',
+                borderRadius: '50%',
+                margin: '0 auto 20px'
+              }} 
+            />
+            <p style={{ color: '#4a5568', fontSize: '16px', fontWeight: '500' }}>Loading product...</p>
+          </motion.div>
         </main>
         <Footer />
       </div>
@@ -315,7 +350,7 @@ export default function ProductPage({ params }: ProductPageProps) {
 
     // Save to recent orders (keep last 5 orders) in sessionStorage
     try {
-      const existingOrders = isNewCustomer ? [] : loadRecentOrders();
+      const existingOrders = isNewCustomer ? [] : recentOrders;
       const updatedOrders = [newOrder, ...existingOrders].slice(0, 5);
       sessionStorage.setItem('qeelu_recent_orders', JSON.stringify(updatedOrders));
       setRecentOrders(updatedOrders);
@@ -373,80 +408,153 @@ export default function ProductPage({ params }: ProductPageProps) {
   console.log('Generated quantityOptions:', quantityOptions);
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#eeeeee' }}>
+    <div className="min-h-screen flex flex-col" style={{ background: 'linear-gradient(180deg, #f5f7fa 0%, #eef2f6 50%, #f5f7fa 100%)' }}>
       <Header />
       
-      <main className="flex-1" style={{ paddingTop: '20px', paddingBottom: '30px' }}>
+      <main className="flex-1" style={{ paddingTop: '110px', paddingBottom: '50px' }}>
         {/* Centered Container */}
         <div
           style={{
-            maxWidth: '1100px',
+            maxWidth: '1400px',
             margin: '0 auto',
-            paddingLeft: '20px',
-            paddingRight: '20px'
+            paddingLeft: '30px',
+            paddingRight: '30px'
           }}
         >
           {/* Product Title */}
-          <h1 style={{ fontSize: isArabic ? '20px' : '17px', fontWeight: '500', color: '#222', marginBottom: '16px' }}>
-            {productTitle} - <span style={{ color: '#4CAF50' }}>Free Delivery</span>
-          </h1>
+          <motion.h1 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            style={{ 
+              fontSize: isArabic ? '28px' : '32px', 
+              fontWeight: '700', 
+              background: 'linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ff8c42 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              marginBottom: '8px',
+              lineHeight: '1.3'
+            }}
+          >
+            {productTitle}
+          </motion.h1>
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            style={{ marginBottom: '30px' }}
+          >
+            <span style={{ 
+              display: 'inline-block',
+              background: 'linear-gradient(135deg, #38a169 0%, #48bb78 100%)',
+              color: '#fff',
+              fontSize: '14px',
+              fontWeight: '600',
+              padding: '6px 16px',
+              borderRadius: '20px',
+              boxShadow: '0px 4px 12px rgba(56, 161, 105, 0.3)'
+            }}>
+              ✓ Free Delivery
+            </span>
+          </motion.div>
 
           {/* Order Confirmation Success */}
           {orderSubmitted && (
-            <div style={{ marginBottom: '24px' }}>
-              {/* Success Card - Compact */}
-              <div style={{
-                backgroundColor: '#fff',
-                borderRadius: '12px',
-                padding: '24px 20px',
-                textAlign: 'center',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                marginBottom: '24px',
-              }}>
-                {/* Success Icon - Smaller */}
-                <div style={{
-                  width: '60px',
-                  height: '60px',
-                  borderRadius: '50%',
-                  backgroundColor: '#e8f5e9',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto 16px',
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+              style={{ marginBottom: '40px' }}
+            >
+              {/* Success Card - Modern */}
+              <motion.div 
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.6 }}
+                style={{
+                  background: 'linear-gradient(145deg, #ffffff 0%, #f7fafc 100%)',
+                  borderRadius: '24px',
+                  padding: '40px 30px',
+                  textAlign: 'center',
+                  boxShadow: '0px 20px 60px rgba(102, 126, 234, 0.15), 0px 10px 25px rgba(79, 172, 254, 0.1)',
+                  marginBottom: '30px',
+                  border: '2px solid rgba(102, 126, 234, 0.1)',
                 }}>
-                  <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" strokeWidth="3">
+                {/* Success Icon - Modern */}
+                <motion.div 
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 0.5, type: 'spring', stiffness: 200 }}
+                  style={{
+                    width: '80px',
+                    height: '80px',
+                    borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #38a169 0%, #48bb78 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0 auto 20px',
+                    boxShadow: '0px 10px 30px rgba(56, 161, 105, 0.4)',
+                  }}
+                >
+                  <motion.svg 
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ duration: 0.6, delay: 0.3 }}
+                    width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3">
                     <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                </div>
+                  </motion.svg>
+                </motion.div>
 
-                {/* Success Message - Compact */}
-                <h2 style={{
-                  fontSize: isArabic ? '22px' : '20px',
-                  fontWeight: '700',
-                  color: '#1a1a2e',
-                  marginBottom: '8px',
-                }}>
+                {/* Success Message - Modern */}
+                <motion.h2 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.4 }}
+                  style={{
+                    fontSize: isArabic ? '28px' : '32px',
+                    fontWeight: '700',
+                    background: 'linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ff8c42 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                    marginBottom: '12px',
+                  }}
+                >
                   {isArabic ? 'تم إرسال طلبك بنجاح!' : 'Order Placed Successfully!'}
-                </h2>
-                <p style={{
-                  fontSize: isArabic ? '14px' : '13px',
-                  color: '#666',
-                  marginBottom: '16px',
-                  lineHeight: '1.5',
-                }}>
+                </motion.h2>
+                <motion.p 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 0.5 }}
+                  style={{
+                    fontSize: isArabic ? '16px' : '16px',
+                    color: '#4a5568',
+                    marginBottom: '24px',
+                    lineHeight: '1.6',
+                    fontWeight: '500',
+                  }}
+                >
                   {isArabic 
                     ? 'شكراً لك! سنتواصل معك قريباً للتوصيل خلال 1-2 يوم عمل.'
                     : 'Thank you! We will contact you for delivery within 1-2 working days.'}
-                </p>
+                </motion.p>
 
-                {/* Order Summary - Compact */}
-                <div style={{
-                  backgroundColor: '#f8f9fa',
-                  borderRadius: '10px',
-                  padding: '14px 16px',
-                  marginTop: '16px',
-                  textAlign: 'left',
-                }}>
+                {/* Order Summary - Modern */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.6 }}
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(255, 107, 53, 0.05) 0%, rgba(247, 147, 30, 0.05) 100%)',
+                    borderRadius: '16px',
+                    padding: '20px 24px',
+                    marginTop: '20px',
+                    textAlign: 'left',
+                    border: '1px solid rgba(255, 107, 53, 0.1)',
+                  }}
+                >
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <span style={{ color: '#666' }}>{isArabic ? 'المنتج:' : 'Product:'}</span>
@@ -461,99 +569,118 @@ export default function ProductPage({ params }: ProductPageProps) {
                     <div style={{
                       display: 'flex',
                       justifyContent: 'space-between',
-                      paddingTop: '8px',
-                      borderTop: '1.5px solid #e0e0e0',
-                      marginTop: '4px',
+                      paddingTop: '12px',
+                      borderTop: '2px solid rgba(255, 107, 53, 0.2)',
+                      marginTop: '8px',
                     }}>
-                      <span style={{ fontWeight: '600', color: '#1a1a2e' }}>{isArabic ? 'الإجمالي:' : 'Total:'}</span>
-                      <span style={{ fontSize: '18px', fontWeight: '700', color: '#4CAF50' }}>
+                      <span style={{ fontWeight: '700', fontSize: '16px', color: '#2d3748' }}>{isArabic ? 'الإجمالي:' : 'Total:'}</span>
+                      <span style={{ 
+                        fontSize: '24px', 
+                        fontWeight: '700', 
+                        background: 'linear-gradient(135deg, #ff6b35 0%, #f7931e 100%)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text',
+                      }}>
                         {(product.currentPrice * parseInt(formData.quantity || '1')).toFixed(2)} PKR
                       </span>
                     </div>
                   </div>
-                </div>
+                </motion.div>
 
-                {/* Action Buttons - Compact */}
-                <div style={{ 
-                  display: 'flex', 
-                  gap: '10px', 
-                  marginTop: '16px',
-                  flexWrap: 'wrap',
-                  justifyContent: 'center' 
-                }}>
-                  <button
-                    onClick={() => window.location.href = '/'}
+                {/* Action Buttons - Modern */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.7 }}
+                  style={{ 
+                    display: 'flex', 
+                    gap: '15px', 
+                    marginTop: '24px',
+                    flexWrap: 'wrap',
+                    justifyContent: 'center' 
+                  }}
+                >
+                  <motion.button
+                    onClick={() => window.location.href = '/shop'}
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
                     style={{
                       flex: '1',
-                      minWidth: '140px',
-                      padding: '10px 20px',
-                      borderRadius: '8px',
+                      minWidth: '160px',
+                      padding: '14px 28px',
+                      borderRadius: '16px',
                       border: 'none',
-                      backgroundColor: '#4CAF50',
+                      background: 'linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ff8c42 100%)',
                       color: '#fff',
-                      fontSize: '14px',
+                      fontSize: '15px',
                       fontWeight: '600',
                       cursor: 'pointer',
-                      transition: 'all 0.2s ease',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      gap: '6px',
+                      gap: '8px',
+                      boxShadow: '0px 8px 25px rgba(255, 107, 53, 0.4)',
                     }}
-                    className="hover:opacity-90"
                   >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                       <polyline points="9 22 9 12 15 12 15 22" />
                     </svg>
                     {isArabic ? 'العودة للرئيسية' : 'Back to Home'}
-                  </button>
-                  <button
-                    onClick={() => {
-                      // Redirect to home page to select another product
-                      window.location.href = '/';
-                    }}
+                  </motion.button>
+                  <motion.button
+                    onClick={() => window.location.href = '/shop'}
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
                     style={{
                       flex: '1',
-                      minWidth: '140px',
-                      padding: '10px 20px',
-                      borderRadius: '8px',
-                      border: '2px solid #FF9800',
-                      backgroundColor: '#fff',
-                      color: '#FF9800',
-                      fontSize: '14px',
+                      minWidth: '160px',
+                      padding: '14px 28px',
+                      borderRadius: '16px',
+                      border: '2px solid #ff6b35',
+                      background: 'transparent',
+                      color: '#ff6b35',
+                      fontSize: '15px',
                       fontWeight: '600',
                       cursor: 'pointer',
-                      transition: 'all 0.2s ease',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      gap: '6px',
+                      gap: '8px',
+                      transition: 'all 0.3s ease',
                     }}
-                    className="hover:bg-orange-50"
                   >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
                       <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
                     </svg>
                     {isArabic ? 'تسوق منتجات أخرى' : 'Shop More Products'}
-                  </button>
-                </div>
-              </div>
+                  </motion.button>
+                </motion.div>
+              </motion.div>
 
               {/* Recent Orders Section - Only show if 2 or more orders (not first order) */}
               {recentOrders.length > 1 && (
-                <div style={{ marginBottom: '30px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.7 }}
+                  style={{ marginBottom: '40px' }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                     <h3 style={{
-                      fontSize: isArabic ? '20px' : '18px',
+                      fontSize: isArabic ? '26px' : '24px',
                       fontWeight: '700',
-                      color: '#1a1a2e',
+                      background: 'linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ff8c42 100%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text',
                       margin: 0,
                     }}>
                       {isArabic ? 'طلباتك الأخيرة' : 'Your Recent Orders'}
                     </h3>
-                    <button
+                    <motion.button
                       onClick={() => {
                         if (window.confirm(isArabic ? 'هل تريد حذف سجل الطلبات؟' : 'Clear order history?')) {
                           sessionStorage.removeItem('qeelu_recent_orders');
@@ -561,85 +688,101 @@ export default function ProductPage({ params }: ProductPageProps) {
                           setRecentOrders([]);
                         }
                       }}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                       style={{
-                        padding: '6px 12px',
-                        borderRadius: '6px',
-                        border: '1px solid #e0e0e0',
-                        backgroundColor: '#fff',
-                        color: '#666',
-                        fontSize: '12px',
+                        padding: '8px 16px',
+                        borderRadius: '12px',
+                        border: '2px solid rgba(229, 62, 62, 0.3)',
+                        background: 'transparent',
+                        color: '#e53e3e',
+                        fontSize: '13px',
+                        fontWeight: '600',
                         cursor: 'pointer',
-                        transition: 'all 0.2s ease',
+                        transition: 'all 0.3s ease',
                       }}
-                      className="hover:bg-red-50 hover:border-red-300 hover:text-red-600"
                     >
                       {isArabic ? 'حذف السجل' : 'Clear History'}
-                    </button>
+                    </motion.button>
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    {recentOrders.slice(0, 3).map((order: {id: string; product: {name: string; image: string; quantity: number; price: number}; date: string; time: string; total: number}, index: number) => (
-                      <div
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    {recentOrders.slice(0, 3).map((order: RecentOrder, index: number) => (
+                      <motion.div
                         key={order.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5, delay: 0.8 + index * 0.1 }}
+                        whileHover={{ x: 5 }}
                         style={{
-                          backgroundColor: index === 0 ? '#e8f5e9' : '#fff',
-                          border: index === 0 ? '2px solid #4CAF50' : '1px solid #e0e0e0',
-                          borderRadius: '12px',
-                          padding: '14px 16px',
+                          background: index === 0 
+                            ? 'linear-gradient(135deg, rgba(56, 161, 105, 0.1) 0%, rgba(72, 187, 120, 0.1) 100%)'
+                            : 'linear-gradient(145deg, #ffffff 0%, #f7fafc 100%)',
+                          border: index === 0 ? '2px solid #38a169' : '2px solid rgba(102, 126, 234, 0.1)',
+                          borderRadius: '16px',
+                          padding: '18px 20px',
                           display: 'flex',
-                          gap: '12px',
+                          gap: '16px',
                           alignItems: 'center',
-                          boxShadow: index === 0 ? '0 4px 12px rgba(76, 175, 80, 0.15)' : '0 2px 6px rgba(0,0,0,0.06)',
+                          boxShadow: index === 0 
+                            ? '0px 8px 25px rgba(56, 161, 105, 0.2)' 
+                            : '0px 4px 15px rgba(102, 126, 234, 0.1)',
                         }}
                       >
                         {/* Order Number Badge */}
                         <div style={{
-                          width: '36px',
-                          height: '36px',
+                          width: '44px',
+                          height: '44px',
                           borderRadius: '50%',
-                          backgroundColor: index === 0 ? '#4CAF50' : '#f5f5f5',
-                          color: index === 0 ? '#fff' : '#666',
+                          background: index === 0 
+                            ? 'linear-gradient(135deg, #38a169 0%, #48bb78 100%)'
+                            : 'linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)',
+                          color: index === 0 ? '#fff' : '#667eea',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          fontSize: '14px',
+                          fontSize: '16px',
                           fontWeight: '700',
                           flexShrink: 0,
+                          boxShadow: index === 0 
+                            ? '0px 4px 12px rgba(56, 161, 105, 0.3)'
+                            : 'none'
                         }}>
                           {index + 1}
                         </div>
 
                         {/* Product Image */}
                         <div style={{
-                          width: '50px',
-                          height: '50px',
-                          borderRadius: '8px',
+                          width: '60px',
+                          height: '60px',
+                          borderRadius: '12px',
                           overflow: 'hidden',
                           position: 'relative',
                           flexShrink: 0,
+                          boxShadow: '0px 4px 12px rgba(0,0,0,0.1)'
                         }}>
                           <Image
                             src={order.product.image}
                             alt={order.product.name}
                             fill
                             className="object-cover"
-                            sizes="50px"
+                            sizes="60px"
                           />
                         </div>
 
                         {/* Order Details */}
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <p style={{
-                            fontSize: '13px',
+                            fontSize: '15px',
                             fontWeight: '600',
-                            color: '#1a1a2e',
-                            marginBottom: '4px',
+                            color: '#2d3748',
+                            marginBottom: '6px',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap',
                           }}>
                             {order.product.name}
                           </p>
-                          <p style={{ fontSize: '12px', color: '#666' }}>
+                          <p style={{ fontSize: '13px', color: '#4a5568', fontWeight: '500' }}>
                             {isArabic ? 'الكمية:' : 'Qty:'} {order.product.quantity} • {order.product.price.toFixed(2)} PKR
                           </p>
                         </div>
@@ -649,67 +792,95 @@ export default function ProductPage({ params }: ProductPageProps) {
                           textAlign: 'right',
                           flexShrink: 0,
                         }}>
-                          <p style={{ fontSize: '16px', fontWeight: '700', color: '#4CAF50' }}>
+                          <p style={{ 
+                            fontSize: '20px', 
+                            fontWeight: '700', 
+                            background: index === 0
+                              ? 'linear-gradient(135deg, #38a169 0%, #48bb78 100%)'
+                              : 'linear-gradient(135deg, #ff6b35 0%, #f7931e 100%)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            backgroundClip: 'text',
+                          }}>
                             {order.total.toFixed(2)} PKR
                           </p>
-                          <p style={{ fontSize: '11px', color: '#999' }}>
+                          <p style={{ fontSize: '12px', color: '#718096', fontWeight: '500', marginTop: '4px' }}>
                             {order.time}
                           </p>
                         </div>
-                      </div>
+                      </motion.div>
                     ))}
                   </div>
-                </div>
+                </motion.div>
               )}
 
               {/* Recommended Products Section */}
-              <div>
-                <h3 style={{
-                  fontSize: isArabic ? '20px' : '18px',
-                  fontWeight: '700',
-                  color: '#1a1a2e',
-                  marginBottom: '16px',
-                  textAlign: 'center',
-                }}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.8 }}
+              >
+                <motion.h3 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 0.9 }}
+                  style={{
+                    fontSize: isArabic ? '26px' : '28px',
+                    fontWeight: '700',
+                    background: 'linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ff8c42 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                    marginBottom: '24px',
+                    textAlign: 'center',
+                  }}
+                >
                   {isArabic ? 'منتجات قد تعجبك' : 'You May Also Like'}
-                </h3>
+                </motion.h3>
                 
-                <div className="grid grid-cols-2 md:grid-cols-4" style={{ gap: '16px' }}>
-                  {getRecommendedProducts().map((recommendedProduct) => {
+                <div className="grid grid-cols-2 md:grid-cols-4" style={{ gap: '20px' }}>
+                  {getRecommendedProducts().map((recommendedProduct, index) => {
                     const recTitle = getProductTitle(recommendedProduct);
                     return (
-                      <a
+                      <motion.a
                         key={recommendedProduct.id}
                         href={`/product/${recommendedProduct.id}`}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 1 + index * 0.1 }}
+                        whileHover={{ y: -5, scale: 1.02 }}
                         style={{
-                          backgroundColor: '#fff',
-                          borderRadius: '12px',
-                          padding: '12px',
-                          boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                          background: 'linear-gradient(145deg, #ffffff 0%, #f7fafc 100%)',
+                          borderRadius: '20px',
+                          padding: '16px',
+                          boxShadow: '0px 12px 35px rgba(102, 126, 234, 0.15), 0px 5px 15px rgba(79, 172, 254, 0.1)',
                           textDecoration: 'none',
+                          border: '2px solid rgba(102, 126, 234, 0.1)',
                           transition: 'all 0.3s ease',
                         }}
-                        className="hover:shadow-lg"
                       >
                         {/* Product Image */}
                         <div style={{
                           position: 'relative',
                           paddingBottom: '100%',
-                          borderRadius: '8px',
+                          borderRadius: '16px',
                           overflow: 'hidden',
-                          marginBottom: '10px',
+                          marginBottom: '12px',
+                          background: 'linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%)',
                         }}>
                           <span style={{
                             position: 'absolute',
-                            top: '8px',
-                            right: '8px',
+                            top: '10px',
+                            right: '10px',
                             zIndex: 10,
-                            backgroundColor: '#e53935',
+                            background: 'linear-gradient(135deg, #e53e3e 0%, #fc8181 100%)',
                             color: '#fff',
-                            fontSize: '11px',
-                            fontWeight: '600',
-                            padding: '4px 8px',
-                            borderRadius: '4px',
+                            fontSize: '12px',
+                            fontWeight: '700',
+                            padding: '6px 10px',
+                            borderRadius: '10px',
+                            boxShadow: '0px 4px 12px rgba(229, 62, 62, 0.4)',
+                            letterSpacing: '0.3px'
                           }}>
                             {recommendedProduct.discount}% OFF
                           </span>
@@ -723,17 +894,18 @@ export default function ProductPage({ params }: ProductPageProps) {
                           {recommendedProduct.freeDelivery && (
                             <span style={{
                               position: 'absolute',
-                              bottom: '6px',
-                              left: '6px',
+                              bottom: '10px',
+                              left: '10px',
                               zIndex: 10,
-                              backgroundColor: '#4CAF50',
+                              background: 'linear-gradient(135deg, #38a169 0%, #48bb78 100%)',
                               color: '#fff',
-                              fontSize: '9px',
-                              fontWeight: '500',
-                              padding: '3px 6px',
-                              borderRadius: '50px',
+                              fontSize: '10px',
+                              fontWeight: '600',
+                              padding: '4px 10px',
+                              borderRadius: '20px',
+                              boxShadow: '0px 4px 12px rgba(56, 161, 105, 0.4)',
                             }}>
-                              Free Delivery
+                              ✓ Free Delivery
                             </span>
                           )}
                         </div>
@@ -741,193 +913,266 @@ export default function ProductPage({ params }: ProductPageProps) {
                         {/* Product Info */}
                         <div>
                           <h4 style={{
-                            fontSize: '13px',
-                            fontWeight: '500',
-                            color: '#1a1a2e',
-                            marginBottom: '8px',
+                            fontSize: '14px',
+                            fontWeight: '600',
+                            color: '#2d3748',
+                            marginBottom: '10px',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                             display: '-webkit-box',
                             WebkitLineClamp: 2,
                             WebkitBoxOrient: 'vertical',
-                            minHeight: '36px',
+                            minHeight: '40px',
+                            lineHeight: '1.4'
                           }}>
                             {recTitle}
                           </h4>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                             <span style={{
-                              color: '#e53935',
-                              fontSize: '16px',
+                              background: 'linear-gradient(135deg, #e53e3e 0%, #fc8181 100%)',
+                              WebkitBackgroundClip: 'text',
+                              WebkitTextFillColor: 'transparent',
+                              backgroundClip: 'text',
+                              fontSize: '18px',
                               fontWeight: '700',
                             }}>
                               {recommendedProduct.currentPrice.toFixed(2)} PKR
                             </span>
                             <span style={{
-                              color: '#999',
-                              fontSize: '12px',
+                              color: '#a0aec0',
+                              fontSize: '13px',
                               textDecoration: 'line-through',
+                              fontWeight: '500'
                             }}>
                               {recommendedProduct.originalPrice.toFixed(2)} PKR
                             </span>
                           </div>
                         </div>
-                      </a>
+                      </motion.a>
                     );
                   })}
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           )}
 
           {/* Main Content Grid */}
           {!orderSubmitted && (
-          <div className="grid grid-cols-1 lg:grid-cols-2" style={{ gap: '20px' }}>
+          <div className="grid grid-cols-1 lg:grid-cols-2" style={{ gap: '30px' }}>
             
             {/* Left Column - Product Images & Info */}
-            <div 
+            <motion.div 
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
               style={{
-                backgroundColor: '#ffffff',
-                borderRadius: '10px',
-                padding: '14px',
-                boxShadow: '0px 1px 4px rgba(0,0,0,0.08)'
+                background: 'linear-gradient(145deg, #ffffff 0%, #f7fafc 100%)',
+                borderRadius: '24px',
+                padding: '24px',
+                boxShadow: '0px 20px 60px rgba(102, 126, 234, 0.15), 0px 10px 25px rgba(79, 172, 254, 0.1)',
+                border: '2px solid rgba(102, 126, 234, 0.1)',
               }}
             >
               {/* Main Image */}
               <div 
                 className="relative"
                 style={{ 
-                  borderRadius: '8px', 
+                  borderRadius: '20px', 
                   overflow: 'hidden',
                   paddingBottom: '100%',
-                  backgroundColor: '#f8f8f8'
+                  background: 'linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%)',
+                  boxShadow: 'inset 0px 2px 8px rgba(0,0,0,0.05)'
                 }}
               >
-                <span 
+                <motion.span 
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
                   style={{
                     position: 'absolute',
-                    top: '10px',
-                    right: '10px',
+                    top: '16px',
+                    right: '16px',
                     zIndex: 10,
-                    backgroundColor: '#e53935',
+                    background: 'linear-gradient(135deg, #e53e3e 0%, #fc8181 100%)',
                     color: '#fff',
-                    fontSize: '11px',
-                    fontWeight: '600',
-                    padding: '4px 8px',
-                    borderRadius: '4px'
+                    fontSize: '13px',
+                    fontWeight: '700',
+                    padding: '8px 14px',
+                    borderRadius: '12px',
+                    boxShadow: '0px 6px 20px rgba(229, 62, 62, 0.4)',
+                    letterSpacing: '0.5px'
                   }}
                 >
                   {product.discount}% OFF
-                </span>
-                <Image
-                  src={allImages[selectedImage]}
-                  alt={productTitle}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                  style={{ transition: 'opacity 0.5s ease' }}
-                />
+                </motion.span>
+                <motion.div
+                  key={selectedImage}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.4 }}
+                  style={{ width: '100%', height: '100%', position: 'relative' }}
+                >
+                  {!imageErrors.has(selectedImage) ? (
+                    <Image
+                      src={allImages[selectedImage]}
+                      alt={productTitle}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                      unoptimized
+                      onError={() => setImageErrors(prev => new Set(prev).add(selectedImage))}
+                    />
+                  ) : (
+                    <div style={{
+                      width: '100%',
+                      height: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor: '#f5f5f5',
+                      color: '#999',
+                      fontSize: '16px'
+                    }}>
+                      Image not available
+                    </div>
+                  )}
+                </motion.div>
 
                 {/* Navigation Arrows - only show if multiple images */}
                 {totalImages > 1 && (
                   <>
-                    <button
+                    <motion.button
                       onClick={() => handleImageSelect((selectedImage - 1 + totalImages) % totalImages)}
+                      whileHover={{ scale: 1.1, x: -2 }}
+                      whileTap={{ scale: 0.9 }}
                       style={{
                         position: 'absolute',
-                        left: '10px',
+                        left: '16px',
                         top: '50%',
                         transform: 'translateY(-50%)',
                         zIndex: 10,
-                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                        border: 'none',
+                        background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(247,250,252,0.95) 100%)',
+                        border: '2px solid rgba(102, 126, 234, 0.2)',
                         borderRadius: '50%',
-                        width: '36px',
-                        height: '36px',
+                        width: '44px',
+                        height: '44px',
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                        transition: 'all 0.2s ease'
+                        boxShadow: '0px 6px 20px rgba(0,0,0,0.15)',
+                        backdropFilter: 'blur(10px)'
                       }}
-                      className="hover:bg-white"
                     >
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#667eea" strokeWidth="2.5">
                         <polyline points="15 18 9 12 15 6" />
                       </svg>
-                    </button>
-                    <button
+                    </motion.button>
+                    <motion.button
                       onClick={() => handleImageSelect((selectedImage + 1) % totalImages)}
+                      whileHover={{ scale: 1.1, x: 2 }}
+                      whileTap={{ scale: 0.9 }}
                       style={{
                         position: 'absolute',
-                        right: '10px',
+                        right: '16px',
                         top: '50%',
                         transform: 'translateY(-50%)',
                         zIndex: 10,
-                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                        border: 'none',
+                        background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(247,250,252,0.95) 100%)',
+                        border: '2px solid rgba(102, 126, 234, 0.2)',
                         borderRadius: '50%',
-                        width: '36px',
-                        height: '36px',
+                        width: '44px',
+                        height: '44px',
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                        transition: 'all 0.2s ease'
+                        boxShadow: '0px 6px 20px rgba(0,0,0,0.15)',
+                        backdropFilter: 'blur(10px)'
                       }}
-                      className="hover:bg-white"
                     >
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#667eea" strokeWidth="2.5">
                         <polyline points="9 18 15 12 9 6" />
                       </svg>
-                    </button>
+                    </motion.button>
                   </>
                 )}
 
                 {product.freeDelivery && (
-                  <span 
+                  <motion.span 
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ duration: 0.5, delay: 0.4 }}
                     style={{
                       position: 'absolute',
-                      bottom: '10px',
-                      left: '10px',
+                      bottom: '16px',
+                      left: '16px',
                       zIndex: 10,
-                      backgroundColor: '#4CAF50',
+                      background: 'linear-gradient(135deg, #38a169 0%, #48bb78 100%)',
                       color: 'white',
-                      fontSize: '11px',
-                      fontWeight: '500',
-                      padding: '3px 8px',
-                      borderRadius: '50px'
+                      fontSize: '12px',
+                      fontWeight: '600',
+                      padding: '6px 14px',
+                      borderRadius: '20px',
+                      boxShadow: '0px 4px 12px rgba(56, 161, 105, 0.4)',
+                      letterSpacing: '0.3px'
                     }}
                   >
-                    Free Delivery
-                  </span>
+                    ✓ Free Delivery
+                  </motion.span>
                 )}
               </div>
 
               {/* Thumbnail Gallery */}
-              <div className="flex justify-center" style={{ gap: '6px', marginTop: '12px' }}>
+              <div className="flex justify-center" style={{ gap: '10px', marginTop: '20px' }}>
                 {allImages.map((img, index) => (
-                  <button
+                  <motion.button
                     key={index}
                     onClick={() => handleImageSelect(index)}
+                    whileHover={{ scale: 1.1, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
                     style={{
-                      width: '56px',
-                      height: '56px',
-                      borderRadius: '6px',
-                      border: selectedImage === index ? '2px solid #009688' : '2px solid #e0e0e0',
+                      width: '70px',
+                      height: '70px',
+                      borderRadius: '12px',
+                      border: selectedImage === index 
+                        ? '3px solid #ff6b35' 
+                        : '2px solid rgba(102, 126, 234, 0.2)',
                       overflow: 'hidden',
                       position: 'relative',
-                      transition: 'all 0.3s ease'
+                      transition: 'all 0.3s ease',
+                      background: selectedImage === index 
+                        ? 'linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(247, 147, 30, 0.1) 100%)'
+                        : 'transparent',
+                      boxShadow: selectedImage === index 
+                        ? '0px 6px 20px rgba(255, 107, 53, 0.3)'
+                        : '0px 2px 8px rgba(0,0,0,0.1)'
                     }}
                   >
-                    <Image
-                      src={img}
-                      alt={`${productTitle} ${index + 1}`}
-                      fill
-                      className="object-cover"
-                    />
-                  </button>
+                    {!imageErrors.has(index) ? (
+                      <Image
+                        src={img}
+                        alt={`${productTitle} ${index + 1}`}
+                        fill
+                        className="object-cover"
+                        unoptimized
+                        onError={() => setImageErrors(prev => new Set(prev).add(index))}
+                      />
+                    ) : (
+                      <div style={{
+                        width: '100%',
+                        height: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: '#f5f5f5',
+                        color: '#999',
+                        fontSize: '10px'
+                      }}>
+                        N/A
+                      </div>
+                    )}
+                  </motion.button>
                 ))}
               </div>
 
@@ -954,66 +1199,143 @@ export default function ProductPage({ params }: ProductPageProps) {
               )}
 
               {/* Price & Sold Count - PKR */}
-              <div className="flex items-center justify-between" style={{ marginTop: '14px' }}>
-                <div className="flex items-baseline" style={{ gap: '8px' }}>
-                  <span style={{ color: '#e53935', fontSize: '22px', fontWeight: '700' }}>
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+                className="flex items-center justify-between" 
+                style={{ marginTop: '24px', paddingTop: '24px', borderTop: '2px solid rgba(102, 126, 234, 0.1)' }}
+              >
+                <div className="flex items-baseline" style={{ gap: '12px' }}>
+                  <span style={{ 
+                    background: 'linear-gradient(135deg, #e53e3e 0%, #fc8181 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                    fontSize: '32px', 
+                    fontWeight: '700' 
+                  }}>
                     {product.currentPrice.toFixed(2)} PKR
                   </span>
-                  <span style={{ color: '#999', fontSize: '14px', textDecoration: 'line-through' }}>
+                  <span style={{ color: '#a0aec0', fontSize: '16px', textDecoration: 'line-through', fontWeight: '500' }}>
                     {product.originalPrice.toFixed(2)} PKR
                   </span>
                 </div>
-                <span style={{ color: '#009688', fontWeight: '500', fontSize: '13px' }}>
-                  {actualSoldCount} Items Sold
+                <span style={{ 
+                  color: '#667eea', 
+                  fontWeight: '600', 
+                  fontSize: '14px',
+                  background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)',
+                  padding: '6px 12px',
+                  borderRadius: '12px'
+                }}>
+                  🔥 {actualSoldCount} Sold
                 </span>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
 
             {/* Right Column - Order Form */}
-            <div 
+            <motion.div 
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
               style={{
-                backgroundColor: '#ffffff',
-                borderRadius: '10px',
-                padding: '20px',
-                boxShadow: '0px 1px 4px rgba(0,0,0,0.08)'
+                background: 'linear-gradient(145deg, #ffffff 0%, #f7fafc 100%)',
+                borderRadius: '24px',
+                padding: '32px',
+                boxShadow: '0px 20px 60px rgba(102, 126, 234, 0.15), 0px 10px 25px rgba(79, 172, 254, 0.1)',
+                border: '2px solid rgba(102, 126, 234, 0.1)',
               }}
             >
-              <h2 style={{ fontSize: isArabic ? '26px' : '22px', fontWeight: '600', color: '#222', marginBottom: '6px' }}>
+              <motion.h2 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                style={{ 
+                  fontSize: isArabic ? '32px' : '28px', 
+                  fontWeight: '700', 
+                  background: 'linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ff8c42 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                  marginBottom: '8px' 
+                }}
+              >
                 Order Now
-              </h2>
-              <p style={{ color: '#555', fontSize: isArabic ? '15px' : '13px', marginBottom: '20px' }}>
-                Kindly fill the form & we will deliver 1-2 working days.
-              </p>
+              </motion.h2>
+              <motion.p 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+                style={{ 
+                  color: '#4a5568', 
+                  fontSize: isArabic ? '16px' : '15px', 
+                  marginBottom: '28px',
+                  fontWeight: '500'
+                }}
+              >
+                Kindly fill the form & we will deliver within 1-2 working days.
+              </motion.p>
 
-              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 {/* Full Name */}
-                <div>
-                  <label style={{ display: 'block', fontSize: isArabic ? '16px' : '14px', fontWeight: '600', color: '#222', marginBottom: '6px' }}>
-                    Full Name<span style={{ color: '#e53935' }}>*</span>
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.5 }}
+                >
+                  <label style={{ 
+                    display: 'block', 
+                    fontSize: isArabic ? '17px' : '15px', 
+                    fontWeight: '600', 
+                    color: '#2d3748', 
+                    marginBottom: '8px' 
+                  }}>
+                    Full Name<span style={{ color: '#e53e3e', marginLeft: '4px' }}>*</span>
                   </label>
                   <input
                     type="text"
                     name="fullName"
                     value={formData.fullName}
                     onChange={handleInputChange}
-                    placeholder="Full Name*"
+                    placeholder="Enter your full name"
                     required
                     style={{
                       width: '100%',
-                      padding: '12px 14px',
-                      border: '1px solid #ddd',
-                      borderRadius: '5px',
+                      padding: '14px 18px',
+                      border: '2px solid rgba(102, 126, 234, 0.2)',
+                      borderRadius: '12px',
                       fontSize: isArabic ? '17px' : '15px',
-                      color: '#000000',
-                      outline: 'none'
+                      color: '#2d3748',
+                      outline: 'none',
+                      background: '#ffffff',
+                      transition: 'all 0.3s ease'
+                    }}
+                    onFocus={(e) => {
+                      e.currentTarget.style.borderColor = '#ff6b35';
+                      e.currentTarget.style.boxShadow = '0px 0px 0px 3px rgba(255, 107, 53, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.style.borderColor = 'rgba(102, 126, 234, 0.2)';
+                      e.currentTarget.style.boxShadow = 'none';
                     }}
                   />
-                </div>
+                </motion.div>
 
                 {/* Mobile */}
-                <div>
-                  <label style={{ display: 'block', fontSize: isArabic ? '16px' : '14px', fontWeight: '600', color: '#222', marginBottom: '6px' }}>
-                    Mobile<span style={{ color: '#e53935' }}>*</span>
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.6 }}
+                >
+                  <label style={{ 
+                    display: 'block', 
+                    fontSize: isArabic ? '17px' : '15px', 
+                    fontWeight: '600', 
+                    color: '#2d3748', 
+                    marginBottom: '8px' 
+                  }}>
+                    Mobile<span style={{ color: '#e53e3e', marginLeft: '4px' }}>*</span>
                   </label>
                   <input
                     type="tel"
@@ -1024,20 +1346,40 @@ export default function ProductPage({ params }: ProductPageProps) {
                     required
                     style={{
                       width: '100%',
-                      padding: '12px 14px',
-                      border: '1px solid #ddd',
-                      borderRadius: '5px',
+                      padding: '14px 18px',
+                      border: '2px solid rgba(102, 126, 234, 0.2)',
+                      borderRadius: '12px',
                       fontSize: isArabic ? '17px' : '15px',
-                      color: '#000000',
-                      outline: 'none'
+                      color: '#2d3748',
+                      outline: 'none',
+                      background: '#ffffff',
+                      transition: 'all 0.3s ease'
+                    }}
+                    onFocus={(e) => {
+                      e.currentTarget.style.borderColor = '#ff6b35';
+                      e.currentTarget.style.boxShadow = '0px 0px 0px 3px rgba(255, 107, 53, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.style.borderColor = 'rgba(102, 126, 234, 0.2)';
+                      e.currentTarget.style.boxShadow = 'none';
                     }}
                   />
-                </div>
+                </motion.div>
 
                 {/* Quantity */}
-                <div>
-                  <label style={{ display: 'block', fontSize: isArabic ? '16px' : '14px', fontWeight: '600', color: '#222', marginBottom: '6px' }}>
-                    Quantity<span style={{ color: '#e53935' }}>*</span>
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.7 }}
+                >
+                  <label style={{ 
+                    display: 'block', 
+                    fontSize: isArabic ? '17px' : '15px', 
+                    fontWeight: '600', 
+                    color: '#2d3748', 
+                    marginBottom: '8px' 
+                  }}>
+                    Quantity<span style={{ color: '#e53e3e', marginLeft: '4px' }}>*</span>
                   </label>
                   <select
                     name="quantity"
@@ -1046,25 +1388,45 @@ export default function ProductPage({ params }: ProductPageProps) {
                     required
                     style={{
                       width: '100%',
-                      padding: '12px 14px',
-                      border: '1px solid #ddd',
-                      borderRadius: '5px',
+                      padding: '14px 18px',
+                      border: '2px solid rgba(102, 126, 234, 0.2)',
+                      borderRadius: '12px',
                       fontSize: isArabic ? '17px' : '15px',
-                      color: '#000000',
+                      color: '#2d3748',
                       outline: 'none',
-                      backgroundColor: 'white'
+                      backgroundColor: '#ffffff',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease'
+                    }}
+                    onFocus={(e) => {
+                      e.currentTarget.style.borderColor = '#ff6b35';
+                      e.currentTarget.style.boxShadow = '0px 0px 0px 3px rgba(255, 107, 53, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.style.borderColor = 'rgba(102, 126, 234, 0.2)';
+                      e.currentTarget.style.boxShadow = 'none';
                     }}
                   >
                     {quantityOptions.map(opt => (
                       <option key={opt.value} value={opt.value}>{opt.label}</option>
                     ))}
                   </select>
-                </div>
+                </motion.div>
 
                 {/* City */}
-                <div>
-                  <label style={{ display: 'block', fontSize: isArabic ? '16px' : '14px', fontWeight: '600', color: '#222', marginBottom: '6px' }}>
-                    City<span style={{ color: '#e53935' }}>*</span>
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.8 }}
+                >
+                  <label style={{ 
+                    display: 'block', 
+                    fontSize: isArabic ? '17px' : '15px', 
+                    fontWeight: '600', 
+                    color: '#2d3748', 
+                    marginBottom: '8px' 
+                  }}>
+                    City<span style={{ color: '#e53e3e', marginLeft: '4px' }}>*</span>
                   </label>
                   <select
                     name="city"
@@ -1073,13 +1435,23 @@ export default function ProductPage({ params }: ProductPageProps) {
                     required
                     style={{
                       width: '100%',
-                      padding: '12px 14px',
-                      border: '1px solid #ddd',
-                      borderRadius: '5px',
+                      padding: '14px 18px',
+                      border: '2px solid rgba(102, 126, 234, 0.2)',
+                      borderRadius: '12px',
                       fontSize: isArabic ? '17px' : '15px',
-                      color: '#000000',
+                      color: '#2d3748',
                       outline: 'none',
-                      backgroundColor: 'white'
+                      backgroundColor: '#ffffff',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease'
+                    }}
+                    onFocus={(e) => {
+                      e.currentTarget.style.borderColor = '#ff6b35';
+                      e.currentTarget.style.boxShadow = '0px 0px 0px 3px rgba(255, 107, 53, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.style.borderColor = 'rgba(102, 126, 234, 0.2)';
+                      e.currentTarget.style.boxShadow = 'none';
                     }}
                   >
                     <option value="">Select City*</option>
@@ -1092,82 +1464,147 @@ export default function ProductPage({ params }: ProductPageProps) {
                       );
                     })}
                   </select>
-                </div>
+                </motion.div>
 
                 {/* Delivery Address */}
-                <div>
-                  <label style={{ display: 'block', fontSize: isArabic ? '16px' : '14px', fontWeight: '600', color: '#222', marginBottom: '6px' }}>
-                    Delivery Address<span style={{ color: '#e53935' }}>*</span>
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.9 }}
+                >
+                  <label style={{ 
+                    display: 'block', 
+                    fontSize: isArabic ? '17px' : '15px', 
+                    fontWeight: '600', 
+                    color: '#2d3748', 
+                    marginBottom: '8px' 
+                  }}>
+                    Delivery Address<span style={{ color: '#e53e3e', marginLeft: '4px' }}>*</span>
                   </label>
                   <textarea
                     name="address"
                     value={formData.address}
                     onChange={handleInputChange}
-                    placeholder="Delivery Address* (Building No, Street name, Area)"
+                    placeholder="Building No, Street name, Area"
                     required
-                    rows={3}
+                    rows={4}
                     style={{
                       width: '100%',
-                      padding: '12px 14px',
-                      border: '1px solid #ddd',
-                      borderRadius: '5px',
+                      padding: '14px 18px',
+                      border: '2px solid rgba(102, 126, 234, 0.2)',
+                      borderRadius: '12px',
                       fontSize: isArabic ? '17px' : '15px',
-                      color: '#000000',
+                      color: '#2d3748',
                       outline: 'none',
-                      resize: 'none'
+                      resize: 'none',
+                      background: '#ffffff',
+                      transition: 'all 0.3s ease',
+                      fontFamily: 'inherit'
+                    }}
+                    onFocus={(e) => {
+                      e.currentTarget.style.borderColor = '#ff6b35';
+                      e.currentTarget.style.boxShadow = '0px 0px 0px 3px rgba(255, 107, 53, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.style.borderColor = 'rgba(102, 126, 234, 0.2)';
+                      e.currentTarget.style.boxShadow = 'none';
                     }}
                   />
-                </div>
+                </motion.div>
 
                 {/* Submit Button */}
-                <button
+                <motion.button
                   type="submit"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 1 }}
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
                   style={{
                     width: '100%',
-                    backgroundColor: '#4CAF50',
+                    background: 'linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ff8c42 100%)',
                     color: 'white',
-                    fontWeight: '600',
-                    padding: isArabic ? '14px' : '12px',
-                    borderRadius: '5px',
+                    fontWeight: '700',
+                    padding: '16px 24px',
+                    borderRadius: '16px',
                     border: 'none',
-                    fontSize: isArabic ? '16px' : '13px',
-                    textTransform: isArabic ? 'none' : 'uppercase',
+                    fontSize: isArabic ? '17px' : '16px',
                     letterSpacing: '0.5px',
                     cursor: 'pointer',
-                    transition: 'background-color 0.2s'
+                    boxShadow: '0px 8px 25px rgba(255, 107, 53, 0.4)',
+                    transition: 'all 0.3s ease'
                   }}
-                  className="hover:opacity-90"
                 >
                   SUBMIT ORDER
-                </button>
+                </motion.button>
               </form>
-            </div>
+            </motion.div>
           </div>
           )}
 
           {/* Description Section */}
           {!orderSubmitted && (
-          <div 
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
             style={{
-              backgroundColor: '#ffffff',
-              borderRadius: '10px',
-              marginTop: '20px',
-              boxShadow: '0px 1px 4px rgba(0,0,0,0.08)',
+              background: 'linear-gradient(145deg, #ffffff 0%, #f7fafc 100%)',
+              borderRadius: '24px',
+              marginTop: '30px',
+              boxShadow: '0px 20px 60px rgba(102, 126, 234, 0.15), 0px 10px 25px rgba(79, 172, 254, 0.1)',
+              border: '2px solid rgba(102, 126, 234, 0.1)',
               overflow: 'hidden'
             }}
           >
-            <div style={{ borderBottom: '1px solid #eee', padding: '14px 20px' }}>
-              <h3 style={{ fontSize: '15px', fontWeight: '600', color: '#222' }}>Description</h3>
+            <div style={{ 
+              borderBottom: '2px solid rgba(102, 126, 234, 0.1)', 
+              padding: '20px 28px',
+              background: 'linear-gradient(135deg, rgba(255, 107, 53, 0.05) 0%, rgba(247, 147, 30, 0.05) 100%)'
+            }}>
+              <h3 style={{ 
+                fontSize: '22px', 
+                fontWeight: '700', 
+                background: 'linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ff8c42 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}>Description</h3>
             </div>
-            <div style={{ padding: '20px' }}>
-              <p style={{ fontWeight: '500', color: '#222', marginBottom: '14px', fontSize: isArabic ? '18px' : '15px' }}>{productDescription}</p>
-              <ol style={{ listStyleType: 'decimal', paddingLeft: isArabic ? '0' : '18px', paddingRight: isArabic ? '18px' : '0', color: '#222', lineHeight: isArabic ? '2.2' : '2', fontSize: isArabic ? '17px' : '15px' }}>
+            <div style={{ padding: '28px' }}>
+              <p style={{ 
+                fontWeight: '500', 
+                color: '#2d3748', 
+                marginBottom: '20px', 
+                fontSize: isArabic ? '18px' : '16px',
+                lineHeight: '1.7'
+              }}>{productDescription}</p>
+              <ol style={{ 
+                listStyleType: 'decimal', 
+                paddingLeft: isArabic ? '0' : '24px', 
+                paddingRight: isArabic ? '24px' : '0', 
+                color: '#4a5568', 
+                lineHeight: isArabic ? '2.2' : '2', 
+                fontSize: isArabic ? '17px' : '15px' 
+              }}>
                 {productFeatures.map((feature, index) => (
-                  <li key={index} style={{ marginBottom: isArabic ? '8px' : '4px', paddingRight: isArabic ? '8px' : '0' }}>{feature}</li>
+                  <motion.li 
+                    key={index}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4, delay: 0.5 + index * 0.1 }}
+                    style={{ 
+                      marginBottom: isArabic ? '12px' : '8px', 
+                      paddingRight: isArabic ? '8px' : '0',
+                      fontWeight: '500'
+                    }}
+                  >
+                    {feature}
+                  </motion.li>
                 ))}
               </ol>
             </div>
-          </div>
+          </motion.div>
           )}
         </div>
       </main>

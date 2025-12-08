@@ -62,11 +62,11 @@ const translations: Record<string, string> = {
 };
 
 const statusConfig: Record<OrderStatus, { color: string; bgColor: string; icon: string }> = {
-  pending: { color: '#FF9800', bgColor: 'rgba(255, 152, 0, 0.1)', icon: '⏳' },
-  processing: { color: '#2196F3', bgColor: 'rgba(33, 150, 243, 0.1)', icon: '⚙️' },
-  shipped: { color: '#9C27B0', bgColor: 'rgba(156, 39, 176, 0.1)', icon: '🚚' },
-  delivered: { color: '#4CAF50', bgColor: 'rgba(76, 175, 80, 0.1)', icon: '✅' },
-  cancelled: { color: '#f44336', bgColor: 'rgba(244, 67, 54, 0.1)', icon: '❌' },
+  pending: { color: '#FF6B35', bgColor: 'rgba(255, 107, 53, 0.12)', icon: '⏳' },
+  processing: { color: '#3B82F6', bgColor: 'rgba(59, 130, 246, 0.12)', icon: '⚙️' },
+  shipped: { color: '#8B5CF6', bgColor: 'rgba(139, 92, 246, 0.12)', icon: '🚚' },
+  delivered: { color: '#10B981', bgColor: 'rgba(16, 185, 129, 0.12)', icon: '✅' },
+  cancelled: { color: '#EF4444', bgColor: 'rgba(239, 68, 68, 0.12)', icon: '❌' },
 };
 
 interface OrderDetailModalProps {
@@ -162,7 +162,7 @@ function OrderDetailModal({ order, isOpen, onClose, onUpdateStatus }: OrderDetai
           borderRadius: '16px 16px 0 0',
         }}>
           <div>
-            <h2 style={{ fontSize: '18px', fontWeight: '600', color: '#1a1a2e' }}>
+            <h2 style={{ fontSize: '18px', fontWeight: '600', color: '#1E293B' }}>
               {t('admin.orders.orderDetails')}
             </h2>
             <p style={{ fontSize: '13px', color: '#666', marginTop: '2px' }}>#{order.id}</p>
@@ -228,7 +228,7 @@ function OrderDetailModal({ order, isOpen, onClose, onUpdateStatus }: OrderDetai
                       borderRadius: '10px',
                       border: `1.5px solid ${statusConfig[selectedStatus as OrderStatus]?.color || '#ddd'}`,
                       backgroundColor: '#fff',
-                      color: '#1a1a2e',
+                      color: '#1E293B',
                       fontSize: '13px',
                       fontWeight: '500',
                       cursor: 'pointer',
@@ -246,7 +246,7 @@ function OrderDetailModal({ order, isOpen, onClose, onUpdateStatus }: OrderDetai
                         value={status}
                         style={{
                           backgroundColor: '#fff',
-                          color: '#1a1a2e',
+                          color: '#1E293B',
                           padding: '8px',
                         }}
                       >
@@ -264,7 +264,7 @@ function OrderDetailModal({ order, isOpen, onClose, onUpdateStatus }: OrderDetai
                       padding: '10px 20px',
                       borderRadius: '10px',
                       border: 'none',
-                      backgroundColor: '#4CAF50',
+                      backgroundColor: '#10B981',
                       color: '#fff',
                       fontSize: '13px',
                       fontWeight: '600',
@@ -291,7 +291,7 @@ function OrderDetailModal({ order, isOpen, onClose, onUpdateStatus }: OrderDetai
 
           {/* Customer Info */}
           <div style={{ marginBottom: '20px' }}>
-            <h3 style={{ fontSize: '14px', fontWeight: '600', color: '#1a1a2e', marginBottom: '12px' }}>
+            <h3 style={{ fontSize: '14px', fontWeight: '600', color: '#1E293B', marginBottom: '12px' }}>
               {t('admin.orders.customerInfo')}
             </h3>
             <div style={{
@@ -307,7 +307,7 @@ function OrderDetailModal({ order, isOpen, onClose, onUpdateStatus }: OrderDetai
                   width: '36px',
                   height: '36px',
                   borderRadius: '50%',
-                  backgroundColor: '#1a1a2e',
+                  backgroundColor: '#1E293B',
                   color: '#fff',
                   display: 'flex',
                   alignItems: 'center',
@@ -318,7 +318,7 @@ function OrderDetailModal({ order, isOpen, onClose, onUpdateStatus }: OrderDetai
                   {order.customer.charAt(0)}
                 </div>
                 <div>
-                  <p style={{ fontSize: '14px', fontWeight: '500', color: '#1a1a2e' }}>{order.customer}</p>
+                  <p style={{ fontSize: '14px', fontWeight: '500', color: '#1E293B' }}>{order.customer}</p>
                   <p style={{ fontSize: '13px', color: '#666' }}>{order.phone}</p>
                 </div>
               </div>
@@ -331,7 +331,7 @@ function OrderDetailModal({ order, isOpen, onClose, onUpdateStatus }: OrderDetai
 
           {/* Products */}
           <div style={{ marginBottom: '20px' }}>
-            <h3 style={{ fontSize: '14px', fontWeight: '600', color: '#1a1a2e', marginBottom: '12px' }}>
+            <h3 style={{ fontSize: '14px', fontWeight: '600', color: '#1E293B', marginBottom: '12px' }}>
               {t('admin.orders.products')} ({order.products.length})
             </h3>
             <div style={{
@@ -371,13 +371,13 @@ function OrderDetailModal({ order, isOpen, onClose, onUpdateStatus }: OrderDetai
                   
                   {/* Product Info */}
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: '14px', color: '#1a1a2e', fontWeight: '500', marginBottom: '4px' }}>
+                    <p style={{ fontSize: '14px', color: '#1E293B', fontWeight: '500', marginBottom: '4px' }}>
                       {product.name}
                     </p>
                     <p style={{ fontSize: '12px', color: '#999', marginBottom: '4px' }}>
                       Quantity: x{product.quantity}
                     </p>
-                    <p style={{ fontSize: '14px', fontWeight: '600', color: '#4CAF50' }}>
+                    <p style={{ fontSize: '14px', fontWeight: '600', color: '#10B981' }}>
                       {product.price * product.quantity} PKR
                     </p>
                   </div>
@@ -385,13 +385,13 @@ function OrderDetailModal({ order, isOpen, onClose, onUpdateStatus }: OrderDetai
               ))}
               <div style={{
                 padding: '14px',
-                backgroundColor: '#1a1a2e',
+                backgroundColor: '#1E293B',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
               }}>
                 <span style={{ fontSize: '14px', color: '#fff', fontWeight: '500' }}>{t('admin.orders.total')}</span>
-                <span style={{ fontSize: '18px', color: '#4CAF50', fontWeight: '700' }}>{order.total.toFixed(2)} PKR</span>
+                <span style={{ fontSize: '18px', color: '#10B981', fontWeight: '700' }}>{order.total.toFixed(2)} PKR</span>
               </div>
             </div>
           </div>
@@ -527,7 +527,7 @@ function EditOrderModal({ order, isOpen, onClose, onSave }: EditOrderModalProps)
           borderRadius: '16px 16px 0 0',
         }}>
           <div>
-            <h2 style={{ fontSize: '18px', fontWeight: '600', color: '#1a1a2e' }}>
+            <h2 style={{ fontSize: '18px', fontWeight: '600', color: '#1E293B' }}>
               {t('admin.orders.editOrder')}
             </h2>
             <p style={{ fontSize: '13px', color: '#666', marginTop: '2px' }}>#{order.id}</p>
@@ -557,7 +557,7 @@ function EditOrderModal({ order, isOpen, onClose, onSave }: EditOrderModalProps)
         <div style={{ padding: '20px' }}>
           {/* Customer Name */}
           <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#1a1a2e', marginBottom: '8px' }}>
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#1E293B', marginBottom: '8px' }}>
               {t('admin.orders.customerName')} <span style={{ color: '#e53935' }}>*</span>
             </label>
             <input
@@ -578,7 +578,7 @@ function EditOrderModal({ order, isOpen, onClose, onSave }: EditOrderModalProps)
 
           {/* Phone */}
           <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#1a1a2e', marginBottom: '8px' }}>
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#1E293B', marginBottom: '8px' }}>
               {t('admin.orders.phone')} <span style={{ color: '#e53935' }}>*</span>
             </label>
             <input
@@ -599,7 +599,7 @@ function EditOrderModal({ order, isOpen, onClose, onSave }: EditOrderModalProps)
 
           {/* City */}
           <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#1a1a2e', marginBottom: '8px' }}>
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#1E293B', marginBottom: '8px' }}>
               {t('admin.orders.city')} <span style={{ color: '#e53935' }}>*</span>
             </label>
             <select
@@ -629,7 +629,7 @@ function EditOrderModal({ order, isOpen, onClose, onSave }: EditOrderModalProps)
 
           {/* Address */}
           <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#1a1a2e', marginBottom: '8px' }}>
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#1E293B', marginBottom: '8px' }}>
               {t('admin.orders.address')} <span style={{ color: '#e53935' }}>*</span>
             </label>
             <textarea
@@ -657,7 +657,7 @@ function EditOrderModal({ order, isOpen, onClose, onSave }: EditOrderModalProps)
             marginBottom: '20px',
             border: '2px solid #e3f2fd',
           }}>
-            <h3 style={{ fontSize: '13px', fontWeight: '700', color: '#1a1a2e', marginBottom: '12px', textTransform: 'uppercase' }}>
+            <h3 style={{ fontSize: '13px', fontWeight: '700', color: '#1E293B', marginBottom: '12px', textTransform: 'uppercase' }}>
               🛒 {t('admin.orders.products')}
             </h3>
             {formData.products.map((product, index) => (
@@ -672,7 +672,7 @@ function EditOrderModal({ order, isOpen, onClose, onSave }: EditOrderModalProps)
                 border: '1px solid #e0e0e0',
               }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontSize: '14px', fontWeight: '600', color: '#1a1a2e', marginBottom: '4px' }}>
+                  <p style={{ fontSize: '14px', fontWeight: '600', color: '#1E293B', marginBottom: '4px' }}>
                     {product.name}
                   </p>
                   <p style={{ fontSize: '12px', color: '#666' }}>
@@ -689,7 +689,7 @@ function EditOrderModal({ order, isOpen, onClose, onSave }: EditOrderModalProps)
                     style={{
                       width: '70px',
                       padding: '8px',
-                      border: '2px solid #2196F3',
+                      border: '2px solid #3B82F6',
                       borderRadius: '6px',
                       fontSize: '14px',
                       fontWeight: '700',
@@ -717,10 +717,10 @@ function EditOrderModal({ order, isOpen, onClose, onSave }: EditOrderModalProps)
               justifyContent: 'space-between',
               alignItems: 'center'
             }}>
-              <span style={{ fontSize: '15px', fontWeight: '700', color: '#1a1a2e' }}>
+              <span style={{ fontSize: '15px', fontWeight: '700', color: '#1E293B' }}>
                 {t('admin.orders.total')}
               </span>
-              <span style={{ fontSize: '18px', fontWeight: '700', color: '#4CAF50' }}>
+              <span style={{ fontSize: '18px', fontWeight: '700', color: '#10B981' }}>
                 {formData.products.reduce((sum, p) => sum + (p.price * p.quantity), 0).toFixed(2)} PKR
               </span>
             </div>
@@ -751,12 +751,12 @@ function EditOrderModal({ order, isOpen, onClose, onSave }: EditOrderModalProps)
                 padding: '14px',
                 border: 'none',
                 borderRadius: '10px',
-                background: 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)',
+                background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
                 color: '#fff',
                 fontSize: '14px',
                 fontWeight: '600',
                 cursor: 'pointer',
-                boxShadow: '0 4px 12px rgba(76, 175, 80, 0.3)',
+                boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -1154,7 +1154,7 @@ function AdminOrdersContent() {
       {/* Page Title with Export Buttons */}
       <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px', flexWrap: 'wrap' }}>
         <div>
-          <h1 style={{ fontSize: '22px', fontWeight: '600', color: '#1a1a2e' }}>
+          <h1 style={{ fontSize: '22px', fontWeight: '600', color: '#1E293B' }}>
             {t('admin.orders.title')}
           </h1>
           <p style={{ color: '#666', fontSize: '14px', marginTop: '4px' }}>
@@ -1174,7 +1174,7 @@ function AdminOrdersContent() {
                 padding: '12px 18px',
                 borderRadius: '10px',
                 border: 'none',
-                backgroundColor: '#4CAF50',
+                backgroundColor: '#10B981',
                 color: '#fff',
                 fontSize: '14px',
                 fontWeight: '600',
@@ -1201,9 +1201,9 @@ function AdminOrdersContent() {
               gap: '8px',
               padding: '12px 18px',
               borderRadius: '10px',
-              border: '2px solid #1a1a2e',
+              border: '2px solid #1E293B',
               backgroundColor: '#fff',
-              color: '#1a1a2e',
+              color: '#1E293B',
               fontSize: '14px',
               fontWeight: '600',
               cursor: filteredOrders.length === 0 ? 'not-allowed' : 'pointer',
@@ -1238,9 +1238,9 @@ function AdminOrdersContent() {
                 gap: '8px',
                 padding: '12px 18px',
                 borderRadius: '10px',
-                border: '2px solid #2196F3',
+                border: '2px solid #3B82F6',
                 backgroundColor: '#fff',
-                color: '#2196F3',
+                color: '#3B82F6',
                 fontSize: '14px',
                 fontWeight: '600',
                 cursor: 'pointer',
@@ -1266,7 +1266,7 @@ function AdminOrdersContent() {
       >
         {/* Total Orders */}
         <div style={{
-          backgroundColor: '#1a1a2e',
+          backgroundColor: '#1E293B',
           borderRadius: '14px',
           padding: '16px',
           color: '#fff',
@@ -1277,7 +1277,7 @@ function AdminOrdersContent() {
 
         {/* Revenue */}
         <div style={{
-          backgroundColor: '#00BCD4',
+          backgroundColor: '#06B6D4',
           borderRadius: '14px',
           padding: '16px',
           color: '#fff',
@@ -1288,7 +1288,7 @@ function AdminOrdersContent() {
 
         {/* Pending */}
         <div style={{
-          backgroundColor: '#FF9800',
+          backgroundColor: '#FF6B35',
           borderRadius: '14px',
           padding: '16px',
           color: '#fff',
@@ -1302,7 +1302,7 @@ function AdminOrdersContent() {
 
         {/* Processing */}
         <div style={{
-          backgroundColor: '#2196F3',
+          backgroundColor: '#3B82F6',
           borderRadius: '14px',
           padding: '16px',
           color: '#fff',
@@ -1316,7 +1316,7 @@ function AdminOrdersContent() {
 
         {/* Shipped */}
         <div style={{
-          backgroundColor: '#9C27B0',
+          backgroundColor: '#8B5CF6',
           borderRadius: '14px',
           padding: '16px',
           color: '#fff',
@@ -1330,7 +1330,7 @@ function AdminOrdersContent() {
 
         {/* Delivered */}
         <div style={{
-          backgroundColor: '#4CAF50',
+          backgroundColor: '#10B981',
           borderRadius: '14px',
           padding: '16px',
           color: '#fff',
@@ -1344,7 +1344,7 @@ function AdminOrdersContent() {
 
         {/* Cancelled */}
         <div style={{
-          backgroundColor: '#f44336',
+          backgroundColor: '#EF4444',
           borderRadius: '14px',
           padding: '16px',
           color: '#fff',
@@ -1401,7 +1401,7 @@ function AdminOrdersContent() {
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
             {['all', 'pending', 'processing', 'shipped', 'delivered', 'cancelled'].map((status) => {
               const isSelected = filterStatus === status;
-              const statusColor = status !== 'all' ? statusConfig[status as OrderStatus]?.color : '#1a1a2e';
+              const statusColor = status !== 'all' ? statusConfig[status as OrderStatus]?.color : '#1E293B';
               
               return (
                 <button
@@ -1435,9 +1435,9 @@ function AdminOrdersContent() {
                 gap: '6px',
                 marginLeft: 'auto',
                 padding: '6px 10px',
-                backgroundColor: '#fff3e0',
+                backgroundColor: '#FFF4E6',
                 borderRadius: '8px',
-                border: '1px solid #FF9800'
+                border: '1px solid #FF6B35'
               }}>
                 <span style={{ fontSize: '12px', fontWeight: '600', color: '#E65100' }}>
                   {selectedOrders.length}
@@ -1453,9 +1453,9 @@ function AdminOrdersContent() {
                   style={{
                     padding: '4px 8px',
                     borderRadius: '6px',
-                    border: '1px solid #FF9800',
+                    border: '1px solid #FF6B35',
                     backgroundColor: '#fff',
-                    color: '#E65100',
+                    color: '#C2410C',
                     fontSize: '12px',
                     fontWeight: '600',
                     cursor: 'pointer',
@@ -1495,7 +1495,7 @@ function AdminOrdersContent() {
                       width: '18px',
                       height: '18px',
                       cursor: 'pointer',
-                      accentColor: '#4CAF50',
+                      accentColor: '#10B981',
                     }}
                   />
                 </th>
@@ -1534,7 +1534,7 @@ function AdminOrdersContent() {
                         width: '18px',
                         height: '18px',
                         cursor: 'pointer',
-                        accentColor: '#4CAF50',
+                        accentColor: '#10B981',
                       }}
                     />
                   </td>
@@ -1586,16 +1586,16 @@ function AdminOrdersContent() {
                       </div>
                       {/* Order ID and Date */}
                       <div>
-                        <p style={{ fontSize: '14px', fontWeight: '600', color: '#1a1a2e' }}>
-                          #{order.id}
-                        </p>
+                    <p style={{ fontSize: '14px', fontWeight: '600', color: '#1E293B' }}>
+                      #{order.id}
+                    </p>
                         <p style={{ fontSize: '12px', color: '#999' }}>{order.date}</p>
                       </div>
                     </div>
                   </td>
                   <td style={{ padding: '16px' }}>
                     <div>
-                      <p style={{ fontSize: '14px', fontWeight: '500', color: '#1a1a2e', marginBottom: '4px' }}>{order.customer}</p>
+                      <p style={{ fontSize: '14px', fontWeight: '500', color: '#1E293B', marginBottom: '4px' }}>{order.customer}</p>
                       <p style={{ fontSize: '12px', color: '#999' }}>{order.city}</p>
                       <p style={{ fontSize: '11px', color: '#bbb', marginTop: '2px' }}>{order.phone}</p>
                     </div>
@@ -1618,7 +1618,7 @@ function AdminOrdersContent() {
                     </div>
                   </td>
                   <td style={{ padding: '16px' }}>
-                    <p style={{ fontSize: '16px', fontWeight: '700', color: '#4CAF50' }}>
+                    <p style={{ fontSize: '16px', fontWeight: '700', color: '#10B981' }}>
                       {order.total.toFixed(2)} PKR
                     </p>
                   </td>
@@ -1721,8 +1721,8 @@ function AdminOrdersContent() {
                           padding: '10px',
                           borderRadius: '8px',
                           border: 'none',
-                          backgroundColor: '#e3f2fd',
-                          color: '#2196F3',
+                          backgroundColor: '#DBEAFE',
+                          color: '#3B82F6',
                           cursor: 'pointer',
                           transition: 'all 0.2s ease',
                           display: 'flex',
@@ -1743,8 +1743,8 @@ function AdminOrdersContent() {
                           padding: '10px',
                           borderRadius: '8px',
                           border: 'none',
-                          backgroundColor: '#fff3e0',
-                          color: '#FF9800',
+                          backgroundColor: '#FFF4E6',
+                          color: '#FF6B35',
                           cursor: 'pointer',
                           transition: 'all 0.2s ease',
                           display: 'flex',
@@ -1809,7 +1809,7 @@ function AdminOrdersContent() {
                   width: '18px',
                   height: '18px',
                   cursor: 'pointer',
-                  accentColor: '#4CAF50',
+                  accentColor: '#10B981',
                 }}
               />
               <span style={{ fontSize: '13px', fontWeight: '600', color: '#666' }}>
@@ -1839,7 +1839,7 @@ function AdminOrdersContent() {
                       width: '20px',
                       height: '20px',
                       cursor: 'pointer',
-                      accentColor: '#4CAF50',
+                      accentColor: '#10B981',
                       flexShrink: 0,
                     }}
                   />
@@ -1889,7 +1889,7 @@ function AdminOrdersContent() {
                   </div>
                   {/* Order ID and Date */}
                   <div>
-                    <p style={{ fontSize: '15px', fontWeight: '600', color: '#1a1a2e' }}>#{order.id}</p>
+                    <p style={{ fontSize: '15px', fontWeight: '600', color: '#1E293B' }}>#{order.id}</p>
                     <p style={{ fontSize: '12px', color: '#999', marginTop: '2px' }}>{order.date} • {order.time}</p>
                   </div>
                 </div>
@@ -1989,7 +1989,7 @@ function AdminOrdersContent() {
                   width: '40px',
                   height: '40px',
                   borderRadius: '50%',
-                  backgroundColor: '#1a1a2e',
+                  backgroundColor: '#1E293B',
                   color: '#fff',
                   display: 'flex',
                   alignItems: 'center',
@@ -2000,7 +2000,7 @@ function AdminOrdersContent() {
                 }}>
                   {order.customer.charAt(0)}
                 </div>
-                <p style={{ fontSize: '14px', fontWeight: '600', color: '#1a1a2e', marginBottom: '4px' }}>
+                <p style={{ fontSize: '14px', fontWeight: '600', color: '#1E293B', marginBottom: '4px' }}>
                   {order.customer}
                 </p>
                 <p style={{ fontSize: '12px', color: '#999', marginBottom: '2px' }}>{order.city}</p>
@@ -2031,7 +2031,7 @@ function AdminOrdersContent() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: (order.status === 'cancelled' && filterStatus === 'cancelled') ? '10px' : '0' }}>
                   <div>
                     <p style={{ fontSize: '11px', color: '#999', marginBottom: '2px' }}>Total</p>
-                    <p style={{ fontSize: '20px', fontWeight: '700', color: '#4CAF50' }}>{order.total.toFixed(2)} PKR</p>
+                    <p style={{ fontSize: '20px', fontWeight: '700', color: '#10B981' }}>{order.total.toFixed(2)} PKR</p>
                   </div>
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <button
@@ -2041,8 +2041,8 @@ function AdminOrdersContent() {
                         padding: '10px',
                         borderRadius: '8px',
                         border: 'none',
-                        backgroundColor: '#e3f2fd',
-                        color: '#2196F3',
+                        backgroundColor: '#DBEAFE',
+                        color: '#3B82F6',
                         cursor: 'pointer',
                         transition: 'all 0.2s ease',
                         display: 'flex',
@@ -2064,8 +2064,8 @@ function AdminOrdersContent() {
                         padding: '10px',
                         borderRadius: '8px',
                         border: 'none',
-                        backgroundColor: '#fff3e0',
-                        color: '#FF9800',
+                        backgroundColor: '#FFF4E6',
+                        color: '#FF6B35',
                         cursor: 'pointer',
                         transition: 'all 0.2s ease',
                         display: 'flex',
@@ -2138,7 +2138,7 @@ function AdminOrdersContent() {
                 borderRadius: '10px',
                 border: '2px solid #e0e0e0',
                 backgroundColor: currentPage === 1 ? '#f5f5f5' : '#fff',
-                color: currentPage === 1 ? '#999' : '#1a1a2e',
+                color: currentPage === 1 ? '#999' : '#1E293B',
                 fontSize: '14px',
                 fontWeight: '600',
                 cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
@@ -2189,15 +2189,15 @@ function AdminOrdersContent() {
                     style={{
                       padding: '10px 16px',
                       borderRadius: '10px',
-                      border: currentPage === pageNum ? '2px solid #1a1a2e' : '2px solid #e0e0e0',
-                      backgroundColor: currentPage === pageNum ? '#1a1a2e' : '#fff',
+                      border: currentPage === pageNum ? '2px solid #1E293B' : '2px solid #e0e0e0',
+                      backgroundColor: currentPage === pageNum ? '#1E293B' : '#fff',
                       color: currentPage === pageNum ? '#fff' : '#333',
                       fontSize: '14px',
                       fontWeight: currentPage === pageNum ? '700' : '500',
                       cursor: 'pointer',
                       transition: 'all 0.2s ease',
                       minWidth: '44px',
-                      boxShadow: currentPage === pageNum ? '0 4px 12px rgba(26, 26, 46, 0.3)' : 'none',
+                      boxShadow: currentPage === pageNum ? '0 4px 12px rgba(30, 41, 59, 0.3)' : 'none',
                       transform: currentPage === pageNum ? 'translateY(-2px)' : 'translateY(0)',
                     }}
                     className="hover:bg-gray-50"
@@ -2217,7 +2217,7 @@ function AdminOrdersContent() {
                 borderRadius: '10px',
                 border: '2px solid #e0e0e0',
                 backgroundColor: currentPage === totalPages ? '#f5f5f5' : '#fff',
-                color: currentPage === totalPages ? '#999' : '#1a1a2e',
+                color: currentPage === totalPages ? '#999' : '#1E293B',
                 fontSize: '14px',
                 fontWeight: '600',
                 cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
