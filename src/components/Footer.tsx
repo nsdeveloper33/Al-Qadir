@@ -2,8 +2,41 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 
 export default function Footer() {
+  const [contactInfo, setContactInfo] = useState({
+    whatsapp: '923001234567',
+    phone: '+92 300 1234567',
+    email: 'info@alqadir.com',
+    address: 'Vehari, Pakistan'
+  });
+
+  useEffect(() => {
+    // Fetch contact settings asynchronously (non-blocking)
+    const controller = new AbortController();
+    
+    fetch('/api/contact-settings', { 
+      signal: controller.signal,
+      cache: 'no-store'
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.settings) {
+          setContactInfo(data.settings);
+        }
+      })
+      .catch((err) => {
+        // Keep default values on error (already set in state)
+        if (err.name !== 'AbortError') {
+          // Silently fail - defaults are already set
+        }
+      });
+
+    return () => {
+      controller.abort(); // Cleanup on unmount
+    };
+  }, []);
 
   return (
     <footer 
@@ -80,7 +113,7 @@ export default function Footer() {
             </p>
             <div style={{ display: 'flex', gap: '15px', marginTop: '25px' }}>
               <motion.a 
-                href="https://wa.me/923001234567" 
+                href={`https://wa.me/${contactInfo.whatsapp}`}
                 target="_blank" 
                 rel="noopener noreferrer"
                 whileHover={{ scale: 1.1, y: -3 }}
@@ -130,7 +163,7 @@ export default function Footer() {
                 { href: '/shop', label: 'Home' },
                 { href: '/shop', label: 'Shop' },
                 { href: '/about', label: 'About Us' },
-                { href: '#', label: 'Contact Us' }
+                { href: '/about#contact', label: 'Contact Us' }
               ].map((link, index) => (
                 <motion.li
                   key={index}
@@ -190,7 +223,7 @@ export default function Footer() {
                 style={{ margin: '12px 0', display: 'flex', alignItems: 'center', gap: '12px' }}
               >
                 <span style={{ fontSize: '18px' }}>📍</span>
-                <span>Vehari, Pakistan</span>
+                <span>{contactInfo.address}</span>
               </motion.p>
               <motion.p 
                 whileHover={{ x: 5 }}
@@ -198,7 +231,7 @@ export default function Footer() {
               >
                 <span style={{ fontSize: '18px' }}>📞</span>
                 <a 
-                  href="tel:+923001234567" 
+                  href={`tel:${contactInfo.phone.replace(/\s+/g, '')}`}
                   style={{ 
                     color: '#ff6b35', 
                     textDecoration: 'none',
@@ -208,7 +241,7 @@ export default function Footer() {
                   onMouseEnter={(e) => e.currentTarget.style.color = '#f7931e'}
                   onMouseLeave={(e) => e.currentTarget.style.color = '#ff6b35'}
                 >
-                  +92 300 1234567
+                  {contactInfo.phone}
                 </a>
               </motion.p>
               <motion.p 
@@ -216,7 +249,19 @@ export default function Footer() {
                 style={{ margin: '12px 0', display: 'flex', alignItems: 'center', gap: '12px' }}
               >
                 <span style={{ fontSize: '18px' }}>✉️</span>
-                <span>info@alqadir.com</span>
+                <a
+                  href={`mailto:${contactInfo.email}`}
+                  style={{ 
+                    color: '#ff6b35', 
+                    textDecoration: 'none',
+                    fontWeight: '500',
+                    transition: 'color 0.3s ease'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = '#f7931e'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = '#ff6b35'}
+                >
+                  {contactInfo.email}
+                </a>
               </motion.p>
             </div>
           </motion.div>

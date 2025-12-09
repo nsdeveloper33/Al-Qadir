@@ -70,10 +70,11 @@ export default function Home() {
           width: '100%',
           background: 'linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%)',
           paddingTop: '90px',
-          paddingBottom: '60px',
+          paddingBottom: '40px',
           position: 'relative',
           overflow: 'hidden'
         }}
+        className="hero-section"
       >
         {/* Decorative Background Elements */}
         <div
@@ -143,7 +144,8 @@ export default function Home() {
               style={{
                 width: '100%',
                 height: 'auto',
-                minHeight: '400px',
+                minHeight: '200px',
+                maxHeight: '600px',
                 objectFit: 'cover',
                 display: 'block',
                 filter: 'brightness(1.05) contrast(1.1) saturate(1.1)',
@@ -151,8 +153,11 @@ export default function Home() {
                 transition: 'transform 0.5s ease'
               }}
               priority
+              className="hero-banner-image"
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'scale(1.02)';
+                if (window.innerWidth > 768) {
+                  e.currentTarget.style.transform = 'scale(1.02)';
+                }
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'scale(1)';
@@ -175,12 +180,13 @@ export default function Home() {
           <div
             style={{
               textAlign: 'center',
-              padding: '40px 20px',
+              padding: 'clamp(20px, 4vw, 40px) clamp(15px, 3vw, 20px)',
               backgroundColor: 'rgba(255, 255, 255, 0.98)',
               borderRadius: '20px',
               boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
-              marginTop: '40px'
+              marginTop: 'clamp(20px, 4vw, 40px)'
             }}
+            className="hero-content-box"
           >
             <h1
               style={{
@@ -210,25 +216,40 @@ export default function Home() {
               Your one-stop destination for premium products with unbeatable deals and free delivery across Pakistan
             </p>
             
-            <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '20px' }}>
+            <div style={{ 
+              display: 'flex', 
+              gap: 'clamp(12px, 3vw, 20px)', 
+              justifyContent: 'center', 
+              flexWrap: 'wrap', 
+              marginTop: '20px',
+              flexDirection: 'column',
+              alignItems: 'stretch'
+            }}
+            className="hero-buttons-container"
+            >
               <Link
                 href="/shop"
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
+                  justifyContent: 'center',
                   gap: '10px',
-                  padding: '20px 50px',
+                  padding: 'clamp(14px, 3vw, 20px) clamp(30px, 8vw, 50px)',
                   backgroundColor: '#1a1a2e',
                   color: '#fff',
-                  fontSize: '20px',
+                  fontSize: 'clamp(16px, 3.5vw, 20px)',
                   fontWeight: '700',
                   borderRadius: '14px',
                   textDecoration: 'none',
                   boxShadow: '0 8px 30px rgba(26, 26, 46, 0.4), 0 0 0 3px rgba(26, 26, 46, 0.1)',
                   transition: 'all 0.3s ease',
                   border: '3px solid #1a1a2e',
-                  letterSpacing: '0.5px'
+                  letterSpacing: '0.5px',
+                  width: '100%',
+                  maxWidth: '400px',
+                  margin: '0 auto'
                 }}
+                className="hero-button"
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = '#4CAF50';
                   e.currentTarget.style.borderColor = '#4CAF50';
@@ -253,18 +274,23 @@ export default function Home() {
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  padding: '20px 50px',
+                  justifyContent: 'center',
+                  padding: 'clamp(14px, 3vw, 20px) clamp(30px, 8vw, 50px)',
                   backgroundColor: '#fff',
                   color: '#1a1a2e',
-                  fontSize: '20px',
+                  fontSize: 'clamp(16px, 3.5vw, 20px)',
                   fontWeight: '700',
                   borderRadius: '14px',
                   textDecoration: 'none',
                   border: '3px solid #1a1a2e',
                   boxShadow: '0 8px 30px rgba(26, 26, 46, 0.2), 0 0 0 3px rgba(255, 255, 255, 0.5)',
                   transition: 'all 0.3s ease',
-                  letterSpacing: '0.5px'
+                  letterSpacing: '0.5px',
+                  width: '100%',
+                  maxWidth: '400px',
+                  margin: '0 auto'
                 }}
+                className="hero-button"
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = '#1a1a2e';
                   e.currentTarget.style.color = '#fff';
@@ -393,26 +419,159 @@ export default function Home() {
         }
       `}</style>
 
+      {/* Responsive CSS Media Queries */}
+      <style jsx global>{`
+        /* Mobile Responsive Styles */
+        @media (min-width: 768px) {
+          .hero-section {
+            padding-top: 90px !important;
+            padding-bottom: 60px !important;
+          }
+          
+          .hero-banner-image {
+            min-height: 400px !important;
+          }
+          
+          .hero-content-box {
+            padding: 40px 20px !important;
+            margin-top: 40px !important;
+          }
+          
+          .hero-buttons-container {
+            flex-direction: row !important;
+            align-items: center !important;
+          }
+          
+          .hero-button {
+            width: auto !important;
+            max-width: none !important;
+          }
+          
+          .garments-grid,
+          .purse-grid,
+          .lace-grid {
+            grid-template-columns: 1fr 1fr !important;
+          }
+          
+          .garments-carousel {
+            height: 500px !important;
+            margin-top: 0 !important;
+          }
+          
+          .garment-card {
+            width: 400px !important;
+            height: 450px !important;
+          }
+          
+          .purse-collage {
+            height: 500px !important;
+            margin-top: 0 !important;
+          }
+          
+          .purse-collage-container {
+            width: 500px !important;
+            height: 480px !important;
+          }
+          
+          .cosmetics-grid {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
+          }
+          
+          .general-store-grid {
+            grid-template-columns: 1fr 1fr !important;
+          }
+          
+          .promo-left {
+            clip-path: polygon(0 0, 85% 0, 100% 100%, 0 100%) !important;
+          }
+        }
+        
+        @media (max-width: 767px) {
+          .hero-section {
+            padding-top: 70px !important;
+            padding-bottom: 30px !important;
+          }
+          
+          .hero-banner-image {
+            min-height: 200px !important;
+          }
+          
+          .section-button {
+            width: 100% !important;
+            max-width: 100% !important;
+          }
+          
+          .garments-section,
+          .purse-section,
+          .lace-section,
+          .cosmetics-section,
+          .jewellery-section,
+          .general-store-section {
+            padding: 40px 15px !important;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .hero-section {
+            padding-top: 60px !important;
+            padding-bottom: 20px !important;
+          }
+          
+          .hero-content-box {
+            padding: 20px 15px !important;
+            margin-top: 20px !important;
+          }
+          
+          .garments-section,
+          .purse-section,
+          .lace-section,
+          .cosmetics-section,
+          .jewellery-section,
+          .general-store-section {
+            padding: 30px 10px !important;
+          }
+          
+          .garments-carousel,
+          .purse-collage {
+            height: 300px !important;
+            min-height: 300px !important;
+          }
+          
+          .garment-card {
+            width: 280px !important;
+            height: 320px !important;
+          }
+          
+          .purse-collage-container {
+            width: 100% !important;
+            height: 350px !important;
+            min-height: 350px !important;
+          }
+        }
+      `}</style>
+
       {/* Section 1: Garments (گارمنٹس) */}
       <section
         style={{
           width: '100%',
-          minHeight: '500px',
+          minHeight: 'auto',
           position: 'relative',
           overflow: 'hidden',
           backgroundColor: '#fff',
-          padding: '80px 20px'
+          padding: 'clamp(40px, 8vw, 80px) clamp(15px, 4vw, 20px)'
         }}
+        className="garments-section"
       >
         <div
           style={{
             maxWidth: '1400px',
             margin: '0 auto',
             display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '60px',
+            gridTemplateColumns: '1fr',
+            gap: 'clamp(30px, 6vw, 60px)',
             alignItems: 'center'
           }}
+          className="garments-grid"
         >
           {/* Left Side - Text Content */}
           <div style={{ position: 'relative', zIndex: 2 }}>
@@ -446,9 +605,9 @@ export default function Home() {
             </h2>
             <p
               style={{
-                fontSize: '20px',
+                fontSize: 'clamp(16px, 3vw, 20px)',
                 color: '#1a1a2e',
-                marginBottom: '30px',
+                marginBottom: 'clamp(20px, 4vw, 30px)',
                 fontWeight: '600',
                 lineHeight: '1.6'
               }}
@@ -457,9 +616,9 @@ export default function Home() {
             </p>
             <p
               style={{
-                fontSize: '16px',
+                fontSize: 'clamp(14px, 2.5vw, 16px)',
                 color: '#666',
-                marginBottom: '40px',
+                marginBottom: 'clamp(30px, 5vw, 40px)',
                 lineHeight: '1.8'
               }}
             >
@@ -469,16 +628,20 @@ export default function Home() {
               href="/shop?category=garments"
               style={{
                 display: 'inline-block',
-                padding: '18px 45px',
+                padding: 'clamp(14px, 3vw, 18px) clamp(30px, 6vw, 45px)',
                 backgroundColor: '#1a1a2e',
                 color: '#fff',
-                fontSize: '18px',
+                fontSize: 'clamp(14px, 3vw, 18px)',
                 fontWeight: '700',
                 borderRadius: '10px',
                 textDecoration: 'none',
                 transition: 'all 0.3s ease',
-                boxShadow: '0 8px 25px rgba(26, 26, 46, 0.3)'
+                boxShadow: '0 8px 25px rgba(26, 26, 46, 0.3)',
+                width: '100%',
+                maxWidth: '300px',
+                textAlign: 'center'
               }}
+              className="section-button"
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-3px) scale(1.05)';
                 e.currentTarget.style.boxShadow = '0 12px 35px rgba(26, 26, 46, 0.5)';
@@ -497,12 +660,15 @@ export default function Home() {
             style={{
               position: 'relative',
               zIndex: 1,
-              height: '500px',
+              height: 'clamp(300px, 60vw, 500px)',
+              minHeight: '300px',
               perspective: '1000px',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              marginTop: 'clamp(20px, 4vw, 0px)'
             }}
+            className="garments-carousel"
           >
             {garmentsImages.map((image, index) => {
               const isActive = index === currentCardIndex;
@@ -545,8 +711,8 @@ export default function Home() {
                   key={index}
                   style={{
                     position: 'absolute',
-                    width: '400px',
-                    height: '450px',
+                    width: 'clamp(280px, 70vw, 400px)',
+                    height: 'clamp(320px, 80vw, 450px)',
                     transformStyle: 'preserve-3d',
                     transform: `translateY(${translateY}px) rotateY(${rotateY}deg) scale(${scale})`,
                     opacity: opacity,
@@ -555,6 +721,7 @@ export default function Home() {
                     cursor: 'pointer'
                   }}
                   onClick={() => setCurrentCardIndex(index)}
+                  className="garment-card"
                 >
                   <div
                     style={{
@@ -623,41 +790,49 @@ export default function Home() {
       <section
         style={{
           width: '100%',
-          minHeight: '500px',
+          minHeight: 'auto',
           position: 'relative',
           overflow: 'hidden',
           backgroundColor: '#f8f9fa',
-          padding: '80px 20px'
+          padding: 'clamp(40px, 8vw, 80px) clamp(15px, 4vw, 20px)'
         }}
+        className="purse-section"
       >
         <div
           style={{
             maxWidth: '1400px',
             margin: '0 auto',
             display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '60px',
+            gridTemplateColumns: '1fr',
+            gap: 'clamp(30px, 6vw, 60px)',
             alignItems: 'center'
           }}
+          className="purse-grid"
         >
           {/* Left Side - Collage Style Bag Cards */}
           <div
             style={{
               position: 'relative',
               zIndex: 1,
-              height: '500px',
+              height: 'clamp(350px, 70vw, 500px)',
+              minHeight: '350px',
               width: '100%',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              marginTop: 'clamp(20px, 4vw, 0px)'
             }}
+            className="purse-collage"
           >
             <div
               style={{
                 position: 'relative',
-                width: '500px',
-                height: '480px'
+                width: '100%',
+                maxWidth: '500px',
+                height: 'clamp(350px, 70vw, 480px)',
+                minHeight: '350px'
               }}
+              className="purse-collage-container"
             >
               {/* Card 1 - Top Left */}
               <div
@@ -1018,12 +1193,13 @@ export default function Home() {
       <section
         style={{
           width: '100%',
-          minHeight: '500px',
+          minHeight: 'auto',
           position: 'relative',
           overflow: 'hidden',
           backgroundColor: '#fff',
-          padding: '80px 20px'
+          padding: 'clamp(40px, 8vw, 80px) clamp(15px, 4vw, 20px)'
         }}
+        className="cosmetics-section"
       >
         <div
           style={{
@@ -1104,10 +1280,11 @@ export default function Home() {
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-              gap: '30px',
-              marginBottom: '40px'
+              gridTemplateColumns: 'repeat(auto-fit, minmax(clamp(200px, 40vw, 250px), 1fr))',
+              gap: 'clamp(15px, 3vw, 30px)',
+              marginBottom: 'clamp(30px, 5vw, 40px)'
             }}
+            className="cosmetics-grid"
           >
             {[
               'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=300&fit=crop',
@@ -1181,22 +1358,24 @@ export default function Home() {
       <section
         style={{
           width: '100%',
-          minHeight: '600px',
+          minHeight: 'auto',
           position: 'relative',
           overflow: 'hidden',
           background: 'linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)',
-          padding: '80px 20px'
+          padding: 'clamp(40px, 8vw, 80px) clamp(15px, 4vw, 20px)'
         }}
+        className="lace-section"
       >
         <div
           style={{
             maxWidth: '1400px',
             margin: '0 auto',
             display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '60px',
+            gridTemplateColumns: '1fr',
+            gap: 'clamp(30px, 6vw, 60px)',
             alignItems: 'center'
           }}
+          className="lace-grid"
         >
           {/* Left Side - Text Content */}
           <div style={{ position: 'relative', zIndex: 2 }}>
@@ -1450,12 +1629,13 @@ export default function Home() {
       <section
         style={{
           width: '100%',
-          minHeight: '500px',
+          minHeight: 'auto',
           position: 'relative',
           overflow: 'hidden',
           backgroundColor: '#f8f9fa',
-          padding: '80px 20px'
+          padding: 'clamp(40px, 8vw, 80px) clamp(15px, 4vw, 20px)'
         }}
+        className="jewellery-section"
       >
         <div
           style={{
@@ -1519,12 +1699,13 @@ export default function Home() {
           <div
             style={{
               display: 'flex',
-              gap: '30px',
+              gap: 'clamp(15px, 3vw, 30px)',
               justifyContent: 'center',
               alignItems: 'center',
               flexWrap: 'wrap',
-              marginBottom: '50px'
+              marginBottom: 'clamp(30px, 5vw, 50px)'
             }}
+            className="jewellery-showcase"
           >
             {[
               'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=450&h=400&fit=crop',
@@ -1539,8 +1720,9 @@ export default function Home() {
                   boxShadow: '0 20px 60px rgba(0, 0, 0, 0.15)',
                   transition: 'transform 0.3s ease',
                   flex: '1',
-                  minWidth: '300px',
-                  maxWidth: '450px'
+                  minWidth: 'clamp(280px, 80vw, 300px)',
+                  maxWidth: '450px',
+                  width: '100%'
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-15px) scale(1.03)';
@@ -1600,12 +1782,13 @@ export default function Home() {
       <section
         style={{
           width: '100%',
-          minHeight: '600px',
+          minHeight: 'auto',
           position: 'relative',
           overflow: 'hidden',
-          padding: '80px 20px',
+          padding: 'clamp(40px, 8vw, 80px) clamp(15px, 4vw, 20px)',
           background: '#f5f5f5'
         }}
+        className="general-store-section"
       >
         <div
           style={{
@@ -1618,26 +1801,29 @@ export default function Home() {
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
+              gridTemplateColumns: '1fr',
               gap: '0',
-              minHeight: '500px',
+              minHeight: 'auto',
               borderRadius: '20px',
               overflow: 'hidden',
               boxShadow: '0 20px 60px rgba(0,0,0,0.15)'
             }}
+            className="general-store-grid"
           >
             {/* Left Side - Yellow Promotional */}
             <div
               style={{
                 background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
-                padding: '60px 50px',
+                padding: 'clamp(30px, 6vw, 60px) clamp(25px, 5vw, 50px)',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center',
                 position: 'relative',
-                clipPath: 'polygon(0 0, 85% 0, 100% 100%, 0 100%)',
-                overflow: 'hidden'
+                clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)',
+                overflow: 'hidden',
+                minHeight: '300px'
               }}
+              className="promo-left"
             >
               {/* Animated Background Decorations */}
               <div
@@ -1792,13 +1978,15 @@ export default function Home() {
             <div
               style={{
                 background: '#fff',
-                padding: '40px',
+                padding: 'clamp(25px, 5vw, 40px)',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
                 position: 'relative',
-                overflow: 'hidden'
+                overflow: 'hidden',
+                minHeight: '300px'
               }}
+              className="promo-right"
             >
               {/* Animated Background Pattern */}
               <div

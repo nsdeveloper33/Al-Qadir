@@ -1,9 +1,39 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+
 export default function WhatsAppFab() {
+  const [whatsappNumber, setWhatsappNumber] = useState('923001234567');
+
+  useEffect(() => {
+    // Fetch contact settings asynchronously (non-blocking)
+    const controller = new AbortController();
+    
+    fetch('/api/contact-settings', { 
+      signal: controller.signal,
+      cache: 'no-store'
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.settings?.whatsapp) {
+          setWhatsappNumber(data.settings.whatsapp);
+        }
+      })
+      .catch((err) => {
+        // Keep default value on error (already set in state)
+        if (err.name !== 'AbortError') {
+          // Silently fail - default is already set
+        }
+      });
+
+    return () => {
+      controller.abort(); // Cleanup on unmount
+    };
+  }, []);
+
   return (
     <a
-      href="https://wa.me/923001234567"
+      href={`https://wa.me/${whatsappNumber}`}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Chat on WhatsApp"

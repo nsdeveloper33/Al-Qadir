@@ -8,6 +8,13 @@ interface AdminProfile {
   email: string;
 }
 
+interface ContactSettings {
+  whatsapp: string;
+  phone: string;
+  email: string;
+  address: string;
+}
+
 export default function AdminProfile() {
   const router = useRouter();
   const [profile, setProfile] = useState<AdminProfile | null>(null);
@@ -15,15 +22,26 @@ export default function AdminProfile() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [activeTab, setActiveTab] = useState<'account' | 'contact'>('account');
   
   // Form fields
   const [email, setEmail] = useState('');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  
+  // Contact settings
+  const [contactSettings, setContactSettings] = useState<ContactSettings>({
+    whatsapp: '923001234567',
+    phone: '+92 300 1234567',
+    email: 'info@alqadir.com',
+    address: 'Vehari, Pakistan'
+  });
+  const [savingContact, setSavingContact] = useState(false);
 
   useEffect(() => {
     fetchProfile();
+    fetchContactSettings();
   }, []);
 
   const fetchProfile = async () => {
@@ -41,6 +59,49 @@ export default function AdminProfile() {
       setError('An error occurred while loading profile');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchContactSettings = async () => {
+    try {
+      const response = await fetch('/api/admin/contact-settings');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.settings) {
+          setContactSettings(data.settings);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load contact settings:', error);
+    }
+  };
+
+  const handleSaveContactSettings = async () => {
+    setSavingContact(true);
+    setError('');
+    setSuccess('');
+    
+    try {
+      const response = await fetch('/api/admin/contact-settings', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(contactSettings),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setSuccess('Contact settings updated successfully!');
+        setTimeout(() => setSuccess(''), 3000);
+      } else {
+        setError(data.error || 'Failed to update contact settings');
+      }
+    } catch {
+      setError('An error occurred. Please try again.');
+    } finally {
+      setSavingContact(false);
     }
   };
 
@@ -181,7 +242,7 @@ export default function AdminProfile() {
       }}>
         <div style={{
           width: '100%',
-          maxWidth: '600px',
+          maxWidth: '700px',
         }}>
         {/* Page Title */}
         <div style={{ marginBottom: '24px', textAlign: 'center' }}>
@@ -189,8 +250,55 @@ export default function AdminProfile() {
             Profile Settings
           </h1>
           <p style={{ color: '#666', fontSize: '15px' }}>
-            Manage your admin account email and password
+            Manage your admin account and contact information
           </p>
+        </div>
+
+        {/* Tabs */}
+        <div style={{
+          display: 'flex',
+          gap: '8px',
+          marginBottom: '24px',
+          backgroundColor: '#f8f9fa',
+          padding: '6px',
+          borderRadius: '12px',
+        }}>
+          <button
+            type="button"
+            onClick={() => setActiveTab('account')}
+            style={{
+              flex: 1,
+              padding: '12px 20px',
+              fontSize: '15px',
+              fontWeight: '600',
+              color: activeTab === 'account' ? '#fff' : '#666',
+              backgroundColor: activeTab === 'account' ? '#3498db' : 'transparent',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+            }}
+          >
+            Account Settings
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('contact')}
+            style={{
+              flex: 1,
+              padding: '12px 20px',
+              fontSize: '15px',
+              fontWeight: '600',
+              color: activeTab === 'contact' ? '#fff' : '#666',
+              backgroundColor: activeTab === 'contact' ? '#4CAF50' : 'transparent',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+            }}
+          >
+            Contact Information
+          </button>
         </div>
 
         {/* Success Message */}
@@ -243,11 +351,14 @@ export default function AdminProfile() {
           backgroundColor: '#fff',
           borderRadius: '16px',
           boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-          padding: '40px',
+          padding: '32px',
         }}>
-        <form onSubmit={handleSubmit}>
+        
+        {/* Account Settings Tab */}
+        {activeTab === 'account' && (
+          <form onSubmit={handleSubmit}>
           {/* Email Field */}
-          <div style={{ marginBottom: '28px' }}>
+          <div style={{ marginBottom: '24px' }}>
             <label style={{
               display: 'block',
               fontSize: '15px',
@@ -288,28 +399,28 @@ export default function AdminProfile() {
 
           {/* Password Update Section */}
           <div style={{
-            marginTop: '32px',
-            paddingTop: '32px',
+            marginTop: '24px',
+            paddingTop: '24px',
             borderTop: '1px solid #eee',
           }}>
             <h3 style={{
               fontSize: '16px',
               fontWeight: '600',
               color: '#2c3e50',
-              marginBottom: '16px',
+              marginBottom: '12px',
             }}>
               Change Password
             </h3>
             <p style={{
               fontSize: '13px',
               color: '#666',
-              marginBottom: '20px',
+              marginBottom: '18px',
             }}>
               Leave blank if you don&apos;t want to change your password
             </p>
 
             {/* Current Password */}
-            <div style={{ marginBottom: '24px' }}>
+            <div style={{ marginBottom: '20px' }}>
               <label style={{
                 display: 'block',
                 fontSize: '15px',
@@ -348,7 +459,7 @@ export default function AdminProfile() {
             </div>
 
             {/* New Password */}
-            <div style={{ marginBottom: '24px' }}>
+            <div style={{ marginBottom: '20px' }}>
               <label style={{
                 display: 'block',
                 fontSize: '15px',
@@ -387,7 +498,7 @@ export default function AdminProfile() {
             </div>
 
             {/* Confirm Password */}
-            <div style={{ marginBottom: '28px' }}>
+            <div style={{ marginBottom: '24px' }}>
               <label style={{
                 display: 'block',
                 fontSize: '15px',
@@ -430,7 +541,7 @@ export default function AdminProfile() {
           <div style={{
             display: 'flex',
             gap: '12px',
-            marginTop: '32px',
+            marginTop: '24px',
             paddingTop: '24px',
             borderTop: '1px solid #eee',
           }}>
@@ -439,8 +550,8 @@ export default function AdminProfile() {
               disabled={saving}
               style={{
                 flex: 1,
-                padding: '16px 24px',
-                fontSize: '16px',
+                padding: '14px 24px',
+                fontSize: '15px',
                 fontWeight: '600',
                 color: '#fff',
                 backgroundColor: saving ? '#95a5a6' : '#3498db',
@@ -465,15 +576,15 @@ export default function AdminProfile() {
                 }
               }}
             >
-              {saving ? 'Saving...' : 'Save Changes'}
+              {saving ? 'Saving...' : 'Save Account Changes'}
             </button>
             
             <button
               type="button"
               onClick={handleLogout}
               style={{
-                padding: '16px 28px',
-                fontSize: '16px',
+                padding: '14px 24px',
+                fontSize: '15px',
                 fontWeight: '600',
                 color: '#e74c3c',
                 backgroundColor: 'transparent',
@@ -495,6 +606,223 @@ export default function AdminProfile() {
             </button>
           </div>
         </form>
+        )}
+
+        {/* Contact Information Tab */}
+        {activeTab === 'contact' && (
+          <div>
+            <h3 style={{
+              fontSize: '18px',
+              fontWeight: '600',
+              color: '#2c3e50',
+              marginBottom: '12px',
+            }}>
+              Contact Information
+            </h3>
+            <p style={{
+              fontSize: '13px',
+              color: '#666',
+              marginBottom: '24px',
+            }}>
+              Update contact details that appear on the website (Footer, About Us page, WhatsApp button)
+            </p>
+
+            {/* WhatsApp Number */}
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{
+                display: 'block',
+                fontSize: '15px',
+                fontWeight: '600',
+                color: '#2c3e50',
+                marginBottom: '10px',
+              }}>
+                WhatsApp Number <span style={{ color: '#e74c3c' }}>*</span>
+              </label>
+              <input
+                type="text"
+                value={contactSettings.whatsapp}
+                onChange={(e) => setContactSettings({ ...contactSettings, whatsapp: e.target.value })}
+                placeholder="923001234567 (without + or spaces)"
+                style={{
+                  width: '100%',
+                  padding: '14px 18px',
+                  fontSize: '15px',
+                  color: '#2c3e50',
+                  backgroundColor: '#fff',
+                  border: '2px solid #e0e0e0',
+                  borderRadius: '10px',
+                  outline: 'none',
+                  transition: 'all 0.2s',
+                  boxSizing: 'border-box',
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#3498db';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(52, 152, 219, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#e0e0e0';
+                  e.target.style.boxShadow = 'none';
+                }}
+              />
+              <p style={{ fontSize: '12px', color: '#999', marginTop: '6px' }}>
+                Format: 923001234567 (country code + number, no spaces or +)
+              </p>
+            </div>
+
+            {/* Phone Number */}
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{
+                display: 'block',
+                fontSize: '15px',
+                fontWeight: '600',
+                color: '#2c3e50',
+                marginBottom: '10px',
+              }}>
+                Phone Number (Display)
+              </label>
+              <input
+                type="text"
+                value={contactSettings.phone}
+                onChange={(e) => setContactSettings({ ...contactSettings, phone: e.target.value })}
+                placeholder="+92 300 1234567"
+                style={{
+                  width: '100%',
+                  padding: '14px 18px',
+                  fontSize: '15px',
+                  color: '#2c3e50',
+                  backgroundColor: '#fff',
+                  border: '2px solid #e0e0e0',
+                  borderRadius: '10px',
+                  outline: 'none',
+                  transition: 'all 0.2s',
+                  boxSizing: 'border-box',
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#3498db';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(52, 152, 219, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#e0e0e0';
+                  e.target.style.boxShadow = 'none';
+                }}
+              />
+            </div>
+
+            {/* Email */}
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{
+                display: 'block',
+                fontSize: '15px',
+                fontWeight: '600',
+                color: '#2c3e50',
+                marginBottom: '10px',
+              }}>
+                Email Address
+              </label>
+              <input
+                type="email"
+                value={contactSettings.email}
+                onChange={(e) => setContactSettings({ ...contactSettings, email: e.target.value })}
+                placeholder="info@alqadir.com"
+                style={{
+                  width: '100%',
+                  padding: '14px 18px',
+                  fontSize: '15px',
+                  color: '#2c3e50',
+                  backgroundColor: '#fff',
+                  border: '2px solid #e0e0e0',
+                  borderRadius: '10px',
+                  outline: 'none',
+                  transition: 'all 0.2s',
+                  boxSizing: 'border-box',
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#3498db';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(52, 152, 219, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#e0e0e0';
+                  e.target.style.boxShadow = 'none';
+                }}
+              />
+            </div>
+
+            {/* Address */}
+            <div style={{ marginBottom: '24px' }}>
+              <label style={{
+                display: 'block',
+                fontSize: '15px',
+                fontWeight: '600',
+                color: '#2c3e50',
+                marginBottom: '10px',
+              }}>
+                Address
+              </label>
+              <input
+                type="text"
+                value={contactSettings.address}
+                onChange={(e) => setContactSettings({ ...contactSettings, address: e.target.value })}
+                placeholder="Vehari, Pakistan"
+                style={{
+                  width: '100%',
+                  padding: '14px 18px',
+                  fontSize: '15px',
+                  color: '#2c3e50',
+                  backgroundColor: '#fff',
+                  border: '2px solid #e0e0e0',
+                  borderRadius: '10px',
+                  outline: 'none',
+                  transition: 'all 0.2s',
+                  boxSizing: 'border-box',
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#3498db';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(52, 152, 219, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#e0e0e0';
+                  e.target.style.boxShadow = 'none';
+                }}
+              />
+            </div>
+
+            {/* Save Contact Settings Button */}
+            <button
+              type="button"
+              onClick={handleSaveContactSettings}
+              disabled={savingContact}
+              style={{
+                width: '100%',
+                padding: '14px 24px',
+                fontSize: '15px',
+                fontWeight: '600',
+                color: '#fff',
+                backgroundColor: savingContact ? '#95a5a6' : '#4CAF50',
+                border: 'none',
+                borderRadius: '10px',
+                cursor: savingContact ? 'not-allowed' : 'pointer',
+                transition: 'all 0.2s',
+                boxShadow: savingContact ? 'none' : '0 2px 8px rgba(76, 175, 80, 0.3)',
+              }}
+              onMouseEnter={(e) => {
+                if (!savingContact) {
+                  e.currentTarget.style.backgroundColor = '#45a049';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(76, 175, 80, 0.4)';
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!savingContact) {
+                  e.currentTarget.style.backgroundColor = '#4CAF50';
+                  e.currentTarget.style.boxShadow = '0 2px 8px rgba(76, 175, 80, 0.3)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }
+              }}
+            >
+              {savingContact ? 'Saving...' : 'Save Contact Settings'}
+            </button>
+          </div>
+        )}
         </div>
       </div>
     </div>

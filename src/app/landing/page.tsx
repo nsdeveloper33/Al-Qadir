@@ -16,16 +16,17 @@ export default function LandingPage() {
         style={{ 
           width: '100%',
           backgroundColor: '#eeeeee',
-          paddingTop: '20px',
-          paddingBottom: '20px'
+          paddingTop: 'clamp(15px, 3vw, 20px)',
+          paddingBottom: 'clamp(15px, 3vw, 20px)'
         }}
+        className="landing-banner-section"
       >
         <div
           style={{
             maxWidth: '1300px',
             margin: '0 auto',
-            paddingLeft: '15px',
-            paddingRight: '15px'
+            paddingLeft: 'clamp(10px, 2vw, 15px)',
+            paddingRight: 'clamp(10px, 2vw, 15px)'
           }}
         >
           <div
@@ -45,10 +46,13 @@ export default function LandingPage() {
               style={{
                 width: '100%',
                 height: 'auto',
+                minHeight: 'clamp(200px, 40vw, 400px)',
+                maxHeight: '400px',
                 objectFit: 'cover',
                 display: 'block'
               }}
               priority
+              className="landing-banner-image"
             />
           </div>
         </div>
@@ -58,26 +62,30 @@ export default function LandingPage() {
       <div
         style={{
           maxWidth: '1300px',
-          margin: '40px auto',
-          paddingLeft: '15px',
-          paddingRight: '15px',
+          margin: 'clamp(20px, 4vw, 40px) auto',
+          paddingLeft: 'clamp(10px, 2vw, 15px)',
+          paddingRight: 'clamp(10px, 2vw, 15px)',
           textAlign: 'center'
         }}
+        className="landing-cta-section"
       >
         <Link
           href="/"
           style={{
             display: 'inline-block',
-            padding: '16px 32px',
+            padding: 'clamp(12px, 2.5vw, 16px) clamp(24px, 5vw, 32px)',
             backgroundColor: '#1a1a2e',
             color: '#fff',
-            fontSize: '18px',
+            fontSize: 'clamp(14px, 3vw, 18px)',
             fontWeight: '600',
             borderRadius: '10px',
             textDecoration: 'none',
             boxShadow: '0 4px 12px rgba(26, 26, 46, 0.3)',
-            transition: 'all 0.3s ease'
+            transition: 'all 0.3s ease',
+            width: '100%',
+            maxWidth: '300px'
           }}
+          className="landing-cta-button"
           onMouseEnter={(e) => {
             e.currentTarget.style.backgroundColor = '#4CAF50';
             e.currentTarget.style.transform = 'translateY(-2px)';

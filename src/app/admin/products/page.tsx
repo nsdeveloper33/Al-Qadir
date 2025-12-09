@@ -443,33 +443,41 @@ function ProductModal({ isOpen, onClose, product, onSave, t }: ProductModalProps
         </div>
 
         {/* Step Indicator */}
-        <div style={{ padding: '20px 24px', backgroundColor: '#fafafa', borderBottom: '1px solid #eee' }}>
+        <div style={{ padding: '24px', backgroundColor: '#fafafa', borderBottom: '1px solid #eee' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             {steps.map((step, index) => (
               <div key={step.num} style={{ display: 'flex', alignItems: 'center', flex: index < steps.length - 1 ? 1 : 'none' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 1 }}>
                   <div
                     style={{
-                      width: '44px',
-                      height: '44px',
+                      width: '48px',
+                      height: '48px',
                       borderRadius: '50%',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '18px',
-                      backgroundColor: currentStep >= step.num ? '#4CAF50' : '#e0e0e0',
+                      fontSize: '20px',
+                      backgroundColor: currentStep === step.num ? '#4CAF50' : currentStep > step.num ? '#4CAF50' : '#e0e0e0',
                       color: currentStep >= step.num ? '#fff' : '#999',
-                      transition: 'all 0.3s',
+                      transition: 'all 0.3s ease',
                       boxShadow: currentStep === step.num ? '0 4px 12px rgba(76, 175, 80, 0.4)' : 'none',
+                      border: currentStep === step.num ? '2px solid #4CAF50' : '2px solid transparent',
                     }}
                   >
-                    {currentStep > step.num ? '✓' : step.icon}
+                    {currentStep > step.num ? (
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                    ) : (
+                      <span>{step.icon}</span>
+                    )}
                   </div>
                   <span style={{ 
                     fontSize: '12px', 
-                    marginTop: '8px', 
+                    marginTop: '10px', 
                     color: currentStep >= step.num ? '#1a1a2e' : '#999',
                     fontWeight: currentStep === step.num ? '600' : '400',
+                    textAlign: 'center',
                   }}>
                     {step.label}
                   </span>
@@ -478,12 +486,12 @@ function ProductModal({ isOpen, onClose, product, onSave, t }: ProductModalProps
                   <div
                     style={{
                       flex: 1,
-                      height: '3px',
+                      height: '2px',
                       backgroundColor: currentStep > step.num ? '#4CAF50' : '#e0e0e0',
-                      margin: '0 12px',
-                      marginBottom: '24px',
-                      borderRadius: '2px',
-                      transition: 'background-color 0.3s',
+                      margin: '0 16px',
+                      marginBottom: '34px',
+                      borderRadius: '1px',
+                      transition: 'background-color 0.3s ease',
                     }}
                   />
                 )}
@@ -502,7 +510,7 @@ function ProductModal({ isOpen, onClose, product, onSave, t }: ProductModalProps
         )}
 
         {/* Step Content */}
-        <div style={{ padding: '24px', maxHeight: '350px', overflowY: 'auto' }}>
+        <div style={{ padding: '24px', maxHeight: '400px', overflowY: 'auto' }}>
           
           {/* Step 1: Basic Info */}
           {currentStep === 1 && (
@@ -532,6 +540,17 @@ function ProductModal({ isOpen, onClose, product, onSave, t }: ProductModalProps
                       color: '#000',
                       outline: 'none',
                       textAlign: 'left',
+                      transition: 'border-color 0.2s ease',
+                    }}
+                    onFocus={(e) => {
+                      if (!fieldErrors.title) {
+                        e.target.style.borderColor = '#4CAF50';
+                      }
+                    }}
+                    onBlur={(e) => {
+                      if (!fieldErrors.title) {
+                        e.target.style.borderColor = '#e8e8e8';
+                      }
                     }}
                   />
                   {fieldErrors.title && (
@@ -559,6 +578,14 @@ function ProductModal({ isOpen, onClose, product, onSave, t }: ProductModalProps
                       color: '#000',
                       backgroundColor: '#fff',
                       cursor: 'pointer',
+                      outline: 'none',
+                      transition: 'border-color 0.2s ease',
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#4CAF50';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#e8e8e8';
                     }}
                   >
                     {categories.filter(c => c.id !== 'all').map((cat) => (
@@ -582,6 +609,14 @@ function ProductModal({ isOpen, onClose, product, onSave, t }: ProductModalProps
                       color: '#000',
                       backgroundColor: '#fff',
                       cursor: 'pointer',
+                      outline: 'none',
+                      transition: 'border-color 0.2s ease',
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#4CAF50';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#e8e8e8';
                     }}
                   >
                     <option value="active">{t('admin.active')}</option>
@@ -596,58 +631,68 @@ function ProductModal({ isOpen, onClose, product, onSave, t }: ProductModalProps
                   <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#1a1a2e', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                     {t('admin.form.originalPrice')} <span style={{ color: '#e53935' }}>*</span>
                   </label>
-                  <div style={{ position: 'relative' }}>
-                    <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#999', fontSize: '14px' }}>$</span>
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.1"
-                      value={formData.originalPrice || ''}
-                      onChange={(e) => {
-                        const newOriginalPrice = parseFloat(e.target.value) || 0;
-                        
-                        // Auto-calculate current price based on discount (if discount is set)
-                        const autoCurrentPrice = formData.discount > 0
-                          ? newOriginalPrice * (1 - formData.discount / 100)
-                          : formData.currentPrice;
-                        
-                        setFormData({ 
-                          ...formData, 
-                          originalPrice: newOriginalPrice,
-                          currentPrice: formData.discount > 0 ? parseFloat(autoCurrentPrice.toFixed(2)) : formData.currentPrice
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    value={formData.originalPrice || ''}
+                    onChange={(e) => {
+                      const newOriginalPrice = parseFloat(e.target.value) || 0;
+                      
+                      // Auto-calculate current price based on discount (if discount is set)
+                      const autoCurrentPrice = formData.discount > 0
+                        ? newOriginalPrice * (1 - formData.discount / 100)
+                        : formData.currentPrice;
+                      
+                      setFormData({ 
+                        ...formData, 
+                        originalPrice: newOriginalPrice,
+                        currentPrice: formData.discount > 0 ? parseFloat(autoCurrentPrice.toFixed(2)) : formData.currentPrice
+                      });
+                      
+                      // Auto-update all tier prices based on their discounts
+                      if (newOriginalPrice > 0) {
+                        const updatedTiers = pricingTiers.map(tier => {
+                          if ((tier.discount || 0) > 0) {
+                            const normalPrice = newOriginalPrice * tier.quantity;
+                            const autoTierPrice = normalPrice * (1 - (tier.discount || 0) / 100);
+                            return {
+                              ...tier,
+                              price: parseFloat(autoTierPrice.toFixed(2))
+                            };
+                          }
+                          return tier;
                         });
-                        
-                        // Auto-update all tier prices based on their discounts
-                        if (newOriginalPrice > 0) {
-                          const updatedTiers = pricingTiers.map(tier => {
-                            if ((tier.discount || 0) > 0) {
-                              const normalPrice = newOriginalPrice * tier.quantity;
-                              const autoTierPrice = normalPrice * (1 - (tier.discount || 0) / 100);
-                              return {
-                                ...tier,
-                                price: parseFloat(autoTierPrice.toFixed(2))
-                              };
-                            }
-                            return tier;
-                          });
-                          setPricingTiers(updatedTiers);
-                        }
-                        
-                        // Clear error when user types
-                        if (fieldErrors.originalPrice) {
-                          setFieldErrors(prev => ({ ...prev, originalPrice: '' }));
-                        }
-                      }}
-                      style={{
-                        width: '100%',
-                        padding: '12px 14px 12px 28px',
-                        border: fieldErrors.originalPrice ? '2px solid #e53935' : '2px solid #e8e8e8',
-                        borderRadius: '10px',
-                        fontSize: '14px',
-                        color: '#000',
-                      }}
-                    />
-                  </div>
+                        setPricingTiers(updatedTiers);
+                      }
+                      
+                      // Clear error when user types
+                      if (fieldErrors.originalPrice) {
+                        setFieldErrors(prev => ({ ...prev, originalPrice: '' }));
+                      }
+                    }}
+                    placeholder="Enter price"
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      border: fieldErrors.originalPrice ? '2px solid #e53935' : '2px solid #e8e8e8',
+                      borderRadius: '10px',
+                      fontSize: '14px',
+                      color: '#000',
+                      outline: 'none',
+                      transition: 'border-color 0.2s ease',
+                    }}
+                    onFocus={(e) => {
+                      if (!fieldErrors.originalPrice) {
+                        e.target.style.borderColor = '#4CAF50';
+                      }
+                    }}
+                    onBlur={(e) => {
+                      if (!fieldErrors.originalPrice) {
+                        e.target.style.borderColor = '#e8e8e8';
+                      }
+                    }}
+                  />
                   {fieldErrors.originalPrice && (
                     <p style={{ color: '#e53935', fontSize: '12px', marginTop: '4px', fontWeight: '500' }}>
                       ⚠️ {fieldErrors.originalPrice}
@@ -658,42 +703,52 @@ function ProductModal({ isOpen, onClose, product, onSave, t }: ProductModalProps
                   <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#1a1a2e', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                     {t('admin.form.currentPrice')} <span style={{ color: '#e53935' }}>*</span>
                   </label>
-                  <div style={{ position: 'relative' }}>
-                    <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#999', fontSize: '14px' }}>$</span>
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={formData.currentPrice || ''}
-                      onChange={(e) => {
-                        const newCurrentPrice = parseFloat(e.target.value) || 0;
-                        
-                        // Auto-calculate discount based on current price
-                        const autoDiscount = formData.originalPrice > 0
-                          ? Math.round(((formData.originalPrice - newCurrentPrice) / formData.originalPrice) * 100)
-                          : 0;
-                        
-                        setFormData({ 
-                          ...formData, 
-                          currentPrice: newCurrentPrice,
-                          discount: autoDiscount >= 0 ? autoDiscount : 0
-                        });
-                        
-                        // Clear error when user types
-                        if (fieldErrors.currentPrice) {
-                          setFieldErrors(prev => ({ ...prev, currentPrice: '' }));
-                        }
-                      }}
-                      style={{
-                        width: '100%',
-                        padding: '12px 14px 12px 28px',
-                        border: fieldErrors.currentPrice ? '2px solid #e53935' : '2px solid #e8e8e8',
-                        borderRadius: '10px',
-                        fontSize: '14px',
-                        color: '#000',
-                      }}
-                    />
-                  </div>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={formData.currentPrice || ''}
+                    onChange={(e) => {
+                      const newCurrentPrice = parseFloat(e.target.value) || 0;
+                      
+                      // Auto-calculate discount based on current price
+                      const autoDiscount = formData.originalPrice > 0
+                        ? Math.round(((formData.originalPrice - newCurrentPrice) / formData.originalPrice) * 100)
+                        : 0;
+                      
+                      setFormData({ 
+                        ...formData, 
+                        currentPrice: newCurrentPrice,
+                        discount: autoDiscount >= 0 ? autoDiscount : 0
+                      });
+                      
+                      // Clear error when user types
+                      if (fieldErrors.currentPrice) {
+                        setFieldErrors(prev => ({ ...prev, currentPrice: '' }));
+                      }
+                    }}
+                    placeholder="Enter price"
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      border: fieldErrors.currentPrice ? '2px solid #e53935' : '2px solid #e8e8e8',
+                      borderRadius: '10px',
+                      fontSize: '14px',
+                      color: '#000',
+                      outline: 'none',
+                      transition: 'border-color 0.2s ease',
+                    }}
+                    onFocus={(e) => {
+                      if (!fieldErrors.currentPrice) {
+                        e.target.style.borderColor = '#4CAF50';
+                      }
+                    }}
+                    onBlur={(e) => {
+                      if (!fieldErrors.currentPrice) {
+                        e.target.style.borderColor = '#e8e8e8';
+                      }
+                    }}
+                  />
                   {fieldErrors.currentPrice && (
                     <p style={{ color: '#e53935', fontSize: '12px', marginTop: '4px', fontWeight: '500' }}>
                       ⚠️ {fieldErrors.currentPrice}
@@ -739,6 +794,16 @@ function ProductModal({ isOpen, onClose, product, onSave, t }: ProductModalProps
                       color: '#000',
                       outline: 'none',
                       transition: 'border-color 0.2s ease',
+                    }}
+                    onFocus={(e) => {
+                      if (!fieldErrors.discount) {
+                        e.target.style.borderColor = '#4CAF50';
+                      }
+                    }}
+                    onBlur={(e) => {
+                      if (!fieldErrors.discount) {
+                        e.target.style.borderColor = '#e8e8e8';
+                      }
                     }}
                   />
                   {fieldErrors.discount && (
@@ -946,6 +1011,14 @@ function ProductModal({ isOpen, onClose, product, onSave, t }: ProductModalProps
                     color: '#000',
                     resize: 'none',
                     textAlign: 'left',
+                    outline: 'none',
+                    transition: 'border-color 0.2s ease',
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#4CAF50';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#e8e8e8';
                   }}
                 />
               </div>
@@ -1355,6 +1428,15 @@ function ProductModal({ isOpen, onClose, product, onSave, t }: ProductModalProps
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '8px',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#f5f5f5';
+                e.currentTarget.style.borderColor = '#d0d0d0';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#fff';
+                e.currentTarget.style.borderColor = '#e0e0e0';
               }}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -1401,6 +1483,17 @@ function ProductModal({ isOpen, onClose, product, onSave, t }: ProductModalProps
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '8px',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'linear-gradient(135deg, #45a049 0%, #3d8b40 100%)';
+                e.currentTarget.style.boxShadow = '0 6px 16px rgba(76, 175, 80, 0.4)';
+                e.currentTarget.style.transform = 'translateY(-1px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(76, 175, 80, 0.3)';
+                e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
               {t('admin.next')}
@@ -1429,6 +1522,21 @@ function ProductModal({ isOpen, onClose, product, onSave, t }: ProductModalProps
                 justifyContent: 'center',
                 gap: '8px',
                 opacity: isSubmitting ? 0.7 : 1,
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                if (!isSubmitting) {
+                  e.currentTarget.style.background = 'linear-gradient(135deg, #45a049 0%, #3d8b40 100%)';
+                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(76, 175, 80, 0.4)';
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isSubmitting) {
+                  e.currentTarget.style.background = 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(76, 175, 80, 0.3)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }
               }}
             >
               {isSubmitting ? (

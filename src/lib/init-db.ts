@@ -78,6 +78,20 @@ export async function initDatabase() {
       )
     `;
 
+    // Create contact_settings table
+    await sql`
+      CREATE TABLE IF NOT EXISTS contact_settings (
+        id INTEGER PRIMARY KEY DEFAULT 1,
+        whatsapp TEXT NOT NULL DEFAULT '923001234567',
+        phone TEXT DEFAULT '+92 300 1234567',
+        email TEXT DEFAULT 'info@alqadir.com',
+        address TEXT DEFAULT 'Vehari, Pakistan',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        CONSTRAINT single_row CHECK (id = 1)
+      )
+    `;
+
     // Create indexes for better performance
     await sql`CREATE INDEX IF NOT EXISTS idx_products_category ON products(category)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_products_status ON products(status)`;
