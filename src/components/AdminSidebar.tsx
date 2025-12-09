@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { 
@@ -100,22 +100,39 @@ const statusLabels: Record<string, string> = {
 function AdminSidebarContent({ isOpen, onClose, isMobile = false }: AdminSidebarProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [categoriesOpen, setCategoriesOpen] = useState(false);
-  const [ordersOpen, setOrdersOpen] = useState(false);
   
   // Get active category and status from URL
   const activeCategory = searchParams.get('category');
   const activeStatus = searchParams.get('status');
   
-  // Auto-open dropdowns when active
+  // Derive state from URL params
+  const shouldCategoriesBeOpen = activeCategory && pathname === '/admin/products';
+  const shouldOrdersBeOpen = activeStatus && pathname === '/admin/orders';
+  
+  const [categoriesOpen, setCategoriesOpen] = useState(shouldCategoriesBeOpen);
+  const [ordersOpen, setOrdersOpen] = useState(shouldOrdersBeOpen);
+  
+  // Track previous values to detect changes
+  const prevShouldCategoriesBeOpenRef = useRef(shouldCategoriesBeOpen);
+  const prevShouldOrdersBeOpenRef = useRef(shouldOrdersBeOpen);
+  
+  // Sync state with URL params when they change
+  // This is a valid use case - syncing UI state with URL params
   useEffect(() => {
-    if (activeCategory && pathname === '/admin/products') {
-      setCategoriesOpen(true);
+    if (prevShouldCategoriesBeOpenRef.current !== shouldCategoriesBeOpen) {
+      prevShouldCategoriesBeOpenRef.current = shouldCategoriesBeOpen;
+      if (categoriesOpen !== shouldCategoriesBeOpen) {
+        setCategoriesOpen(shouldCategoriesBeOpen);
+      }
     }
-    if (activeStatus && pathname === '/admin/orders') {
-      setOrdersOpen(true);
+    if (prevShouldOrdersBeOpenRef.current !== shouldOrdersBeOpen) {
+      prevShouldOrdersBeOpenRef.current = shouldOrdersBeOpen;
+      if (ordersOpen !== shouldOrdersBeOpen) {
+        setOrdersOpen(shouldOrdersBeOpen);
+      }
     }
-  }, [activeCategory, activeStatus, pathname]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shouldCategoriesBeOpen, shouldOrdersBeOpen]);
 
   return (
     <>
@@ -379,7 +396,6 @@ function AdminSidebarContent({ isOpen, onClose, isMobile = false }: AdminSidebar
             {/* Orders Dropdown */}
             <li>
               {(() => {
-                const hasStatusActive = activeStatus && pathname === '/admin/orders';
                 const isOrdersPage = pathname === '/admin/orders';
                 return (
                   <button

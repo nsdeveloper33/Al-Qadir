@@ -37,7 +37,7 @@ export default function AdminProfile() {
       } else {
         setError('Failed to load profile');
       }
-    } catch (error) {
+    } catch {
       setError('An error occurred while loading profile');
     } finally {
       setLoading(false);
@@ -70,7 +70,7 @@ export default function AdminProfile() {
     }
 
     try {
-      const updateData: any = {};
+      const updateData: { email?: string; password?: string; currentPassword?: string } = {};
       if (email !== profile?.email) {
         updateData.email = email;
       }
@@ -108,7 +108,7 @@ export default function AdminProfile() {
       } else {
         setError(data.error || 'Failed to update profile');
       }
-    } catch (error) {
+    } catch {
       setError('An error occurred. Please try again.');
     } finally {
       setSaving(false);
@@ -305,7 +305,7 @@ export default function AdminProfile() {
               color: '#666',
               marginBottom: '20px',
             }}>
-              Leave blank if you don't want to change your password
+              Leave blank if you don&apos;t want to change your password
             </p>
 
             {/* Current Password */}
