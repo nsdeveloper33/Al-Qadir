@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion, MotionStyle } from 'framer-motion';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -23,21 +23,23 @@ export default function Header() {
     transition: { duration: 0.5, ease: 'easeOut' }
   };
 
+  const headerStyle: MotionStyle = {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1000,
+    borderBottom: '1px solid rgba(0,0,0,0.08)',
+    backdropFilter: 'blur(15px)',
+    background: 'rgba(255, 255, 255, 0.98)',
+    boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.05)'
+  };
+
   return (
     <motion.header 
       className="bg-white"
       {...headerAnimationProps}
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 1000,
-        borderBottom: '1px solid rgba(0,0,0,0.08)',
-        backdropFilter: 'blur(15px)',
-        background: 'rgba(255, 255, 255, 0.98)',
-        boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.05)'
-      } as React.CSSProperties}
+      style={headerStyle}
       dir="ltr"
     >
       {/* Centered Container */}
