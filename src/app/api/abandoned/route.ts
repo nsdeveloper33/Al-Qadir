@@ -15,23 +15,49 @@ interface AbandonedOrderRow {
   created_at: string;
 }
 
-// GET all abandoned orders
-export async function GET() {
+// GET all abandoned orders (optionally filtered by phone and name)
+export async function GET(request: NextRequest) {
   try {
-    const rows = await sql`
-      SELECT 
-        id,
-        name,
-        phone,
-        city,
-        address,
-        quantity,
-        product_id,
-        status,
-        created_at
-      FROM abandoned_orders
-      ORDER BY created_at DESC
-    ` as AbandonedOrderRow[];
+    const { searchParams } = new URL(request.url);
+    const phone = searchParams.get('phone');
+    const name = searchParams.get('name');
+
+    let rows: AbandonedOrderRow[];
+    
+    if (phone && name) {
+      // Filter by phone and name
+      rows = await sql`
+        SELECT 
+          id,
+          name,
+          phone,
+          city,
+          address,
+          quantity,
+          product_id,
+          status,
+          created_at
+        FROM abandoned_orders
+        WHERE phone = ${phone} AND name = ${name}
+        ORDER BY created_at DESC
+      ` as AbandonedOrderRow[];
+    } else {
+      // Get all orders
+      rows = await sql`
+        SELECT 
+          id,
+          name,
+          phone,
+          city,
+          address,
+          quantity,
+          product_id,
+          status,
+          created_at
+        FROM abandoned_orders
+        ORDER BY created_at DESC
+      ` as AbandonedOrderRow[];
+    }
 
     const abandonedOrders = rows.map((row) => ({
       id: row.id,

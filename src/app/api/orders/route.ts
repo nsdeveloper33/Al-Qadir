@@ -3,26 +3,55 @@ import { sql } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
-// GET all orders
-export async function GET() {
+// GET all orders (optionally filtered by phone and customer name)
+export async function GET(request: NextRequest) {
   try {
-    const rows = await sql`
-      SELECT 
-        id,
-        customer,
-        phone,
-        city,
-        address,
-        products,
-        total,
-        status,
-        date,
-        time,
-        created_at,
-        updated_at
-      FROM orders
-      ORDER BY date DESC, time DESC
-    `;
+    const { searchParams } = new URL(request.url);
+    const phone = searchParams.get('phone');
+    const customer = searchParams.get('customer');
+
+    let rows;
+    
+    if (phone && customer) {
+      // Filter by phone and customer name
+      rows = await sql`
+        SELECT 
+          id,
+          customer,
+          phone,
+          city,
+          address,
+          products,
+          total,
+          status,
+          date,
+          time,
+          created_at,
+          updated_at
+        FROM orders
+        WHERE phone = ${phone} AND customer = ${customer}
+        ORDER BY date DESC, time DESC
+      `;
+    } else {
+      // Get all orders
+      rows = await sql`
+        SELECT 
+          id,
+          customer,
+          phone,
+          city,
+          address,
+          products,
+          total,
+          status,
+          date,
+          time,
+          created_at,
+          updated_at
+        FROM orders
+        ORDER BY date DESC, time DESC
+      `;
+    }
 
     // Transform database rows to Order format
     const orders = rows.map((row: Record<string, unknown>) => ({

@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, use, useEffect, useRef } from 'react';
+import { useState, use, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import WhatsAppFab from '@/components/WhatsAppFab';
@@ -10,7 +11,7 @@ import { cities, getCityName } from '@/data/products';
 import { notFound } from 'next/navigation';
 import { useProducts } from '@/context/ProductContext';
 import { useOrders } from '@/context/OrderContext';
-import { saveAbandonedOrder, removeAbandonedOrderOnSubmit } from '@/utils/abandonedOrders';
+import { saveAbandonedOrder, removeAbandonedOrderOnSubmit, AbandonedOrder } from '@/utils/abandonedOrders';
 import { getProductTitle, getProductDescription, getProductFeatures } from '@/utils/getProductText';
 import { getSoldCount } from '@/utils/getSoldCount';
 
@@ -20,6 +21,7 @@ interface ProductPageProps {
 
 export default function ProductPage({ params }: ProductPageProps) {
   const { id } = use(params);
+  const router = useRouter();
   const { products, loading } = useProducts();
   const { addOrder, orders } = useOrders();
   // Handle both integer IDs (from initial data) and decimal IDs (from new products)
@@ -99,9 +101,80 @@ export default function ProductPage({ params }: ProductPageProps) {
     };
   });
   const [orderSubmitted, setOrderSubmitted] = useState(false);
+  const [orderRestored, setOrderRestored] = useState(false);
   const hasSubmittedRef = useRef(false); // Track if form was submitted
   const formDataRef = useRef(formData); // Keep ref for cleanup handlers
   const savedDetailsRef = useRef<{ fullName?: string; mobile?: string; city?: string; address?: string; quantity?: string } | null>(null);
+  
+  // Restore abandoned order when product page loads
+  useEffect(() => {
+    if (!product || typeof window === 'undefined') return;
+    
+    const restoreAbandonedOrder = async () => {
+      try {
+        // Get customer details from sessionStorage first
+        let sessionData: { fullName?: string; mobile?: string } | null = null;
+        try {
+          const saved = sessionStorage.getItem('qeelu_customer_details');
+          if (saved) {
+            sessionData = JSON.parse(saved);
+          }
+        } catch {
+          // Ignore errors
+        }
+        
+        // If we have name and phone in sessionStorage, check for abandoned order
+        if (sessionData?.fullName && sessionData?.mobile) {
+          const response = await fetch(`/api/abandoned?phone=${encodeURIComponent(sessionData.mobile)}&name=${encodeURIComponent(sessionData.fullName)}`, {
+            cache: 'no-store'
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            const abandonedOrders = data.abandonedOrders || [];
+            
+            // Find order for current product
+            const matchingOrder = abandonedOrders.find((order: AbandonedOrder) => 
+              order.product_id === product.id.toString()
+            );
+            
+            if (matchingOrder) {
+              // Restore form data from abandoned order
+              setFormData((prev: typeof formData) => ({
+                fullName: matchingOrder.name || prev.fullName,
+                mobile: matchingOrder.phone || prev.mobile,
+                city: matchingOrder.city || prev.city,
+                address: matchingOrder.address || prev.address,
+                quantity: matchingOrder.quantity || prev.quantity
+              }));
+              
+              // Update sessionStorage
+              try {
+                sessionStorage.setItem('qeelu_customer_details', JSON.stringify({
+                  fullName: matchingOrder.name,
+                  mobile: matchingOrder.phone,
+                  city: matchingOrder.city,
+                  address: matchingOrder.address,
+                  quantity: matchingOrder.quantity || '1'
+                }));
+              } catch {
+                // Ignore errors
+              }
+              
+              setOrderRestored(true);
+              
+              // Hide notification after 5 seconds
+              setTimeout(() => setOrderRestored(false), 5000);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error restoring abandoned order:', error);
+      }
+    };
+    
+    restoreAbandonedOrder();
+  }, [product]);
   
   // Update savedDetailsRef after formData is loaded from sessionStorage
   useEffect(() => {
@@ -145,49 +218,100 @@ export default function ProductPage({ params }: ProductPageProps) {
     return () => clearInterval(interval);
   }, [totalImages, product]);
 
+  // Function to save abandoned order
+  const handleSaveAbandonedOrder = useCallback(async () => {
+    if (!product) return;
+    // Don't save if order was already submitted - check both ref and state
+    if (hasSubmittedRef.current) {
+      console.log('⏭️ Skipping save: Order already submitted (ref check)');
+      return;
+    }
+    if (!formDataRef.current.fullName || !formDataRef.current.mobile) return;
+    
+    const saved = savedDetailsRef.current;
+    let shouldSave = false;
+    
+    if (saved) {
+      const hasChanges = 
+        formDataRef.current.fullName !== saved.fullName ||
+        formDataRef.current.mobile !== saved.mobile ||
+        formDataRef.current.city !== saved.city ||
+        formDataRef.current.address !== saved.address ||
+        formDataRef.current.quantity !== saved.quantity;
+      shouldSave = hasChanges;
+    } else {
+      shouldSave = true;
+    }
+    
+    if (shouldSave) {
+      // Final check before saving - don't save if order was submitted
+      if (hasSubmittedRef.current) {
+        console.log('⏭️ Skipping save: Order was submitted before save');
+        return;
+      }
+      
+      console.log('💾 Saving abandoned order:', {
+        name: formDataRef.current.fullName,
+        phone: formDataRef.current.mobile,
+        city: formDataRef.current.city,
+        address: formDataRef.current.address,
+        quantity: formDataRef.current.quantity,
+        product_id: product.id.toString(),
+      });
+      
+      const saved = await saveAbandonedOrder({
+        name: formDataRef.current.fullName,
+        phone: formDataRef.current.mobile,
+        city: formDataRef.current.city,
+        address: formDataRef.current.address,
+        quantity: formDataRef.current.quantity,
+        product_id: product.id.toString(),
+      });
+      
+      if (saved) {
+        console.log('✅ Abandoned order saved successfully');
+      } else {
+        console.log('❌ Failed to save abandoned order');
+      }
+    }
+  }, [product]);
+
+  // Auto-save abandoned order periodically while user is filling form
+  useEffect(() => {
+    if (!product) return;
+    // Don't auto-save if order was submitted
+    if (hasSubmittedRef.current) return;
+    
+    // Auto-save every 30 seconds if form has data
+    const autoSaveInterval = setInterval(() => {
+      // Double check before saving - don't save if order was submitted
+      if (!hasSubmittedRef.current) {
+        if (formDataRef.current.fullName && formDataRef.current.mobile) {
+          handleSaveAbandonedOrder();
+        }
+      }
+    }, 30000); // Save every 30 seconds
+    
+    return () => clearInterval(autoSaveInterval);
+  }, [product, handleSaveAbandonedOrder]);
+
   // Save abandoned order when user leaves page (MUST be before early returns)
   useEffect(() => {
     if (!product) return;
-
-    const shouldSaveAbandoned = () => {
-      if (hasSubmittedRef.current) return false;
-      if (!formDataRef.current.fullName || !formDataRef.current.mobile) return false;
-      
-      const saved = savedDetailsRef.current;
-      if (saved) {
-        const hasChanges = 
-          formDataRef.current.fullName !== saved.fullName ||
-          formDataRef.current.mobile !== saved.mobile ||
-          formDataRef.current.city !== saved.city ||
-          formDataRef.current.address !== saved.address;
-        return hasChanges;
-      }
-      return true;
-    };
     
     const handleBeforeUnload = () => {
-      if (shouldSaveAbandoned()) {
-        saveAbandonedOrder({
-          name: formDataRef.current.fullName,
-          phone: formDataRef.current.mobile,
-          city: formDataRef.current.city,
-          address: formDataRef.current.address,
-          quantity: formDataRef.current.quantity,
-          product_id: product.id.toString(),
-        });
+      // Don't save if order was submitted
+      if (!hasSubmittedRef.current) {
+        handleSaveAbandonedOrder();
       }
     };
 
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'hidden' && shouldSaveAbandoned()) {
-        saveAbandonedOrder({
-          name: formDataRef.current.fullName,
-          phone: formDataRef.current.mobile,
-          city: formDataRef.current.city,
-          address: formDataRef.current.address,
-          quantity: formDataRef.current.quantity,
-          product_id: product.id.toString(),
-        });
+      if (document.visibilityState === 'hidden') {
+        // Don't save if order was submitted
+        if (!hasSubmittedRef.current) {
+          handleSaveAbandonedOrder();
+        }
       }
     };
 
@@ -197,19 +321,12 @@ export default function ProductPage({ params }: ProductPageProps) {
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
-      
-      if (shouldSaveAbandoned()) {
-        saveAbandonedOrder({
-          name: formDataRef.current.fullName,
-          phone: formDataRef.current.mobile,
-          city: formDataRef.current.city,
-          address: formDataRef.current.address,
-          quantity: formDataRef.current.quantity,
-          product_id: product.id.toString(),
-        });
+      // Don't save on cleanup if order was submitted
+      if (!hasSubmittedRef.current) {
+        handleSaveAbandonedOrder();
       }
     };
-  }, [product]);
+  }, [product, handleSaveAbandonedOrder]);
 
   // Show loading state while products are being fetched
   if (loading) {
@@ -433,6 +550,35 @@ export default function ProductPage({ params }: ProductPageProps) {
             paddingRight: '30px'
           }}
         >
+          {/* Order Restored Notification */}
+          {orderRestored && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5 }}
+              style={{
+                background: 'linear-gradient(135deg, #38a169 0%, #48bb78 100%)',
+                color: '#fff',
+                padding: '16px 20px',
+                borderRadius: '12px',
+                marginBottom: '20px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                boxShadow: '0px 4px 12px rgba(56, 161, 105, 0.3)'
+              }}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                <polyline points="22 4 12 14.01 9 11.01" />
+              </svg>
+              <span style={{ fontSize: '15px', fontWeight: '600' }}>
+                Your previous order details have been restored!
+              </span>
+            </motion.div>
+          )}
+
           {/* Product Title */}
           <motion.h1 
             initial={{ opacity: 0, y: -20 }}
@@ -614,7 +760,13 @@ export default function ProductPage({ params }: ProductPageProps) {
                   }}
                 >
                   <motion.button
-                    onClick={() => window.location.href = '/shop'}
+                    onClick={async () => {
+                      // Only save if order wasn't submitted
+                      if (!hasSubmittedRef.current) {
+                        await handleSaveAbandonedOrder();
+                      }
+                      router.push('/');
+                    }}
                     whileHover={{ scale: 1.05, y: -2 }}
                     whileTap={{ scale: 0.95 }}
                     style={{
@@ -642,7 +794,13 @@ export default function ProductPage({ params }: ProductPageProps) {
                     {isArabic ? 'العودة للرئيسية' : 'Back to Home'}
                   </motion.button>
                   <motion.button
-                    onClick={() => window.location.href = '/shop'}
+                    onClick={async () => {
+                      // Only save if order wasn't submitted
+                      if (!hasSubmittedRef.current) {
+                        await handleSaveAbandonedOrder();
+                      }
+                      router.push('/shop');
+                    }}
                     whileHover={{ scale: 1.05, y: -2 }}
                     whileTap={{ scale: 0.95 }}
                     style={{

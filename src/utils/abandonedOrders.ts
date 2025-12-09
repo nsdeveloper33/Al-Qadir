@@ -36,10 +36,33 @@ export function countFilledFields(data: Partial<AbandonedOrder>): number {
 }
 
 /**
+ * Check if customer has already submitted an order
+ */
+async function hasSubmittedOrder(phone: string, name: string): Promise<boolean> {
+  try {
+    const response = await fetch(`/api/orders?phone=${encodeURIComponent(phone)}&customer=${encodeURIComponent(name)}`, {
+      cache: 'no-store'
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      const orders = data.orders || [];
+      // Check if there are any submitted orders (not cancelled)
+      return orders.some((order: any) => order.status !== 'cancelled');
+    }
+    return false;
+  } catch (error) {
+    console.error('Error checking submitted orders:', error);
+    return false;
+  }
+}
+
+/**
  * Save an abandoned order to database via API
  * Requirements:
  * - Name and phone are REQUIRED (must not be empty)
- * - At least 4 fields total must be filled
+ * - At least 3 fields total must be filled
+ * - Customer should NOT have already submitted an order
  */
 export async function saveAbandonedOrder(data: {
   name: string;
@@ -51,25 +74,43 @@ export async function saveAbandonedOrder(data: {
 }): Promise<boolean> {
   // Check if name and phone are provided (REQUIRED)
   if (!data.name || !data.name.trim() || !data.phone || !data.phone.trim()) {
+    console.log('❌ Validation failed: Name and phone are required', data);
     return false;
   }
 
-  // Check if at least 4 fields are filled
+  // Check if at least 3 fields are filled (reduced from 4 to make it easier to save)
   const filledCount = countFilledFields(data);
-  if (filledCount < 4) {
+  if (filledCount < 3) {
+    console.log('❌ Validation failed: At least 3 fields required. Filled:', filledCount, data);
+    return false;
+  }
+
+  // Check if customer has already submitted an order
+  const hasOrder = await hasSubmittedOrder(data.phone, data.name);
+  if (hasOrder) {
+    console.log('⏭️ Skipping save: Customer has already submitted an order', { phone: data.phone, name: data.name });
     return false;
   }
 
   try {
+    console.log('📤 Sending abandoned order to API:', data);
     const response = await fetch('/api/abandoned', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
 
-    return response.ok;
+    if (!response.ok) {
+      const errorData = await response.text();
+      console.error('❌ API Error:', response.status, errorData);
+      return false;
+    }
+
+    const result = await response.json();
+    console.log('✅ Abandoned order saved:', result);
+    return true;
   } catch (error) {
-    console.error('Error saving abandoned order:', error);
+    console.error('❌ Error saving abandoned order:', error);
     return false;
   }
 }

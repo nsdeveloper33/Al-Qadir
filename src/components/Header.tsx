@@ -12,23 +12,34 @@ export default function Header() {
 
   const isActive = (path: string) => pathname === path;
 
+  const headerStyle = { 
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1000,
+    borderBottom: '1px solid rgba(0,0,0,0.08)',
+    backdropFilter: 'blur(15px)',
+    background: 'rgba(255, 255, 255, 0.98)',
+    boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.05)'
+  };
+
+  // Disable animations for admin panel
+  const headerAnimationProps = isAdminPanel ? {
+    initial: false,
+    animate: false,
+    transition: { duration: 0 }
+  } : {
+    initial: { y: -100, opacity: 0 },
+    animate: { y: 0, opacity: 1 },
+    transition: { duration: 0.5, ease: 'easeOut' }
+  };
+
   return (
     <motion.header 
       className="bg-white"
-      initial={{ y: -100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
-      style={{ 
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 1000,
-        borderBottom: '1px solid rgba(0,0,0,0.08)',
-        backdropFilter: 'blur(15px)',
-        background: 'rgba(255, 255, 255, 0.98)',
-        boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.05)'
-      }}
+      {...headerAnimationProps}
+      style={headerStyle}
       dir="ltr"
     >
       {/* Centered Container */}
@@ -48,72 +59,132 @@ export default function Header() {
           }}
         >
           {/* Logo - Centered in Admin, Left in Regular */}
-          <motion.div
-            initial={{ x: isAdminPanel ? 0 : -50, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
-            style={{
-              width: isAdminPanel ? '100%' : 'auto',
-              display: 'flex',
-              justifyContent: 'center'
-            }}
-          >
-            <Link 
-              href="/" 
+          {isAdminPanel ? (
+            <div
               style={{
-                textDecoration: 'none',
+                width: '100%',
                 display: 'flex',
-                flexDirection: 'column',
-                alignItems: isAdminPanel ? 'center' : 'flex-start',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                zIndex: 10
+                justifyContent: 'center'
               }}
             >
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.2 }}
+              <Link 
+                href="/" 
                 style={{
+                  textDecoration: 'none',
                   display: 'flex',
                   flexDirection: 'column',
-                  alignItems: isAdminPanel ? 'center' : 'flex-start',
-                  lineHeight: '1.2'
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  zIndex: 10
                 }}
               >
-                {/* Main Logo Text - Al-Qadir */}
-                <span
+                <div
                   style={{
-                    fontSize: '32px',
-                    fontWeight: '700',
-                    background: isAdminPanel 
-                      ? 'linear-gradient(135deg, #1a1a2e 0%, #4CAF50 100%)'
-                      : 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #4facfe 100%)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                    letterSpacing: '1px',
-                    fontFamily: 'var(--font-poppins), Arial, sans-serif'
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    lineHeight: '1.2'
                   }}
                 >
-                  Al-Qadir
-                </span>
-                {/* Subtitle - Shopping Mall */}
-                <span
+                  {/* Main Logo Text - Al-Qadir */}
+                  <span
+                    style={{
+                      fontSize: '32px',
+                      fontWeight: '700',
+                      background: 'linear-gradient(135deg, #1a1a2e 0%, #4CAF50 100%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text',
+                      letterSpacing: '1px',
+                      fontFamily: 'var(--font-poppins), Arial, sans-serif'
+                    }}
+                  >
+                    Al-Qadir
+                  </span>
+                  {/* Subtitle - Shopping Mall */}
+                  <span
+                    style={{
+                      fontSize: '12px',
+                      fontWeight: '500',
+                      color: '#666',
+                      letterSpacing: '2px',
+                      marginTop: '2px',
+                      textTransform: 'uppercase',
+                      fontFamily: 'var(--font-poppins), Arial, sans-serif'
+                    }}
+                  >
+                    Shopping Mall
+                  </span>
+                </div>
+              </Link>
+            </div>
+          ) : (
+            <motion.div
+              initial={{ x: -50, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
+              style={{
+                width: 'auto',
+                display: 'flex',
+                justifyContent: 'center'
+              }}
+            >
+              <Link 
+                href="/" 
+                style={{
+                  textDecoration: 'none',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  zIndex: 10
+                }}
+              >
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.2 }}
                   style={{
-                    fontSize: '12px',
-                    fontWeight: '500',
-                    color: '#666',
-                    letterSpacing: '2px',
-                    marginTop: '2px',
-                    textTransform: 'uppercase',
-                    fontFamily: 'var(--font-poppins), Arial, sans-serif'
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'flex-start',
+                    lineHeight: '1.2'
                   }}
                 >
-                  Shopping Mall
-                </span>
-              </motion.div>
-            </Link>
-          </motion.div>
+                  {/* Main Logo Text - Al-Qadir */}
+                  <span
+                    style={{
+                      fontSize: '32px',
+                      fontWeight: '700',
+                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #4facfe 100%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text',
+                      letterSpacing: '1px',
+                      fontFamily: 'var(--font-poppins), Arial, sans-serif'
+                    }}
+                  >
+                    Al-Qadir
+                  </span>
+                  {/* Subtitle - Shopping Mall */}
+                  <span
+                    style={{
+                      fontSize: '12px',
+                      fontWeight: '500',
+                      color: '#666',
+                      letterSpacing: '2px',
+                      marginTop: '2px',
+                      textTransform: 'uppercase',
+                      fontFamily: 'var(--font-poppins), Arial, sans-serif'
+                    }}
+                  >
+                    Shopping Mall
+                  </span>
+                </motion.div>
+              </Link>
+            </motion.div>
+          )}
 
           {/* Navigation Buttons - Hidden in Admin Panel */}
           {!isAdminPanel && (
