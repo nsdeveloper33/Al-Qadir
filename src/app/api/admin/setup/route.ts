@@ -54,11 +54,14 @@ export async function POST(request: NextRequest) {
       success: true,
       message: 'Admin account created successfully',
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Setup error:', error);
     
     // Handle unique constraint violation
-    if (error.code === '23505' || error.message?.includes('unique')) {
+    const errorMessage = error instanceof Error ? error.message : '';
+    const errorCode = (error as { code?: string })?.code;
+    
+    if (errorCode === '23505' || errorMessage?.includes('unique')) {
       return NextResponse.json(
         { error: 'Email already exists' },
         { status: 400 }

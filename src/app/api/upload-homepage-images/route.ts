@@ -33,10 +33,10 @@ export async function POST(request: NextRequest) {
       url: result.secure_url,
       publicId: result.public_id,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Upload error:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to upload' },
+      { error: error instanceof Error ? error.message : 'Failed to upload' },
       { status: 500 }
     );
   }

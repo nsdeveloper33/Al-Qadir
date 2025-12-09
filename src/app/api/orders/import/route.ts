@@ -3,6 +3,31 @@ import { sql } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
+interface ExcelProduct {
+  name: string;
+  quantity: number;
+  price: number;
+}
+
+interface DatabaseProduct {
+  id: number;
+  title_en: string;
+  title_ar: string;
+  current_price: number;
+  pricing_tiers: PricingTier[] | null;
+}
+
+interface PricingTier {
+  quantity: number;
+  price: number;
+}
+
+interface ProcessedProduct {
+  name: string;
+  quantity: number;
+  price: number;
+}
+
 /**
  * Import orders from Excel data
  * Expected format: Array of orders with customer, phone, city, address, products, total
@@ -49,13 +74,13 @@ export async function POST(request: NextRequest) {
         }
 
         // Process products with intelligent pricing
-        const processedProducts = orderData.products.map((prod: any) => {
+        const processedProducts: ProcessedProduct[] = (orderData.products as ExcelProduct[]).map((prod) => {
           const productName = prod.name;
           const quantity = prod.quantity;
           const excelPrice = prod.price;
 
           // Try to find product in database (fuzzy matching)
-          const dbProduct = allProducts.find((p: any) => {
+          const dbProduct = (allProducts as DatabaseProduct[]).find((p) => {
             const titleEn = p.title_en.toLowerCase();
             const titleAr = p.title_ar;
             const searchName = productName.toLowerCase();
@@ -71,7 +96,7 @@ export async function POST(request: NextRequest) {
             
             if (pricingTiers && Array.isArray(pricingTiers) && pricingTiers.length > 0) {
               // Pricing tiers available - Use tier price
-              const tier = pricingTiers.find((t: any) => t.quantity === quantity);
+              const tier = pricingTiers.find((t) => t.quantity === quantity);
               
               if (tier) {
                 // Tier found for this quantity
@@ -117,7 +142,7 @@ export async function POST(request: NextRequest) {
 
         // Calculate total based on processed products
         const total = processedProducts.reduce(
-          (sum: number, p: any) => sum + (p.price * p.quantity), 
+          (sum: number, p) => sum + (p.price * p.quantity), 
           0
         );
 
@@ -141,18 +166,19 @@ export async function POST(request: NextRequest) {
             ${orderData.phone},
             ${orderData.city},
             ${orderData.address},
-            ${JSON.stringify(orderData.products)},
-            ${total},
+            ${JSON.stringify(processedProducts)}::jsonb,
+            ${parseFloat(String(total))}::decimal,
             'pending',
-            ${date},
-            ${time}
+            ${date}::date,
+            ${time}::time
           )
         `;
 
         successCount++;
       } catch (error) {
         console.error('Error importing order:', error);
-        errors.push(`Failed to import order for ${orderData.customer}: ${error}`);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        errors.push(`Failed to import order for ${orderData.customer}: ${errorMessage}`);
         errorCount++;
       }
     }

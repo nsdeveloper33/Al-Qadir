@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { products as initialProducts, Product } from '@/data/products';
-import { addProductToI18n } from '@/utils/getProductText';
 
 interface ProductContextType {
   products: Product[];
@@ -96,8 +95,6 @@ export function ProductProvider({ children }: { children: ReactNode }) {
 
       if (response.ok) {
         const data = await response.json();
-        // Add to i18next for dynamic translation support
-        addProductToI18n(data.product);
         setProducts([data.product, ...products]);
         return { success: true };
       } else {

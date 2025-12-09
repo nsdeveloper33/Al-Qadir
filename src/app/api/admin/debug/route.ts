@@ -10,7 +10,7 @@ function hashPassword(password: string): string {
  * Debug endpoint to check admin data in database
  * This helps troubleshoot login issues
  */
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Get all admins
     const admins = await sql`
@@ -33,12 +33,12 @@ export async function GET(request: NextRequest) {
       admins: safeAdmins,
       note: 'If password length is not 64 characters, it is not properly hashed. SHA-256 hash should be 64 characters long.',
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Debug error:', error);
     return NextResponse.json(
       { 
         error: 'Failed to fetch admin data',
-        details: error.message 
+        details: error instanceof Error ? error.message : 'Unknown error'
       },
       { status: 500 }
     );
@@ -85,12 +85,12 @@ export async function POST(request: NextRequest) {
       hashLength: hashedPassword.length,
       adminData,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Debug POST error:', error);
     return NextResponse.json(
       { 
         error: 'Failed to process request',
-        details: error.message 
+        details: error instanceof Error ? error.message : 'Unknown error'
       },
       { status: 500 }
     );
