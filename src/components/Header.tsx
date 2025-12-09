@@ -27,7 +27,7 @@ export default function Header() {
     <motion.header 
       className="bg-white"
       {...headerAnimationProps}
-      style={{ 
+      style={{
         position: 'fixed',
         top: 0,
         left: 0,
