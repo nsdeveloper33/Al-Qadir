@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion, MotionStyle } from 'framer-motion';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -23,8 +23,8 @@ export default function Header() {
     transition: { duration: 0.5, ease: 'easeOut' }
   };
 
-  const headerStyle = {
-    position: 'fixed' as const,
+  const headerStyle: MotionStyle = {
+    position: 'fixed',
     top: 0,
     left: 0,
     right: 0,
