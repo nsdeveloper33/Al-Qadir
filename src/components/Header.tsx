@@ -23,19 +23,21 @@ export default function Header() {
     transition: { duration: 0.5, ease: 'easeOut' }
   };
 
-  // Only keep animatable/backdrop properties in style
-  // Static positioning/layout properties moved to className
-  // Cast to React.CSSProperties to avoid Framer Motion type conflicts with static CSS properties
-  const headerStyle: React.CSSProperties = {
+  const headerStyle = {
+    position: 'fixed' as const,
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1000,
+    borderBottom: '1px solid rgba(0,0,0,0.08)',
     backdropFilter: 'blur(15px)',
     background: 'rgba(255, 255, 255, 0.98)',
-    borderBottom: '1px solid rgba(0,0,0,0.08)',
     boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.05)'
   };
 
   return (
     <motion.header 
-      className="bg-white fixed top-0 left-0 right-0 z-[1000]"
+      className="bg-white"
       {...headerAnimationProps}
       style={headerStyle}
       dir="ltr"
