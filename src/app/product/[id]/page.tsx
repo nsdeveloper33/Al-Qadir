@@ -32,7 +32,7 @@ export default function ProductPage({ params }: ProductPageProps) {
   });
   const isArabic = false;
   
-  const [selectedImage, setSelectedImage] = useState(0);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
   
   // Type for recent orders
@@ -116,8 +116,18 @@ export default function ProductPage({ params }: ProductPageProps) {
   }, [formData]);
 
   // Get all available images (before early returns)
-  const allImages = product ? (product.images || [product.image]) : [];
+  // Filter out empty strings and undefined values
+  const allImages = product ? (
+    product.images && Array.isArray(product.images) && product.images.length > 0
+      ? product.images.filter(img => img && img.trim() !== '')
+      : (product.image && product.image.trim() !== '' ? [product.image] : [])
+  ) : [];
   const totalImages = allImages.length;
+  
+  // Ensure selectedImage is within valid range (derived state)
+  const selectedImage = totalImages > 0 && selectedImageIndex < totalImages 
+    ? selectedImageIndex 
+    : 0;
 
   // Update formDataRef when formData changes (MUST be before early returns)
   useEffect(() => {
@@ -129,7 +139,7 @@ export default function ProductPage({ params }: ProductPageProps) {
     if (!product || totalImages <= 1) return;
 
     const interval = setInterval(() => {
-      setSelectedImage(prev => (prev + 1) % totalImages);
+      setSelectedImageIndex(prev => (prev + 1) % totalImages);
     }, 3000);
 
     return () => clearInterval(interval);
@@ -240,7 +250,9 @@ export default function ProductPage({ params }: ProductPageProps) {
 
   // Handle manual image selection
   const handleImageSelect = (index: number) => {
-    setSelectedImage(index);
+    if (index >= 0 && index < totalImages) {
+      setSelectedImageIndex(index);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -979,7 +991,9 @@ export default function ProductPage({ params }: ProductPageProps) {
                 style={{ 
                   borderRadius: '20px', 
                   overflow: 'hidden',
-                  paddingBottom: '100%',
+                  position: 'relative',
+                  width: '100%',
+                  paddingBottom: '100%', // Creates 1:1 aspect ratio
                   background: 'linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%)',
                   boxShadow: 'inset 0px 2px 8px rgba(0,0,0,0.05)'
                 }}
@@ -1010,9 +1024,15 @@ export default function ProductPage({ params }: ProductPageProps) {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.4 }}
-                  style={{ width: '100%', height: '100%', position: 'relative' }}
+                  style={{ 
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%'
+                  }}
                 >
-                  {!imageErrors.has(selectedImage) ? (
+                  {allImages.length > 0 && allImages[selectedImage] && !imageErrors.has(selectedImage) ? (
                     <Image
                       src={allImages[selectedImage]}
                       alt={productTitle}
@@ -1024,6 +1044,9 @@ export default function ProductPage({ params }: ProductPageProps) {
                     />
                   ) : (
                     <div style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
                       width: '100%',
                       height: '100%',
                       display: 'flex',
