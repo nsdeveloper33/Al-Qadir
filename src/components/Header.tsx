@@ -12,18 +12,6 @@ export default function Header() {
 
   const isActive = (path: string) => pathname === path;
 
-  const headerStyle = { 
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 1000,
-    borderBottom: '1px solid rgba(0,0,0,0.08)',
-    backdropFilter: 'blur(15px)',
-    background: 'rgba(255, 255, 255, 0.98)',
-    boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.05)'
-  };
-
   // Disable animations for admin panel
   const headerAnimationProps = isAdminPanel ? {
     initial: false,
@@ -39,7 +27,17 @@ export default function Header() {
     <motion.header 
       className="bg-white"
       {...headerAnimationProps}
-      style={headerStyle}
+      style={{ 
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1000,
+        borderBottom: '1px solid rgba(0,0,0,0.08)',
+        backdropFilter: 'blur(15px)',
+        background: 'rgba(255, 255, 255, 0.98)',
+        boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.05)'
+      } as React.CSSProperties}
       dir="ltr"
     >
       {/* Centered Container */}
