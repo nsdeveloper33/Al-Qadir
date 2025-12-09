@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { motion, MotionStyle } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -23,21 +23,19 @@ export default function Header() {
     transition: { duration: 0.5, ease: 'easeOut' }
   };
 
-  const headerStyle: MotionStyle = {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 1000,
-    borderBottom: '1px solid rgba(0,0,0,0.08)',
+  // Only keep animatable/backdrop properties in style
+  // Static positioning/layout properties moved to className
+  // Cast to React.CSSProperties to avoid Framer Motion type conflicts with static CSS properties
+  const headerStyle: React.CSSProperties = {
     backdropFilter: 'blur(15px)',
     background: 'rgba(255, 255, 255, 0.98)',
+    borderBottom: '1px solid rgba(0,0,0,0.08)',
     boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.05)'
   };
 
   return (
     <motion.header 
-      className="bg-white"
+      className="bg-white fixed top-0 left-0 right-0 z-[1000]"
       {...headerAnimationProps}
       style={headerStyle}
       dir="ltr"
