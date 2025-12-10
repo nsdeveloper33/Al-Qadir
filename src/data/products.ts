@@ -751,16 +751,16 @@ const rawProducts = [
 // Migrate all products to new multilingual format
 export const products: Product[] = rawProducts.map(migrateProductData);
 
-// Category list matching the reference site
+// Category list
 export const categories = [
   { id: 'all', name: 'All' },
   { id: 'cosmetics', name: 'Cosmetics' },
+  { id: 'ladiesbag', name: 'Ladies Bags' },
+  { id: 'wallets', name: 'Wallets' },
+  { id: 'makeup', name: 'Makeup' },
+  { id: 'lace', name: 'Lace' },
   { id: 'electronics', name: 'Electronics' },
-  { id: 'watches', name: 'Watches' },
-  { id: 'mobile', name: 'Mobile' },
-  { id: 'kitchen', name: 'Kitchen' },
-  { id: 'ladiesbag', name: 'Ladies Bag' },
-  { id: 'other', name: 'Other' },
+  { id: 'general', name: 'General' },
 ];
 
 // Cities for order form (English only)

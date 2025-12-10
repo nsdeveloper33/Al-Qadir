@@ -1,6 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
-import { autoTranslate, translateArray } from '@/utils/translation';
 
 export const dynamic = 'force-dynamic';
 
@@ -787,7 +786,7 @@ const generalStoreProducts = [
   }
 ];
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     console.log('🚀 Starting to add general store products...\n');
     
@@ -844,8 +843,8 @@ export async function POST(request: NextRequest) {
         console.log(`✅ Successfully added: ${product.title.en} (ID: ${row.id})\n`);
         successCount++;
         
-      } catch (error: any) {
-        const errorMsg = error.message || 'Unknown error';
+      } catch (error: unknown) {
+        const errorMsg = error instanceof Error ? error.message : 'Unknown error';
         console.error(`❌ Failed to add: ${product.title.en}`);
         console.error(`   Error: ${errorMsg}\n`);
         errors.push(`${product.title.en}: ${errorMsg}`);
@@ -864,12 +863,13 @@ export async function POST(request: NextRequest) {
       }
     });
     
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error in add-general-store-products:', error);
+    const errorMsg = error instanceof Error ? error.message : 'Failed to add products';
     return NextResponse.json(
       { 
         success: false,
-        error: error.message || 'Failed to add products' 
+        error: errorMsg
       },
       { status: 500 }
     );

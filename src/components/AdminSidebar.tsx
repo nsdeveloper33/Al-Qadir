@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, Suspense } from 'react';
 import Link from 'next/link';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import { 
   BiSpa,
   BiChip,
@@ -21,12 +21,12 @@ import {
 // Categories for dropdown (excluding 'all')
 const categoryItems = [
   { id: 'cosmetics', icon: BiSpa },
-  { id: 'electronics', icon: BiChip },
-  { id: 'watches', icon: BiTime },
-  { id: 'mobile', icon: BiPhone },
-  { id: 'kitchen', icon: BiDish },
   { id: 'ladiesbag', icon: BiShoppingBag },
-  { id: 'other', icon: BiBox },
+  { id: 'wallets', icon: BiBox },
+  { id: 'makeup', icon: BiSpa },
+  { id: 'lace', icon: BiSpa },
+  { id: 'electronics', icon: BiChip },
+  { id: 'general', icon: BiBox },
 ];
 
 // Order statuses for dropdown
@@ -61,16 +61,6 @@ const menuItems = [
       </svg>
     ),
   },
-  {
-    id: 'profile',
-    href: '/admin/profile',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-        <circle cx="12" cy="7" r="4" />
-      </svg>
-    ),
-  },
 ];
 
 interface AdminSidebarProps {
@@ -100,6 +90,7 @@ const statusLabels: Record<string, string> = {
 function AdminSidebarContent({ isOpen, onClose, isMobile = false }: AdminSidebarProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const router = useRouter();
   
   // Get active category and status from URL
   const activeCategory = searchParams.get('category');
@@ -265,7 +256,7 @@ function AdminSidebarContent({ isOpen, onClose, isMobile = false }: AdminSidebar
                       fontWeight: isActive ? '600' : '400',
                       letterSpacing: '0.3px'
                     }}>
-                      {item.id === 'dashboard' ? 'Dashboard' : item.id === 'products' ? 'Products' : 'Profile'}
+                      {item.id === 'dashboard' ? 'Dashboard' : 'Products'}
                     </span>
                   </Link>
                 </li>
@@ -590,10 +581,119 @@ function AdminSidebarContent({ isOpen, onClose, isMobile = false }: AdminSidebar
                 <span>Unsubmitted Orders</span>
               </Link>
             </li>
+
+            {/* Landing Images - 3rd from end */}
+            <li>
+              <Link
+                href="/admin/landing-images"
+                onClick={isMobile ? onClose : undefined}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '14px',
+                  padding: '16px 20px',
+                  color: pathname === '/admin/landing-images' ? '#fff' : 'rgba(255,255,255,0.7)',
+                  textDecoration: 'none',
+                  backgroundColor: pathname === '/admin/landing-images' 
+                    ? 'linear-gradient(90deg, rgba(52, 152, 219, 0.2) 0%, rgba(52, 152, 219, 0.1) 100%)'
+                    : 'transparent',
+                  borderLeft: pathname === '/admin/landing-images' ? '4px solid #3498db' : '4px solid transparent',
+                  borderRadius: pathname === '/admin/landing-images' ? '0 12px 12px 0' : '0',
+                  transition: 'all 0.3s ease',
+                  marginRight: '8px',
+                  position: 'relative',
+                }}
+                onMouseEnter={(e) => {
+                  if (pathname !== '/admin/landing-images') {
+                    e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)';
+                    e.currentTarget.style.transform = 'translateX(4px)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (pathname !== '/admin/landing-images') {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.transform = 'translateX(0)';
+                  }
+                }}
+              >
+                <span style={{ 
+                  opacity: pathname === '/admin/landing-images' ? 1 : 0.7,
+                  color: pathname === '/admin/landing-images' ? '#3498db' : 'inherit',
+                  transition: 'all 0.3s ease'
+                }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                    <circle cx="8.5" cy="8.5" r="1.5" />
+                    <polyline points="21 15 16 10 5 21" />
+                  </svg>
+                </span>
+                <span style={{ 
+                  fontSize: '15px', 
+                  fontWeight: pathname === '/admin/landing-images' ? '600' : '400',
+                  letterSpacing: '0.3px'
+                }}>
+                  Landing Images
+                </span>
+              </Link>
+            </li>
+
+            {/* Profile - End */}
+            <li>
+              <Link
+                href="/admin/profile"
+                onClick={isMobile ? onClose : undefined}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '14px',
+                  padding: '16px 20px',
+                  color: pathname === '/admin/profile' ? '#fff' : 'rgba(255,255,255,0.7)',
+                  textDecoration: 'none',
+                  backgroundColor: pathname === '/admin/profile' 
+                    ? 'linear-gradient(90deg, rgba(52, 152, 219, 0.2) 0%, rgba(52, 152, 219, 0.1) 100%)'
+                    : 'transparent',
+                  borderLeft: pathname === '/admin/profile' ? '4px solid #3498db' : '4px solid transparent',
+                  borderRadius: pathname === '/admin/profile' ? '0 12px 12px 0' : '0',
+                  transition: 'all 0.3s ease',
+                  marginRight: '8px',
+                  position: 'relative',
+                }}
+                onMouseEnter={(e) => {
+                  if (pathname !== '/admin/profile') {
+                    e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)';
+                    e.currentTarget.style.transform = 'translateX(4px)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (pathname !== '/admin/profile') {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.transform = 'translateX(0)';
+                  }
+                }}
+              >
+                <span style={{ 
+                  opacity: pathname === '/admin/profile' ? 1 : 0.7,
+                  color: pathname === '/admin/profile' ? '#3498db' : 'inherit',
+                  transition: 'all 0.3s ease'
+                }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                </span>
+                <span style={{ 
+                  fontSize: '15px', 
+                  fontWeight: pathname === '/admin/profile' ? '600' : '400',
+                  letterSpacing: '0.3px'
+                }}>
+                  Profile
+                </span>
+              </Link>
+            </li>
           </ul>
         </nav>
 
-        {/* Back to Store - Fixed at Bottom */}
+        {/* Logout Button - Fixed at Bottom */}
         <div
           style={{
             padding: '16px',
@@ -602,8 +702,16 @@ function AdminSidebarContent({ isOpen, onClose, isMobile = false }: AdminSidebar
             flexShrink: 0,
           }}
         >
-          <Link
-            href="/"
+          <button
+            onClick={async () => {
+              try {
+                await fetch('/api/admin/logout', { method: 'POST' });
+                router.push('/admin/login');
+                router.refresh();
+              } catch (error) {
+                console.error('Logout error:', error);
+              }
+            }}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -612,20 +720,32 @@ function AdminSidebarContent({ isOpen, onClose, isMobile = false }: AdminSidebar
               backgroundColor: 'transparent',
               color: 'rgba(255,255,255,0.8)',
               borderRadius: '6px',
-              textDecoration: 'none',
               fontSize: '13px',
               fontWeight: '400',
               border: '1px solid rgba(255,255,255,0.2)',
               transition: 'all 0.2s ease',
+              cursor: 'pointer',
+              width: '100%',
+              textAlign: 'left',
             }}
-            className="hover:bg-white/10 hover:border-white/30"
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(231, 76, 60, 0.2)';
+              e.currentTarget.style.borderColor = 'rgba(231, 76, 60, 0.5)';
+              e.currentTarget.style.color = '#fff';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)';
+              e.currentTarget.style.color = 'rgba(255,255,255,0.8)';
+            }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-              <polyline points="9 22 9 12 15 12 15 22" />
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
             </svg>
-            Back to Store
-          </Link>
+            Logout
+          </button>
         </div>
       </aside>
     </>

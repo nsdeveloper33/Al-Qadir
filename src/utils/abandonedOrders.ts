@@ -21,6 +21,19 @@ export interface AbandonedOrder {
   created_at: string;
 }
 
+interface OrderFromAPI {
+  id: string;
+  customer: string;
+  phone: string;
+  city: string;
+  address: string;
+  products: unknown;
+  total: number;
+  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  date: string;
+  time: string;
+}
+
 /**
  * Count how many fields are filled (non-empty)
  */
@@ -46,9 +59,9 @@ async function hasSubmittedOrder(phone: string, name: string): Promise<boolean> 
     
     if (response.ok) {
       const data = await response.json();
-      const orders = data.orders || [];
+      const orders: OrderFromAPI[] = data.orders || [];
       // Check if there are any submitted orders (not cancelled)
-      return orders.some((order: any) => order.status !== 'cancelled');
+      return orders.some((order) => order.status !== 'cancelled');
     }
     return false;
   } catch (error) {

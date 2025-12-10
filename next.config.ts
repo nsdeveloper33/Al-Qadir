@@ -9,6 +9,10 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'res.cloudinary.com',
+      },
+      {
+        protocol: 'https',
         hostname: '**',
       },
       {
@@ -16,6 +20,7 @@ const nextConfig: NextConfig = {
         hostname: '**',
       },
     ],
+    unoptimized: false,
   },
 };
 

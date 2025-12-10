@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
 
     const result = await cloudinary.uploader.upload(imagePath, {
       folder: 'homepage',
-      public_id: imageName.replace('.jpg', '').replace('.jpeg', '').replace('.png', ''),
+      public_id: imageName.replace('.jpg', '').replace('.jpeg', '').replace('.png', '').replace('.webp', ''),
     });
 
     return NextResponse.json({

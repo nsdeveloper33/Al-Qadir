@@ -60,12 +60,12 @@ const translations: Record<string, string> = {
   // Category translations
   'categories.all': 'All',
   'categories.cosmetics': 'Cosmetics',
+  'categories.ladiesbag': 'Ladies Bags',
+  'categories.wallets': 'Wallets',
+  'categories.makeup': 'Makeup',
+  'categories.lace': 'Lace',
   'categories.electronics': 'Electronics',
-  'categories.watches': 'Watches',
-  'categories.mobile': 'Mobile',
-  'categories.kitchen': 'Kitchen',
-  'categories.ladiesbag': 'Ladies Bag',
-  'categories.other': 'Other',
+  'categories.general': 'General',
 };
 
 // Helper function to validate URL or local path

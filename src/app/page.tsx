@@ -8,32 +8,22 @@ import Footer from '@/components/Footer';
 import WhatsAppFab from '@/components/WhatsAppFab';
 
 export default function Home() {
+  // Landing images from database
+  const [landingImages, setLandingImages] = useState<Record<string, string[]>>({});
+  const [loadingImages, setLoadingImages] = useState(true);
+
   // Card flip carousel state for Garments section
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
-  const garmentsImages = [
-    'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&h=500&fit=crop',
-    'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=600&h=500&fit=crop',
-    'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=600&h=500&fit=crop',
-    'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&h=500&fit=crop',
-    'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=600&h=500&fit=crop'
-  ];
+  const garmentsImages = landingImages['garments'] || [];
 
-
-  // Lace section flip card state - Using local images
+  // Lace section flip card state
   const [laceFlipped, setLaceFlipped] = useState(false);
   const [laceImageIndex, setLaceImageIndex] = useState(0);
-  const laceImages = [
-    '/images/lace1.jpg',
-    '/images/lace2.jpg',
-    '/images/lace3.jpg',
-    '/images/lace4.jpg',
-    '/images/lace5.jpg'
-  ];
+  const laceImages = landingImages['lace'] || [];
 
   const handleLaceFlip = () => {
-    if (!laceFlipped) {
+    if (!laceFlipped && laceImages.length > 0) {
       setLaceFlipped(true);
-      // When flipping back, change to next image
       setTimeout(() => {
         setLaceImageIndex((prev) => (prev + 1) % laceImages.length);
         setLaceFlipped(false);
@@ -41,22 +31,81 @@ export default function Home() {
     }
   };
 
-  // Bag images for Purse section - 7 bag images only (All working URLs with auto=format)
-  const bagImages = [
-    'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&h=500&fit=crop&auto=format', // Big center - Handbag
-    'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=250&h=300&fit=crop&auto=format', // Card 1 - Backpack
-    'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=250&h=300&fit=crop&auto=format', // Card 2 - Leather bag
-    'https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?w=250&h=300&fit=crop&auto=format', // Card 3 - Tote bag
-    'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=250&h=300&fit=crop&auto=format', // Card 4 - Shoulder bag
-    'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=250&h=300&fit=crop&auto=format', // Card 5 - Clutch bag
-    'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=250&h=300&fit=crop&auto=format' // Card 6 - Crossbody bag
-  ];
+  // Bag images for Purse section
+  const bagImages = landingImages['purse'] || [];
+
+  // Cosmetics images
+  const cosmeticsImages = landingImages['cosmetics'] || [];
+
+  // Jewellery images
+  const jewelleryImages = landingImages['jewellery'] || [];
+
+  // General store image
+  const generalStoreImage = landingImages['general_store']?.[0] || '';
+
+  // Hero banner image
+  const heroBannerImage = landingImages['hero']?.[0] || null;
+  
+  // Debug log
+  useEffect(() => {
+    console.log('Current heroBannerImage:', heroBannerImage);
+    console.log('landingImages:', landingImages);
+  }, [heroBannerImage, landingImages]);
+
+  // Fetch landing images from database
+  useEffect(() => {
+    const fetchLandingImages = async () => {
+      try {
+        const response = await fetch('/api/landing-images');
+        const data = await response.json();
+        
+        if (data.success && data.images && Array.isArray(data.images)) {
+          console.log('Fetched images:', data.images);
+          const grouped: Record<string, Array<{url: string, order: number}>> = {};
+          data.images.forEach((img: any) => {
+            // Only add images that have valid URLs and are active
+            if (img.image_url && img.image_url.trim() !== '' && img.is_active !== false) {
+              if (!grouped[img.section]) {
+                grouped[img.section] = [];
+              }
+              grouped[img.section].push({
+                url: img.image_url,
+                order: img.display_order || 0
+              });
+            }
+          });
+          
+          // Sort by display_order and extract URLs
+          const finalGrouped: Record<string, string[]> = {};
+          Object.keys(grouped).forEach(section => {
+            grouped[section].sort((a, b) => a.order - b.order);
+            finalGrouped[section] = grouped[section].map(item => item.url);
+          });
+          
+          console.log('Grouped images:', finalGrouped);
+          setLandingImages(finalGrouped);
+        } else {
+          console.warn('No images found or invalid response:', data);
+          setLandingImages({});
+        }
+      } catch (error) {
+        console.error('Error fetching landing images:', error);
+        setLandingImages({});
+      } finally {
+        setLoadingImages(false);
+      }
+    };
+
+    fetchLandingImages();
+  }, []);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentCardIndex((prev) => (prev + 1) % garmentsImages.length);
-    }, 3000);
-    return () => clearInterval(interval);
+    if (garmentsImages.length > 0) {
+      const interval = setInterval(() => {
+        setCurrentCardIndex((prev) => (prev + 1) % garmentsImages.length);
+      }, 3000);
+      return () => clearInterval(interval);
+    }
   }, [garmentsImages.length]);
 
   return (
@@ -95,75 +144,106 @@ export default function Home() {
           style={{
             position: 'relative',
             width: '100%',
-            marginBottom: '50px',
-            overflow: 'hidden'
+            marginBottom: 'clamp(30px, 5vw, 50px)',
+            overflow: 'hidden',
+            minHeight: heroBannerImage ? '200px' : '200px',
+            maxHeight: 'none',
+            backgroundColor: heroBannerImage ? 'transparent' : 'rgba(26, 26, 46, 0.05)',
+            borderRadius: heroBannerImage ? '0' : '12px',
+            zIndex: 1
           }}
+          className="hero-banner-container"
         >
-          {/* Animated Gradient Overlay */}
-          <div
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: 'linear-gradient(180deg, rgba(26, 26, 46, 0.1) 0%, rgba(0,0,0,0.15) 50%, rgba(26, 26, 46, 0.1) 100%)',
-              zIndex: 2,
-              pointerEvents: 'none'
-            }}
-          />
-          
-          {/* Shine Effect Overlay */}
-          <div
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: '-100%',
-              width: '100%',
-              height: '100%',
-              background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)',
-              zIndex: 3,
-              pointerEvents: 'none',
-              animation: 'shine 3s infinite'
-            }}
-          />
-          
           {/* Banner Image with Enhanced Filters */}
-          <div
-            style={{
-              position: 'relative',
-              width: '100%',
-              overflow: 'hidden'
-            }}
-          >
-            <Image
-              src="/Al-Qadir-banner.svg"
-              alt="Al-Qadir Shopping Mall - Best Deals in Pakistan"
-              width={1920}
-              height={600}
+          {heroBannerImage && heroBannerImage.trim() !== '' ? (
+            <div
+              style={{
+                position: 'relative',
+                width: '100%',
+                overflow: 'visible',
+                zIndex: 10
+              }}
+            >
+              <img
+                src={heroBannerImage}
+                alt="Al-Qadir Shopping Mall - Best Deals in Pakistan"
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                  minHeight: '200px',
+                  maxHeight: 'none',
+                  objectFit: 'cover',
+                  display: 'block',
+                  filter: 'brightness(1.05) contrast(1.1) saturate(1.1)',
+                  transform: 'scale(1)',
+                  transition: 'transform 0.5s ease',
+                  position: 'relative',
+                  zIndex: 1
+                }}
+                className="hero-banner-image"
+                onMouseEnter={(e) => {
+                  if (window.innerWidth > 768) {
+                    e.currentTarget.style.transform = 'scale(1.02)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
+                onError={(e) => {
+                  console.error('Image load error:', heroBannerImage, e);
+                  const target = e.target as HTMLImageElement;
+                  target.style.border = '2px solid red';
+                  target.style.backgroundColor = '#ffcccc';
+                }}
+                onLoad={(e) => {
+                  console.log('✅ Image loaded successfully:', heroBannerImage);
+                  const target = e.target as HTMLImageElement;
+                  console.log('Image dimensions:', target.naturalWidth, 'x', target.naturalHeight);
+                }}
+              />
+              {/* Animated Gradient Overlay */}
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  background: 'linear-gradient(180deg, rgba(26, 26, 46, 0.1) 0%, rgba(0,0,0,0.15) 50%, rgba(26, 26, 46, 0.1) 100%)',
+                  zIndex: 2,
+                  pointerEvents: 'none'
+                }}
+              />
+              {/* Shine Effect Overlay */}
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: '-100%',
+                  width: '100%',
+                  height: '100%',
+                  background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)',
+                  zIndex: 3,
+                  pointerEvents: 'none',
+                  animation: 'shine 3s infinite'
+                }}
+              />
+            </div>
+          ) : (
+            /* Placeholder space when no banner */
+            <div
               style={{
                 width: '100%',
-                height: 'auto',
-                minHeight: '200px',
-                maxHeight: '600px',
-                objectFit: 'cover',
-                display: 'block',
-                filter: 'brightness(1.05) contrast(1.1) saturate(1.1)',
-                transform: 'scale(1)',
-                transition: 'transform 0.5s ease'
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                minHeight: '200px'
               }}
-              priority
-              className="hero-banner-image"
-              onMouseEnter={(e) => {
-                if (window.innerWidth > 768) {
-                  e.currentTarget.style.transform = 'scale(1.02)';
-                }
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'scale(1)';
-              }}
-            />
-          </div>
+            >
+              {/* Empty space - maintains section height */}
+            </div>
+          )}
         </div>
 
         {/* Hero Content Below Banner */}
@@ -218,7 +298,7 @@ export default function Home() {
             
             <div style={{ 
               display: 'flex', 
-              gap: 'clamp(12px, 3vw, 20px)', 
+              gap: 'clamp(12px, 1.5vw, 12px)', 
               justifyContent: 'center', 
               flexWrap: 'wrap', 
               marginTop: '20px',
@@ -430,6 +510,12 @@ export default function Home() {
           
           .hero-banner-image {
             min-height: 400px !important;
+            max-height: 1080px !important;
+          }
+          
+          .hero-banner-container {
+            min-height: 400px !important;
+            max-height: none !important;
           }
           
           .hero-content-box {
@@ -440,11 +526,13 @@ export default function Home() {
           .hero-buttons-container {
             flex-direction: row !important;
             align-items: center !important;
+            gap: 8px !important;
           }
           
           .hero-button {
             width: auto !important;
             max-width: none !important;
+            margin: 0 !important;
           }
           
           .garments-grid,
@@ -494,6 +582,12 @@ export default function Home() {
           
           .hero-banner-image {
             min-height: 200px !important;
+            max-height: 600px !important;
+          }
+          
+          .hero-banner-container {
+            min-height: 200px !important;
+            max-height: none !important;
           }
           
           .section-button {
@@ -505,7 +599,7 @@ export default function Home() {
           .purse-section,
           .lace-section,
           .cosmetics-section,
-          .jewellery-section,
+          .electronics-section,
           .general-store-section {
             padding: 40px 15px !important;
           }
@@ -526,7 +620,7 @@ export default function Home() {
           .purse-section,
           .lace-section,
           .cosmetics-section,
-          .jewellery-section,
+          .electronics-section,
           .general-store-section {
             padding: 30px 10px !important;
           }
@@ -552,6 +646,7 @@ export default function Home() {
 
       {/* Section 1: Garments (گارمنٹس) */}
       <section
+        id="garments-section"
         style={{
           width: '100%',
           minHeight: 'auto',
@@ -625,7 +720,7 @@ export default function Home() {
               Discover our latest collection of trendy garments. Style meets comfort in every piece.
             </p>
             <Link
-              href="/shop?category=garments"
+              href="/shop?category=cosmetics"
               style={{
                 display: 'inline-block',
                 padding: 'clamp(14px, 3vw, 18px) clamp(30px, 6vw, 45px)',
@@ -670,13 +765,21 @@ export default function Home() {
             }}
             className="garments-carousel"
           >
-            {garmentsImages.map((image, index) => {
-              const isActive = index === currentCardIndex;
-              const isNext = index === (currentCardIndex + 1) % garmentsImages.length;
-              const isPrev = index === (currentCardIndex - 1 + garmentsImages.length) % garmentsImages.length;
+            {/* Show empty cards if no images, or show images */}
+            {(() => {
+              const validImages = garmentsImages.filter(img => img && img.trim() !== '');
+              const displayItems = validImages.length === 0 
+                ? Array.from({ length: 5 }).map((_, index) => ({ image: '', index }))
+                : validImages.map((image, index) => ({ image, index }));
+              const totalItems = displayItems.length;
               
-              let zIndex = garmentsImages.length - Math.abs(index - currentCardIndex);
-              if (zIndex > garmentsImages.length) zIndex = garmentsImages.length;
+              return displayItems.map(({ image, index }) => {
+                const isActive = index === currentCardIndex;
+                const isNext = index === (currentCardIndex + 1) % totalItems;
+                const isPrev = index === (currentCardIndex - 1 + totalItems) % totalItems;
+                
+                let zIndex = totalItems - Math.abs(index - currentCardIndex);
+                if (zIndex > totalItems) zIndex = totalItems;
               
               let translateY = 0;
               let rotateY = 0;
@@ -737,22 +840,39 @@ export default function Home() {
                       transition: 'all 0.8s ease'
                     }}
                   >
-                    <Image
-                      src={image}
-                      alt={`Garments ${index + 1}`}
-                      width={400}
-                      height={450}
-                      style={{
+                    {image && image.trim() !== '' ? (
+                      <Image
+                        src={image}
+                        alt={`Garments ${index + 1}`}
+                        width={400}
+                        height={450}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          display: 'block'
+                        }}
+                      />
+                    ) : (
+                      <div style={{
                         width: '100%',
                         height: '100%',
-                        objectFit: 'cover',
-                        display: 'block'
-                      }}
-                    />
+                        backgroundColor: '#f5f5f5',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#999',
+                        fontSize: '16px',
+                        fontWeight: '500'
+                      }}>
+                        No Image
+                      </div>
+                    )}
                   </div>
                 </div>
               );
-            })}
+              });
+            })()}
             
             {/* Navigation Dots */}
             <div
@@ -788,6 +908,7 @@ export default function Home() {
 
       {/* Section 2: Purse/Bags (پرکس) */}
       <section
+        id="bags-section"
         style={{
           width: '100%',
           minHeight: 'auto',
@@ -859,18 +980,20 @@ export default function Home() {
                   e.currentTarget.style.zIndex = '1';
                 }}
               >
-                <Image
-                  src={bagImages[1]}
-                  alt="Bag 1"
-                  width={160}
-                  height={180}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    display: 'block'
-                  }}
-                />
+                {bagImages[1] && bagImages[1].trim() !== '' && (
+                  <Image
+                    src={bagImages[1]}
+                    alt="Bag 1"
+                    width={160}
+                    height={180}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      display: 'block'
+                    }}
+                  />
+                )}
               </div>
 
               {/* Card 2 - Top Right */}
@@ -898,18 +1021,20 @@ export default function Home() {
                   e.currentTarget.style.zIndex = '2';
                 }}
               >
-                <Image
-                  src={bagImages[2]}
-                  alt="Bag 2"
-                  width={150}
-                  height={170}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    display: 'block'
-                  }}
-                />
+                {bagImages[2] && bagImages[2].trim() !== '' && (
+                  <Image
+                    src={bagImages[2]}
+                    alt="Bag 2"
+                    width={150}
+                    height={170}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      display: 'block'
+                    }}
+                  />
+                )}
               </div>
 
               {/* Card 3 - Center Big (Horizontal) */}
@@ -937,18 +1062,20 @@ export default function Home() {
                   e.currentTarget.style.zIndex = '5';
                 }}
               >
-                <Image
-                  src={bagImages[0]}
-                  alt="Main Bag"
-                  width={280}
-                  height={200}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    display: 'block'
-                  }}
-                />
+                {bagImages[0] && bagImages[0].trim() !== '' && (
+                  <Image
+                    src={bagImages[0]}
+                    alt="Main Bag"
+                    width={280}
+                    height={200}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      display: 'block'
+                    }}
+                  />
+                )}
               </div>
 
               {/* Card 4 - Bottom Left */}
@@ -976,18 +1103,20 @@ export default function Home() {
                   e.currentTarget.style.zIndex = '3';
                 }}
               >
-                <Image
-                  src={bagImages[3]}
-                  alt="Bag 3"
-                  width={140}
-                  height={160}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    display: 'block'
-                  }}
-                />
+                {bagImages[3] && bagImages[3].trim() !== '' && (
+                  <Image
+                    src={bagImages[3]}
+                    alt="Bag 3"
+                    width={140}
+                    height={160}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      display: 'block'
+                    }}
+                  />
+                )}
               </div>
 
               {/* Card 5 - Bottom Right */}
@@ -1015,18 +1144,20 @@ export default function Home() {
                   e.currentTarget.style.zIndex = '4';
                 }}
               >
-                <Image
-                  src={bagImages[4]}
-                  alt="Bag 4"
-                  width={155}
-                  height={175}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    display: 'block'
-                  }}
-                />
+                {bagImages[4] && bagImages[4].trim() !== '' && (
+                  <Image
+                    src={bagImages[4]}
+                    alt="Bag 4"
+                    width={155}
+                    height={175}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      display: 'block'
+                    }}
+                  />
+                )}
               </div>
 
               {/* Card 6 - Middle Left */}
@@ -1054,18 +1185,20 @@ export default function Home() {
                   e.currentTarget.style.zIndex = '2';
                 }}
               >
-                <Image
-                  src={bagImages[5]}
-                  alt="Bag 5"
-                  width={135}
-                  height={155}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    display: 'block'
-                  }}
-                />
+                {bagImages[5] && bagImages[5].trim() !== '' && (
+                  <Image
+                    src={bagImages[5]}
+                    alt="Bag 5"
+                    width={135}
+                    height={155}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      display: 'block'
+                    }}
+                  />
+                )}
               </div>
 
               {/* Card 7 - Middle Right */}
@@ -1093,18 +1226,20 @@ export default function Home() {
                   e.currentTarget.style.zIndex = '3';
                 }}
               >
-                <Image
-                  src={bagImages[6]}
-                  alt="Bag 6"
-                  width={145}
-                  height={165}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    display: 'block'
-                  }}
-                />
+                {bagImages[6] && bagImages[6].trim() !== '' && (
+                  <Image
+                    src={bagImages[6]}
+                    alt="Bag 6"
+                    width={145}
+                    height={165}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      display: 'block'
+                    }}
+                  />
+                )}
               </div>
             </div>
           </div>
@@ -1161,7 +1296,7 @@ export default function Home() {
               From casual totes to elegant evening bags, find the perfect accessory to complement your style.
             </p>
             <Link
-              href="/shop?category=purse"
+              href="/shop?category=ladiesbag"
               style={{
                 display: 'inline-block',
                 padding: '18px 45px',
@@ -1191,6 +1326,7 @@ export default function Home() {
 
       {/* Section 3: Imported Cosmetics (امپورٹڈ کا سٹیکس) */}
       <section
+        id="cosmetics-section"
         style={{
           width: '100%',
           minHeight: 'auto',
@@ -1286,47 +1422,83 @@ export default function Home() {
             }}
             className="cosmetics-grid"
           >
-            {[
-              'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=300&fit=crop',
-              'https://images.unsplash.com/photo-1522338242992-e1a54906a8da?w=400&h=300&fit=crop',
-              'https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=400&h=300&fit=crop'
-            ].map((imageUrl, item) => (
-              <div
-                key={item}
-                style={{
-                  position: 'relative',
-                  borderRadius: '15px',
-                  overflow: 'hidden',
-                  boxShadow: '0 15px 40px rgba(0,0,0,0.3)',
-                  transition: 'transform 0.3s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-10px) scale(1.02)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                }}
-              >
-                <Image
-                  src={imageUrl}
-                  alt={`Cosmetics ${item + 1}`}
-                  width={400}
-                  height={300}
+            {(() => {
+              const validImages = cosmeticsImages.filter(img => img && img.trim() !== '');
+              const displayItems = validImages.length === 0 
+                ? Array.from({ length: 5 }).map((_, index) => ({ image: '', index }))
+                : (() => {
+                    const items = validImages.map((image, index) => ({ image, index }));
+                    // Fill remaining slots with empty cards up to max 5
+                    while (items.length < 5) {
+                      items.push({ image: '', index: items.length });
+                    }
+                    return items;
+                  })();
+              
+              return displayItems.map(({ image, index }) => (
+                <div
+                  key={index}
                   style={{
-                    width: '100%',
-                    height: '300px',
-                    objectFit: 'cover',
-                    display: 'block'
+                    position: 'relative',
+                    borderRadius: '15px',
+                    overflow: 'hidden',
+                    boxShadow: image ? '0 15px 40px rgba(0,0,0,0.3)' : '0 8px 20px rgba(0,0,0,0.1)',
+                    transition: 'transform 0.3s ease',
+                    backgroundColor: image ? 'transparent' : '#f5f5f5',
+                    border: image ? 'none' : '2px dashed #ddd',
+                    minHeight: '300px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                   }}
-                />
-              </div>
-            ))}
+                  onMouseEnter={(e) => {
+                    if (image) {
+                      e.currentTarget.style.transform = 'translateY(-10px) scale(1.02)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (image) {
+                      e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                    }
+                  }}
+                >
+                  {image && image.trim() !== '' ? (
+                    <Image
+                      src={image}
+                      alt={`Cosmetics ${index + 1}`}
+                      width={400}
+                      height={300}
+                      style={{
+                        width: '100%',
+                        height: '300px',
+                        objectFit: 'cover',
+                        display: 'block'
+                      }}
+                    />
+                  ) : (
+                    <div style={{
+                      textAlign: 'center',
+                      color: '#999',
+                      fontSize: '14px',
+                      fontWeight: '500'
+                    }}>
+                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ opacity: 0.3, marginBottom: '8px' }}>
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                        <circle cx="8.5" cy="8.5" r="1.5" />
+                        <polyline points="21 15 16 10 5 21" />
+                      </svg>
+                      <p style={{ margin: 0 }}>Empty</p>
+                    </div>
+                  )}
+                </div>
+              ));
+            })()}
           </div>
 
           {/* CTA Button */}
           <div style={{ textAlign: 'center' }}>
             <Link
-              href="/shop?category=cosmetics"
+              href="/shop?category=makeup"
               style={{
                 display: 'inline-block',
                 padding: '20px 50px',
@@ -1348,7 +1520,7 @@ export default function Home() {
                 e.currentTarget.style.boxShadow = '0 10px 30px rgba(26, 26, 46, 0.3)';
               }}
             >
-              Shop Cosmetics →
+              Shop Makeup →
             </Link>
           </div>
         </div>
@@ -1356,6 +1528,7 @@ export default function Home() {
 
       {/* Section 4: Lace (لیس) */}
       <section
+        id="lace-section"
         style={{
           width: '100%',
           minHeight: 'auto',
@@ -1512,18 +1685,20 @@ export default function Home() {
                   transform: 'rotateY(0deg)'
                 }}
               >
-                <Image
-                  src={laceImages[laceImageIndex]}
-                  alt="Lace Collection"
-                  width={600}
-                  height={500}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    display: 'block'
-                  }}
-                />
+                {laceImages.length > 0 && laceImages[laceImageIndex] && laceImages[laceImageIndex].trim() !== '' && (
+                  <Image
+                    src={laceImages[laceImageIndex]}
+                    alt="Lace Collection"
+                    width={600}
+                    height={500}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      display: 'block'
+                    }}
+                  />
+                )}
                 {/* Overlay with click hint */}
                 <div
                   style={{
@@ -1625,8 +1800,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Section 5: Jewellery (جیولری) */}
+      {/* Section 5: Electronics (الیکٹرانکس) */}
       <section
+        id="electronics-section"
         style={{
           width: '100%',
           minHeight: 'auto',
@@ -1635,7 +1811,7 @@ export default function Home() {
           backgroundColor: '#f8f9fa',
           padding: 'clamp(40px, 8vw, 80px) clamp(15px, 4vw, 20px)'
         }}
-        className="jewellery-section"
+        className="electronics-section"
       >
         <div
           style={{
@@ -1659,7 +1835,7 @@ export default function Home() {
                 letterSpacing: '2px'
               }}
             >
-              جیولری
+              الیکٹرانکس
             </div>
             <h2
               style={{
@@ -1671,7 +1847,7 @@ export default function Home() {
                 letterSpacing: '2px'
               }}
             >
-              JEWELLERY
+              ELECTRONICS
             </h2>
             <p
               style={{
@@ -1681,7 +1857,7 @@ export default function Home() {
                 marginBottom: '10px'
               }}
             >
-              Timeless Elegance
+              Latest Technology
             </p>
             <p
               style={{
@@ -1691,7 +1867,7 @@ export default function Home() {
                 margin: '0 auto 40px'
               }}
             >
-              Exquisite pieces that reflect your unique style and sophistication
+              Cutting-edge devices and gadgets for modern lifestyle
             </p>
           </div>
 
@@ -1705,52 +1881,89 @@ export default function Home() {
               flexWrap: 'wrap',
               marginBottom: 'clamp(30px, 5vw, 50px)'
             }}
-            className="jewellery-showcase"
+            className="electronics-showcase"
           >
-            {[
-              'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=450&h=400&fit=crop',
-              'https://images.unsplash.com/photo-1603561591411-07134e71a2a9?w=450&h=400&fit=crop'
-            ].map((imageUrl, item) => (
-              <div
-                key={item}
-                style={{
-                  position: 'relative',
-                  borderRadius: '20px',
-                  overflow: 'hidden',
-                  boxShadow: '0 20px 60px rgba(0, 0, 0, 0.15)',
-                  transition: 'transform 0.3s ease',
-                  flex: '1',
-                  minWidth: 'clamp(280px, 80vw, 300px)',
-                  maxWidth: '450px',
-                  width: '100%'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-15px) scale(1.03)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                }}
-              >
-                <Image
-                  src={imageUrl}
-                  alt={`Jewellery ${item + 1}`}
-                  width={450}
-                  height={400}
+            {(() => {
+              const validImages = jewelleryImages.filter(img => img && img.trim() !== '');
+              const displayItems = validImages.length === 0 
+                ? Array.from({ length: 4 }).map((_, index) => ({ image: '', index }))
+                : (() => {
+                    const items = validImages.map((image, index) => ({ image, index }));
+                    // Fill remaining slots with empty cards up to max 4
+                    while (items.length < 4) {
+                      items.push({ image: '', index: items.length });
+                    }
+                    return items;
+                  })();
+              
+              return displayItems.map(({ image, index }) => (
+                <div
+                  key={index}
                   style={{
+                    position: 'relative',
+                    borderRadius: '20px',
+                    overflow: 'hidden',
+                    boxShadow: image ? '0 20px 60px rgba(0, 0, 0, 0.15)' : '0 8px 20px rgba(0,0,0,0.1)',
+                    transition: 'transform 0.3s ease',
+                    flex: '1',
+                    minWidth: 'clamp(280px, 80vw, 300px)',
+                    maxWidth: '450px',
                     width: '100%',
-                    height: '400px',
-                    objectFit: 'cover',
-                    display: 'block'
+                    backgroundColor: image ? 'transparent' : '#f5f5f5',
+                    border: image ? 'none' : '2px dashed #ddd',
+                    minHeight: '400px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                   }}
-                />
-              </div>
-            ))}
+                  onMouseEnter={(e) => {
+                    if (image) {
+                      e.currentTarget.style.transform = 'translateY(-15px) scale(1.03)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (image) {
+                      e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                    }
+                  }}
+                >
+                  {image && image.trim() !== '' ? (
+                    <Image
+                      src={image}
+                      alt={`Electronics ${index + 1}`}
+                      width={450}
+                      height={400}
+                      style={{
+                        width: '100%',
+                        height: '400px',
+                        objectFit: 'cover',
+                        display: 'block'
+                      }}
+                    />
+                  ) : (
+                    <div style={{
+                      textAlign: 'center',
+                      color: '#999',
+                      fontSize: '14px',
+                      fontWeight: '500'
+                    }}>
+                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ opacity: 0.3, marginBottom: '8px' }}>
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                        <circle cx="8.5" cy="8.5" r="1.5" />
+                        <polyline points="21 15 16 10 5 21" />
+                      </svg>
+                      <p style={{ margin: 0 }}>Empty</p>
+                    </div>
+                  )}
+                </div>
+              ));
+            })()}
           </div>
 
           {/* CTA Button */}
           <div style={{ textAlign: 'center' }}>
             <Link
-              href="/shop?category=jewellery"
+              href="/shop?category=electronics"
               style={{
                 display: 'inline-block',
                 padding: '20px 50px',
@@ -1772,7 +1985,7 @@ export default function Home() {
                 e.currentTarget.style.boxShadow = '0 10px 30px rgba(26, 26, 46, 0.3)';
               }}
             >
-              Explore Jewellery →
+              Explore Electronics →
             </Link>
           </div>
         </div>
@@ -1780,6 +1993,7 @@ export default function Home() {
 
       {/* Section 6: General Store (جنرل سٹور) - Similar to Image Design */}
       <section
+        id="general-section"
         style={{
           width: '100%',
           minHeight: 'auto',
@@ -1944,7 +2158,7 @@ export default function Home() {
                 Your one-stop shop for daily essentials, groceries, household items, and more. Quality products at great prices.
               </p>
               <Link
-                href="/shop?category=general-store"
+                href="/shop?category=general"
                 style={{
                   display: 'inline-block',
                   padding: '18px 45px',
@@ -2110,31 +2324,57 @@ export default function Home() {
                   position: 'relative',
                   borderRadius: '15px',
                   overflow: 'hidden',
-                  boxShadow: '0 15px 40px rgba(0,0,0,0.2)',
+                  boxShadow: generalStoreImage ? '0 15px 40px rgba(0,0,0,0.2)' : '0 8px 20px rgba(0,0,0,0.1)',
                   marginBottom: '20px',
                   animation: 'fadeInUp 1s ease-out 0.5s both',
-                  transition: 'transform 0.3s ease'
+                  transition: 'transform 0.3s ease',
+                  backgroundColor: generalStoreImage ? 'transparent' : '#f5f5f5',
+                  border: generalStoreImage ? 'none' : '2px dashed #ddd',
+                  minHeight: '400px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'scale(1.02)';
+                  if (generalStoreImage) {
+                    e.currentTarget.style.transform = 'scale(1.02)';
+                  }
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
+                  if (generalStoreImage) {
+                    e.currentTarget.style.transform = 'scale(1)';
+                  }
                 }}
               >
-                <Image
-                  src="/images/genralstore.jpg"
-                  alt="General Store Products"
-                  width={600}
-                  height={400}
-                  style={{
-                    width: '100%',
-                    height: 'auto',
-                    objectFit: 'cover',
-                    display: 'block',
-                    transition: 'transform 0.5s ease'
-                  }}
-                />
+                {generalStoreImage && generalStoreImage.trim() !== '' ? (
+                  <Image
+                    src={generalStoreImage}
+                    alt="General Store Products"
+                    width={600}
+                    height={400}
+                    style={{
+                      width: '100%',
+                      height: 'auto',
+                      objectFit: 'cover',
+                      display: 'block',
+                      transition: 'transform 0.5s ease'
+                    }}
+                  />
+                ) : (
+                  <div style={{
+                    textAlign: 'center',
+                    color: '#999',
+                    fontSize: '14px',
+                    fontWeight: '500'
+                  }}>
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ opacity: 0.3, marginBottom: '12px' }}>
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                      <circle cx="8.5" cy="8.5" r="1.5" />
+                      <polyline points="21 15 16 10 5 21" />
+                    </svg>
+                    <p style={{ margin: 0 }}>Empty</p>
+                  </div>
+                )}
               </div>
 
               {/* Bottom Promo */}

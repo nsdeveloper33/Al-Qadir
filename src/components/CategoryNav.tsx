@@ -10,27 +10,27 @@ interface CategoryNavProps {
 
 // Category images mapping - Update these URLs with actual category images
 const categoryImages: Record<string, string> = {
-  'all': 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=200&h=200&fit=crop',
-  'cosmetics': 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=200&h=200&fit=crop',
-  'electronics': 'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=200&h=200&fit=crop',
-  'watches': 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&h=200&fit=crop',
-  'mobile': 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200&h=200&fit=crop',
-  'kitchen': 'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=200&h=200&fit=crop',
+  'all': 'https://res.cloudinary.com/drn7iks5k/image/upload/v1765379988/categories/all.png',
+  'cosmetics': 'https://res.cloudinary.com/drn7iks5k/image/upload/v1765380116/categories/cosmetics.jpg',
   'ladiesbag': 'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=200&h=200&fit=crop',
-  'other': 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&h=200&fit=crop'
+  'wallets': 'https://images.unsplash.com/photo-1627123424574-724758594e93?w=200&h=200&fit=crop',
+  'makeup': 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=200&h=200&fit=crop',
+  'lace': 'https://res.cloudinary.com/drn7iks5k/image/upload/v1765379914/categories/lace.jpg',
+  'electronics': 'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=200&h=200&fit=crop',
+  'general': 'https://res.cloudinary.com/drn7iks5k/image/upload/v1765379570/categories/general.webp'
 };
 
-const categoryIds = ['all', 'cosmetics', 'electronics', 'watches', 'mobile', 'kitchen', 'ladiesbag', 'other'];
+const categoryIds = ['all', 'cosmetics', 'ladiesbag', 'wallets', 'makeup', 'lace', 'electronics', 'general'];
 
 const categoryLabels: Record<string, string> = {
   'all': 'All',
   'cosmetics': 'Cosmetics',
+  'ladiesbag': 'Ladies Bags',
+  'wallets': 'Wallets',
+  'makeup': 'Makeup',
+  'lace': 'Lace',
   'electronics': 'Electronics',
-  'watches': 'Watches',
-  'mobile': 'Mobile',
-  'kitchen': 'Kitchen',
-  'ladiesbag': 'Ladies Bag',
-  'other': 'Other'
+  'general': 'General'
 };
 
 export default function CategoryNav({ activeCategory, onCategoryChange }: CategoryNavProps) {
@@ -82,7 +82,47 @@ export default function CategoryNav({ activeCategory, onCategoryChange }: Catego
                 }}
               >
                 <motion.button
-                  onClick={() => onCategoryChange(categoryId)}
+                  onClick={() => {
+                    // Map categories to home page sections
+                    const sectionMap: Record<string, string> = {
+                      'all': '',
+                      'cosmetics': 'cosmetics-section',
+                      'ladiesbag': 'bags-section',
+                      'wallets': 'bags-section',
+                      'makeup': 'cosmetics-section',
+                      'lace': 'lace-section',
+                      'electronics': 'electronics-section',
+                      'general': 'general-section',
+                    };
+                    
+                    const sectionId = sectionMap[categoryId];
+                    
+                    // If on shop page, navigate to home page section
+                    if (typeof window !== 'undefined' && window.location.pathname === '/shop') {
+                      if (categoryId === 'all') {
+                        window.location.href = '/';
+                      } else if (sectionId) {
+                        window.location.href = `/#${sectionId}`;
+                      }
+                    } else {
+                      // If already on home page, scroll to section
+                      if (categoryId === 'all') {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      } else if (sectionId) {
+                        setTimeout(() => {
+                          const element = document.getElementById(sectionId);
+                          if (element) {
+                            const offset = 90; // Header height
+                            const elementPosition = element.getBoundingClientRect().top;
+                            const offsetPosition = elementPosition + window.pageYOffset - offset;
+                            window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+                          }
+                        }, 100);
+                      }
+                      // Still update category for shop page if needed
+                      onCategoryChange(categoryId);
+                    }
+                  }}
                   style={{
                     cursor: 'pointer',
                     background: '#ffffff',
@@ -149,19 +189,25 @@ export default function CategoryNav({ activeCategory, onCategoryChange }: Catego
                     }}
                   >
                     {categoryImage && (
-                      <Image
-                        src={categoryImage}
-                        alt={categoryLabels[categoryId] || categoryId}
-                        width={isActive ? 80 : 74}
-                        height={isActive ? 80 : 74}
-                        style={{
-                          borderRadius: '50%',
-                          objectFit: 'cover',
-                          transition: 'transform 0.3s ease',
-                          filter: isActive ? 'brightness(1.1) saturate(1.2)' : 'brightness(1) saturate(1)'
-                        }}
-                        className="category-image"
-                      />
+                      <div style={{
+                        position: 'absolute',
+                        inset: 0,
+                        borderRadius: '50%',
+                        overflow: 'hidden'
+                      }}>
+                        <Image
+                          src={categoryImage}
+                          alt={categoryLabels[categoryId] || categoryId}
+                          fill
+                          sizes="80px"
+                          style={{
+                            objectFit: 'cover',
+                            transition: 'transform 0.3s ease',
+                            filter: isActive ? 'brightness(1.1) saturate(1.2)' : 'brightness(1) saturate(1)'
+                          }}
+                          className="category-image"
+                        />
+                      </div>
                     )}
                   </div>
                 </motion.button>
